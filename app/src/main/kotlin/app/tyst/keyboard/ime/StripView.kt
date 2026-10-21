@@ -54,7 +54,12 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
     private val dividers = List(2) { Divider(context) }
     private val chipScroll = HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false; isFillViewport = false }
     private val chipRow = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-    private var inlineViews: List<View> = emptyList()
+    var inlineViews: List<View> = emptyList()
+        private set
+    // Autofill pills are live system surfaces, so they get their own row that is only rebuilt when
+    // new pills arrive, never on each keystroke.
+    private val inlineScroll = HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false; isFillViewport = false }
+    private val inlineRow = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
     private var lastState = StripState()
     private val slotData = arrayOfNulls<Suggestion>(3)
     private var undoSlot = -1
@@ -82,6 +87,9 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
         center.addView(slotRow, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
         center.addView(chipScroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
         center.addView(incognitoLabel, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
+        inlineScroll.addView(inlineRow, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, h))
+        center.addView(inlineScroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
+        inlineScroll.visibility = GONE
     }
 
     fun applyColors(c: KeyboardColors) {
@@ -100,7 +108,13 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
 
     /** Shows the system-drawn autofill pills (e.g. from NordPass); an empty list removes them. */
     fun setInlineSuggestions(views: List<View>) {
+        if (views == inlineViews) return
         inlineViews = views
+        inlineRow.removeAllViews()
+        views.forEach { v ->
+            (v.parent as? ViewGroup)?.removeView(v)
+            inlineRow.addView(v, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = context.dp(6f).toInt() })
+        }
         render(lastState, voice.visibility == VISIBLE, toolsActive)
     }
 
@@ -116,6 +130,7 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
 
         val code = state.code
         chipRow.removeAllViews()
+        inlineScroll.visibility = GONE
         when {
             code != null -> {
                 val chip = RichChip(
@@ -133,11 +148,11 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
                 showChips()
             }
             inlineViews.isNotEmpty() -> {
-                inlineViews.forEach { v ->
-                    (v.parent as? ViewGroup)?.removeView(v)
-                    chipRow.addView(v, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = context.dp(6f).toInt() })
-                }
-                showChips()
+                slotRow.visibility = GONE
+                incognitoLabel.visibility = GONE
+                chipScroll.visibility = GONE
+                inlineScroll.visibility = VISIBLE
+                return
             }
             state.memory.isNotEmpty() -> {
                 state.memory.forEach { item ->

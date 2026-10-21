@@ -124,6 +124,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         )
         keyboard = kb
         strip = st
+        if (pendingInline.isNotEmpty()) st.setInlineSuggestions(pendingInline)
         root = r
         applyLook()
         return r
@@ -139,7 +140,6 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             KeyLayoutKind.LETTERS -> Mode.LETTERS
         }
         closePanels()
-        strip?.setInlineSuggestions(emptyList())
         val t = InputConnectionTarget({ currentInputConnection }, keySender, info, focused)
         target = t
         controller?.start(focused, t, settings)
@@ -153,7 +153,14 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         super.onFinishInputView(finishingInput)
     }
 
+    /** Autofill pills that arrived before the keyboard view existed. */
+    private var pendingInline: List<View> = emptyList()
+
     override fun onFinishInput() {
+        // Pills belong to the field that is closing; the next field's pills may arrive before
+        // onStartInputView, so they must not be cleared there.
+        pendingInline = emptyList()
+        strip?.setInlineSuggestions(emptyList())
         controller?.finish()
         target = null
         g.saveNow()
@@ -408,7 +415,10 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
 
     override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
         if (!settings.showPasswordSuggestions) return false
-        InlineAutofill.inflate(this, response) { views -> strip?.setInlineSuggestions(views) }
+        InlineAutofill.inflate(this, response) { views ->
+            pendingInline = views
+            strip?.setInlineSuggestions(views)
+        }
         return true
     }
 
