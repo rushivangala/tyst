@@ -377,6 +377,12 @@ class TypingController(
         changed()
     }
 
+    /** True unless the tools are working on a selection that begins mid-sentence. */
+    fun toolsTextStartsSentence(): Boolean {
+        val t = target ?: return true
+        return t.selected().isEmpty() || Words.isSentenceStart(t.before(8))
+    }
+
     /** The text the writing tools work on: the selection, or the whole field. */
     fun textForTools(): String {
         val t = target ?: return ""

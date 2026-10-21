@@ -113,6 +113,11 @@ class WritingToolsTest {
         assertThat(proof.check("An hour, a user, an apple and a European trip.")).isEmpty()
     }
 
+    @Test fun proofreadKeepsCaseOfAMidSentenceSelection() {
+        assertThat(proof.check("there friend", startsSentence = false)).isEmpty()
+        assertThat(proof.check("there friend").single().replacement).isEqualTo("T")
+    }
+
     @Test fun proofreadRestoresDiacritics() {
         val fixes = proof.check("The train to Vasteras is late.")
         assertThat(fixes.single().replacement).isEqualTo("Västerås")

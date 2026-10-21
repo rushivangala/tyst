@@ -16,7 +16,8 @@ data class Fix(val start: Int, val end: Int, val original: String, val replaceme
  * repeated words, a/an, spacing around punctuation, and a few common confusions.
  */
 class Proofreader(private val autocorrector: Autocorrector) {
-    fun check(text: String, swedishWords: Boolean = true): List<Fix> {
+    /** [startsSentence] is false for a selection that begins mid-sentence, so its first word keeps its case. */
+    fun check(text: String, swedishWords: Boolean = true, startsSentence: Boolean = true): List<Fix> {
         val fixes = ArrayList<Fix>()
         spelling(text, swedishWords, fixes)
         regexFix(text, Regex("(?<![\\p{L}'])i(?![\\p{L}'’])"), FixKind.CAPITALS, fixes) { "I" }
@@ -28,7 +29,7 @@ class Proofreader(private val autocorrector: Autocorrector) {
         regexFix(text, Regex("[ \\t]{2,}"), FixKind.PUNCTUATION, fixes) { " " }
         regexFix(text, Regex("[ \\t]+(?=[,.!?;:])"), FixKind.PUNCTUATION, fixes) { "" }
         regexFix(text, Regex("(?<=[\\p{L}])([,;])(?=[\\p{L}])"), FixKind.PUNCTUATION, fixes) { it.value + " " }
-        capitals(text, fixes)
+        capitals(text, fixes, startsSentence)
         return fixes.sortedWith(compareBy({ it.start }, { -it.end })).fold(ArrayList()) { acc, f ->
             if (acc.isEmpty() || f.start >= acc.last().end) acc += f
             acc
@@ -91,8 +92,8 @@ class Proofreader(private val autocorrector: Autocorrector) {
         return w.first() in "aeio" || (w.first() == 'u' && !w.startsWith("un") && w.getOrNull(2) !in listOf('i', 'e')) || w.startsWith("un")
     }
 
-    private fun capitals(text: String, out: MutableList<Fix>) {
-        var start = true
+    private fun capitals(text: String, out: MutableList<Fix>, startsSentence: Boolean) {
+        var start = startsSentence
         for (i in text.indices) {
             val c = text[i]
             if (start && c.isLetter()) {

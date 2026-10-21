@@ -319,7 +319,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("Tyst", text))
         }
         override fun rewrite(text: String, tone: Tone): Result<RewriteResult> = e.rewriter.rewrite(text, tone, focused.packageName)
-        override fun proofread(text: String): List<Fix> = e.proofreader.check(text, settings.swedishWords)
+        override fun proofread(text: String): List<Fix> = e.proofreader.check(text, settings.swedishWords, controller?.toolsTextStartsSentence() ?: true)
         override fun applyFixes(text: String, fixes: List<Fix>): String = e.proofreader.apply(text, fixes)
         override fun close() = closePanels()
     }
