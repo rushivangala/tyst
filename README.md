@@ -69,11 +69,15 @@ Every `assemble` runs `verify<Variant>NoNetworkPermission`. It fails the build i
 - debug and release APK builds, uploaded as the `tyst-apks` artifact
 - the emulator end-to-end tests on API 35
 
-The release APK is signed with your key when these repository secrets exist: `TYST_KEYSTORE_BASE64`, `TYST_KEYSTORE_PASSWORD`, `TYST_KEY_ALIAS` and `TYST_KEY_PASSWORD`. Without them, it falls back to the debug key so it can still be installed.
+Release APKs are signed with Tyst's permanent key, which lives in two repository secrets: `TYST_KEYSTORE_BASE64` and `TYST_KEYSTORE_PASSWORD`. Without them, branch builds fall back to a throwaway debug key, and a different one each run, so those can't update an installed copy.
+
+### Releases
+
+Push a tag such as `v1.0.0`. After the tests and emulator checks pass, CI builds the signed APK and checks its certificate (SHA-256 `E0:25:42:96:…:91:9A`). It then publishes a GitHub Release with `tyst-v1.0.0.apk` and its checksum, using `docs/releases/<tag>.md` as the notes. The release job refuses to publish without the permanent key.
 
 ### Install on a Pixel
 
-1. Download `tyst-apks` from the workflow run and `adb install app-release.apk`, or open the APK on the phone.
+1. Download the APK from the latest [release](https://github.com/rushivangala/tyst/releases/latest) on the phone and open it, or use `adb install tyst-v1.0.0.apk`.
 2. Open Tyst. Onboarding walks you through enabling it and choosing it as your keyboard.
 
 ## Tests

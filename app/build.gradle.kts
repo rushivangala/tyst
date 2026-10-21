@@ -13,8 +13,11 @@ android {
         applicationId = "app.tyst.keyboard"
         minSdk = 31
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        // CI run numbers only grow, so every build installs over the previous one.
+        val run = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0
+        versionCode = 100 + run
+        versionName = if (System.getenv("GITHUB_REF_TYPE") == "tag") System.getenv("GITHUB_REF_NAME").removePrefix("v")
+        else "1.0.0-dev.$run"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -26,8 +29,8 @@ android {
             create("release") {
                 storeFile = file(releaseKeystore)
                 storePassword = System.getenv("TYST_KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("TYST_KEY_ALIAS")
-                keyPassword = System.getenv("TYST_KEY_PASSWORD")
+                keyAlias = System.getenv("TYST_KEY_ALIAS")?.takeIf { it.isNotBlank() } ?: "tyst"
+                keyPassword = System.getenv("TYST_KEY_PASSWORD")?.takeIf { it.isNotBlank() } ?: System.getenv("TYST_KEYSTORE_PASSWORD")
             }
         }
     }
