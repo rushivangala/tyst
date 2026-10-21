@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -56,10 +57,11 @@ fun StyleScreen() {
     val e = env.engine
     val s = env.settings
     var confirmReset by remember { mutableStateOf(false) }
+    val locale = LocalConfiguration.current.locales[0]
     Screen("My style") {
         item {
             Body("What Tyst has learned from how you write.")
-            val since = e?.style?.firstLearnedAt?.takeIf { it > 0 }?.let { java.text.SimpleDateFormat("MMMM", java.util.Locale.getDefault()).format(Date(it)) }
+            val since = e?.style?.firstLearnedAt?.takeIf { it > 0 }?.let { java.text.SimpleDateFormat("MMMM", locale).format(Date(it)) }
             ToggleRow(
                 "Learn my style",
                 if (s.learning) "From ${e?.style?.messageCount ?: 0} messages you sent${since?.let { " since $it" } ?: ""}" else "Paused. What it learned so far is kept.",
