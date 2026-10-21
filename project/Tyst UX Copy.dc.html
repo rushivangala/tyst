@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#FFFFFF;color:#161D1B;font-family:'Hanken Grotesk',sans-serif;-webkit-font-smoothing:antialiased}a{color:#0D5C58}a:hover{color:#08403D}</style>
+</helmet>
+<div style="max-width:1160px;margin:0 auto;padding:56px 32px 112px;display:flex;flex-direction:column;gap:72px">
+<header style="display:flex;flex-direction:column;gap:16px">
+<span style="font:500 13px 'JetBrains Mono',monospace;color:#0D5C58">TYST · UX COPY · ENGLISH</span>
+<h1 style="margin:0;font-size:48px;line-height:56px;font-weight:500;letter-spacing:-.01em">Interface copy and demo content</h1>
+<p style="margin:0;max-width:720px;font-size:16px;line-height:26px;color:#46524F;text-wrap:pretty">Strings that already appear in the hi-fi screens are kept verbatim. Keys marked <span style="font:500 10px 'JetBrains Mono',monospace;background:#D5EAE7;color:#08403D;border-radius:6px;padding:2px 6px">NEW</span> are copy the screens still need (dialogs, errors, empty states). Curly braces are filled in at runtime. Length notes are character limits for the layout.</p>
+<nav style="display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;font-weight:500">
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="8"><a href="#{{ n.id }}" style="text-decoration:none">{{ n.label }}</a></sc-for>
+</nav>
+</header>
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+<section id="{{ sec.id }}" style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:baseline;gap:14px"><span style="font:500 14px 'JetBrains Mono',monospace;color:#0D5C58">{{ sec.num }}</span><h2 style="margin:0;font-size:30px;line-height:38px;font-weight:500">{{ sec.title }}</h2></div>
+<p style="margin:0;max-width:760px;font-size:15px;line-height:23px;color:#46524F;text-wrap:pretty">{{ sec.intro }}</p>
+</div>
+<div style="border:1px solid #DDE3E1;border-radius:20px;overflow:hidden">
+<div style="display:flex;gap:20px;padding:12px 20px;background:#F3F6F5;border-bottom:1px solid #DDE3E1">
+<sc-for list="{{ sec.head }}" as="h" hint-placeholder-count="4"><span style="flex:{{ h.f }};min-width:0;font:500 12px 'JetBrains Mono',monospace;color:#46524F;text-transform:uppercase;letter-spacing:.04em">{{ h.t }}</span></sc-for>
+</div>
+<sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="5">
+<div style="display:flex;gap:20px;padding:14px 20px;border-top:{{ r.bt }};background:{{ r.bg }};align-items:flex-start">
+<sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4">
+<div style="flex:{{ c.f }};min-width:0;font-family:{{ c.ff }};font-size:{{ c.fs }};line-height:1.5;color:{{ c.col }};font-weight:{{ c.fw }};white-space:pre-line;text-wrap:pretty;overflow-wrap:anywhere">{{ c.t }}<span style="display:{{ c.nwD }};margin-left:8px;font:500 10px 'JetBrains Mono',monospace;background:#D5EAE7;color:#08403D;border-radius:6px;padding:2px 6px;vertical-align:1px">NEW</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MONO="'JetBrains Mono',monospace",SANS="'Hanken Grotesk',sans-serif";
+const S=[
+// ---------- 1 UI strings
+{id:'ui',num:'01',title:'UI strings',intro:'Every screen in the hi-fi file, in order. Buttons are sentence case, verbs first. Toggle rows have a title and one line of support. The word “private” is used only where the product can show proof (no internet permission, data stored on the phone).',
+ head:[['String key',1.5],['Screen',1],['Text',3],['Max length',1]],
+ col:['k','s','t','m'],
+ rows:[
+['onb.welcome.title','1.1 Welcome','Tyst','12 · app name'],
+['onb.welcome.body','1.1 Welcome','A keyboard that learns how you write and never goes online.','70 · 2 lines'],
+['onb.welcome.access','1.1 Welcome','What Tyst can access','28 · label'],
+['onb.welcome.internet.title','1.1 Welcome','Internet','20'],
+['onb.welcome.internet.sub','1.1 Welcome','Not requested','24'],
+['onb.welcome.mic.title','1.1 Welcome','Microphone','20'],
+['onb.welcome.mic.sub','1.1 Welcome','Asks the first time you use voice typing','48 · 1 line'],
+['onb.welcome.cta','1.1 Welcome','Get started','18 · button'],
+['onb.step','1.2–1.5','{n} of 5','8'],
+['onb.enable.title','1.2 Turn on Tyst','Turn on Tyst','20'],
+['onb.enable.body','1.2 Turn on Tyst','Two quick steps in Android settings. Each one ticks off when you come back.','90 · 3 lines'],
+['onb.enable.row1.title','1.2 Turn on Tyst','Enable Tyst','24'],
+['onb.enable.row1.done','1.2 Turn on Tyst','Done','12'],
+['onb.enable.row2.title','1.2 Turn on Tyst','Choose Tyst as your keyboard','36'],
+['onb.enable.row2.sub','1.2 Turn on Tyst','Opens the keyboard picker','36'],
+['onb.enable.note','1.2 Turn on Tyst','Android warns that keyboards can collect what you type. Every keyboard gets this warning. Tyst keeps everything on this phone.','150 · 4 lines'],
+['onb.enable.cta','1.2 Turn on Tyst','Open keyboard picker','24 · button'],
+['onb.privacy.title','1.3 Privacy','Everything you type stays on this phone.','48 · 2 lines'],
+['onb.privacy.body','1.3 Privacy','Tyst has no internet permission, so there is no way for it to send what you write anywhere.','110 · 3 lines'],
+['onb.privacy.group','1.3 Privacy','You choose what it learns','28 · label'],
+['onb.privacy.learn.title','1.3 Privacy','Learn my writing style','28'],
+['onb.privacy.learn.sub','1.3 Privacy','From messages you send. Turn off any time.','52'],
+['onb.privacy.memory.title','1.3 Privacy','Private memory','24'],
+['onb.privacy.memory.sub','1.3 Privacy','Remembers addresses and booking codes you type. Off until you turn it on.','80 · 2 lines'],
+['onb.privacy.note','1.3 Privacy','Check it yourself: Android Settings › Apps › Tyst › Permissions.','80 · 2 lines'],
+['onb.continue','1.3, 1.4','Continue','18 · button'],
+['onb.look.title','1.4 Pick a look','Pick a look','20'],
+['onb.look.body','1.4 Pick a look','Change it any time in Settings.','40'],
+['look.wallpaper.title','1.4, 2.6','Match wallpaper','24'],
+['look.wallpaper.sub','1.4','Takes the accent from your wallpaper','44'],
+['onb.ready.title','1.5 Ready','You’re set','20'],
+['onb.ready.body','1.5 Ready','Try it below. Writing tools switch on when the model finishes downloading.','90 · 3 lines'],
+['onb.ready.field','1.5 Ready','Practice','16 · field label'],
+['onb.ready.progress.title','1.5 Ready','Writing model','24'],
+['onb.ready.progress.sub','1.5 Ready','{done} of {total} MB · keeps going in the background','60'],
+['onb.ready.cta','1.5 Ready','Done','18 · button'],
+['+onb.setup.retry','1.2 Turn on Tyst','Not switched on yet. Tap to try again.','44 · shown if the check fails'],
+['badge.on_device','2.1, 3.x','On device','12 · badge'],
+['set.title','2.1 Settings home','Tyst','12'],
+['set.status.title','2.1 Settings home','Tyst is your keyboard','28'],
+['set.status.sub','2.1 Settings home','Writing model ready · learning {on|paused}','48'],
+['set.typing.title','2.1 Settings home','Typing & dictionaries','28'],
+['set.typing.sub','2.1 Settings home','English · Swedish words {on|off}','40'],
+['set.ai.sub','2.1 Settings home','Rewrite, Proofread, Voice','36'],
+['set.style.sub','2.1 Settings home','Learning · {n} habits  /  Paused','28'],
+['set.privacy.sub','2.1 Settings home','{n} remembered items','28'],
+['set.passwords.sub','2.1 Settings home','{manager} · copied codes','36'],
+['set.appearance.sub','2.1 Settings home','{mode} · {accent}','28'],
+['set.about.sub','2.1 Settings home','Version {v}','20'],
+['typing.lang.english','2.2 Typing','English  ·  Main language for autocorrect and predictions','title 12 · sub 52'],
+['typing.swedish','2.2 Typing','Swedish words  ·  Recognise Swedish names and words in English','title 16 · sub 56'],
+['typing.restore','2.2 Typing','Restore å ä ö  ·  Suggest Västerås when you type Vasteras','title 16 · sub 56'],
+['typing.autocorrect','2.2 Typing','Autocorrect  ·  Medium','title 16 · value 12'],
+['typing.aarow','2.2 Typing','Show å ä ö row  ·  A small row above the letters','title 20 · sub 40'],
+['typing.dictionary','2.2 Typing','Personal dictionary  ·  {n} words, {m} of them Swedish','title 24 · sub 44'],
+['typing.never','2.2 Typing','Never correct  ·  fika, Järntorget and 12 more','title 16 · sub 44'],
+['+typing.restore.disabled','2.2 Typing','Turn on Swedish words to use this.','40 · shown when greyed out'],
+['ai.title','2.3 AI features','AI features','20'],
+['ai.body','2.3 AI features','Everything runs on this phone, so it works offline.','60'],
+['ai.rewrite','2.3 AI features','Rewrite in my style  ·  Rewrites selected text the way you usually write','title 24 · sub 60'],
+['ai.proofread','2.3 AI features','Proofread  ·  Finds spelling and grammar slips, one at a time','title 12 · sub 60'],
+['ai.voice','2.3 AI features','Voice typing  ·  Speech to text without a network','title 16 · sub 52'],
+['ai.translate','2.3 AI features','Translate  ·  English ↔ Swedish  ·  Later','title 12 · sub 28 · badge 8'],
+['ai.reply','2.3 AI features','Reply  ·  Draft a reply to copied text  ·  Later','title 8 · sub 40 · badge 8'],
+['style.title','2.4 My style','My style','16'],
+['style.body','2.4 My style','What Tyst has learned from how you write.','52'],
+['style.learn.title','2.4 My style','Learn my style','24'],
+['style.learn.on','2.4 My style','From {n} messages you sent since {month}','52'],
+['style.learn.off','2.4 My style','Paused. What it learned so far is kept.','48'],
+['style.habits','2.4 My style','How you write  ·  Short sentences · Casual with friends · More formal in email · Digits for times','habit title 28'],
+['style.habit.digits.sub','2.4 My style','“at 6” rather than “at six”','36'],
+['style.phrases','2.4 My style','Phrases you use often','28 · label'],
+['style.pause','2.4 My style','Pause learning  /  Resume learning','20 · button'],
+['style.reset','2.4 My style','Reset my style','20 · button'],
+['style.sheet.title','2.4b Edit habit','Casual with friends','28'],
+['style.sheet.sub','2.4b Edit habit','Learned from {n} messages in WhatsApp and Messages.','60 · 2 lines'],
+['style.sheet.tone','2.4b Edit habit','Tone with friends','24'],
+['style.sheet.forget','2.4b Edit habit','Forget this','16 · button'],
+['+style.reset.confirm.title','2.4 My style','Reset your style?','28'],
+['+style.reset.confirm.body','2.4 My style','Tyst forgets how you write and starts again. Your personal dictionary and private memory stay.','110 · dialog'],
+['+style.reset.confirm.cta','2.4 My style','Reset','12 · destructive button'],
+['priv.title','2.5 Privacy','Privacy & memory','24'],
+['priv.internet.title','2.5 Privacy','Internet access','20'],
+['priv.internet.sub','2.5 Privacy','Not requested. Nothing leaves this phone.','48'],
+['priv.memory.title','2.5 Privacy','Private memory','20'],
+['priv.memory.on','2.5 Privacy','Remembers things you type, like addresses','52'],
+['priv.memory.off','2.5 Privacy','Paused. Saved items are kept.','40'],
+['priv.list','2.5 Privacy','Remembered · {n}','24 · label'],
+['+priv.search.hint','2.5 Privacy','Search what’s remembered','28 · field hint'],
+['+priv.search.empty','2.5 Privacy','Nothing matches “{query}”.','48'],
+['+priv.empty','2.5 Privacy','Nothing remembered yet. Addresses and codes you type will show up here once private memory is on.','100 · 3 lines'],
+['priv.delete_row','2.5 Privacy','Delete','10 · swipe action'],
+['priv.snack.item','2.5 Privacy','Deleted “{item}”','40 · snackbar'],
+['priv.snack.undo','2.5 Privacy','Undo','8'],
+['priv.delete_all.cta','2.5 Privacy','Delete all learned data','28 · button'],
+['priv.snack.all','2.5 Privacy','All learned data deleted','32 · snackbar'],
+['+priv.dialog.title','2.5b Delete all','Delete everything Tyst has learned?','40 · 2 lines'],
+['+priv.dialog.body','2.5b Delete all','This removes your style, personal dictionary and remembered items from this phone. It can’t be undone.','120 · 4 lines'],
+['+priv.dialog.cancel','2.5b Delete all','Cancel','10'],
+['+priv.dialog.confirm','2.5b Delete all','Delete all','12 · error-filled button'],
+['look.title','2.6 Appearance','Appearance','16'],
+['look.mode','2.6 Appearance','Light · Dark · System','8 each · segment'],
+['look.accent','2.6 Appearance','Accent','12 · label'],
+['look.wallpaper.sub2','2.6 Appearance','Uses colours from your wallpaper','44'],
+['look.rotate.title','2.6 Appearance','Change with the time of day','32'],
+['look.rotate.on','2.6 Appearance','Now: {part of day} · {palette}','36'],
+['look.rotate.off','2.6 Appearance','Six palettes through the day','36'],
+['pw.title','2.7 Passwords & codes','Passwords & codes','24'],
+['about.title','2.8 About','About','12'],
+['about.status.title','2.8 About','Tyst {version}','16'],
+['about.status.sub','2.8 About','Android {v} · {device}','36'],
+['about.badge','2.8 About','No network permission','24 · badge'],
+['about.models','2.8 About','Models on this phone','28 · label'],
+['about.models.rows','2.8 About','Writing model · Voice model · Prediction model · Swedish word list  (size left, version right)','title 24'],
+['about.more.rows','2.8 About','Privacy policy · Open-source licences · Share usage stats file  ·  You choose where it goes','title 28 · sub 36'],
+['ai.empty.title','3.1 AI empty','Nothing to work with yet','32'],
+['ai.empty.body','3.1 AI empty','Type a message or select some text, then pick a tool.','64 · 2 lines'],
+['ai.tools','3.x AI panel','Rewrite · Proofread · Translate','12 each · chips'],
+['+ai.loading','3.2 Loading','Writing…','16'],
+['+ai.stop','3.2 Loading','Stop','8 · button. Keeps the original text.'],
+['+ai.result.replace','3.2 Result','Replace','10 · button'],
+['+ai.result.undo','3.2 Result','Undo','8 · button'],
+['+ai.result.again','3.2 Result','Try again','12 · button'],
+['ai.download.title','3.3 Downloading','Writing model is downloading','36'],
+['ai.download.body','3.3 Downloading','{done} of {total} MB. Typing and suggestions work as usual.','64 · 2 lines'],
+['ai.download.badge','3.3 Downloading','Downloading','14 · badge'],
+['ai.download.pause','3.3 Downloading','Pause download','16 · button'],
+['+ai.download.resume','3.3 Downloading','Resume download','16 · button'],
+['ai.battery.title','3.4 Battery Saver','Paused while Battery Saver is on','36'],
+['ai.battery.body','3.4 Battery Saver','Writing tools use a lot of power. Suggestions and autocorrect still work.','80 · 3 lines'],
+['ai.battery.badge','3.4 Battery Saver','Paused','10 · badge'],
+['ai.battery.settings','3.4 Battery Saver','Battery settings','16 · button'],
+['ai.battery.once','3.4 Battery Saver','Run once','10 · button'],
+['ai.na.title','3.5 Not available','Translate isn’t available yet','32'],
+['ai.na.body','3.5 Not available','It needs a second language model, coming in a later update.','64'],
+['ai.na.cta','3.5 Not available','Use Rewrite','14 · button'],
+['+ai.error.generic','3.x AI panel','That didn’t work. Your text is unchanged. Try again.','56'],
+['+ai.error.long','3.x AI panel','That’s too long to rewrite at once. Select a shorter part.','60'],
+['+voice.mic.denied.title','Voice typing','Microphone is off for Tyst','32'],
+['+voice.mic.denied.body','Voice typing','Turn it on in Android settings to use voice typing.','60'],
+['+voice.mic.denied.cta','Voice typing','Open settings','14 · button'],
+['+voice.listening','Voice typing','Listening…','16'],
+['+kb.undo_correction','Keyboard','Undo “{word}”','24 · chip after autocorrect'],
+['+kb.add_word','Keyboard','Add “{word}” to dictionary','32 · long-press suggestion']
+ ]},
+// ---------- 2 typing scenarios
+{id:'typing',num:'02',title:'Typing scenarios',intro:'Fifteen cases for the prototype. The keyboard shows three suggestions after the typed text. Scenarios 12 to 15 have Swedish names, places or words inside English text; the keyboard recognises them, draws no underline and never changes them. Swedish words are on in these cases.',
+ head:[['#',.3],['Context',1.2],['Typed so far',2.2],['Suggestions',1.6],['Behaviour',2.2]],
+ col:['k','s','t','s2','n'],
+ rows:[
+['1','Work chat · Slack','Can you send me the','report  ·  link  ·  file','Top suggestion has the accent container.'],
+['2','Work chat · Slack','Running 10 minutes','late  ·  behind  ·  over','Digits kept because “Digits for times” is a learned habit.'],
+['3','Work chat · Slack','Thanks for flagging','this  ·  that  ·  it','Phrase is in “Phrases you use often”, so it leads.'],
+['4','Work chat · Slack','Let’s move the meeting to','Thursday  ·  tomorrow  ·  3 pm','Times come as digits.'],
+['5','Family chat · WhatsApp','Don’t forget to pick up','milk  ·  the  ·  Alma','Alma is in the personal dictionary (a child’s name).'],
+['6','Family chat · WhatsApp','Dinner is at','6  ·  home  ·  seven','Digit first. Casual tone.'],
+['7','Family chat · WhatsApp','See you','soon  ·  later  ·  at','—'],
+['8','Email · Gmail','Hi Elin, I hope you','are  ·  had  ·  and','Capital after the comma-less greeting is left to the user.'],
+['9','Email · Gmail','Best','regards  ·  wishes  ·  ,','More formal in email: “regards” leads.'],
+['10','Notes','Buy','milk  ·  bread  ·  batteries','From notes history.'],
+['11','Notes','Call the dentist about','Tuesday  ·  my  ·  the','—'],
+['12','Family chat · Swedish place','Let’s go to Liseberg on','Saturday  ·  Sunday  ·  Friday','Liseberg is recognised: no underline, not capitalised differently, not corrected.'],
+['13','Work chat · Swedish word','Are you joining us for','fika  ·  lunch  ·  the','Fika leads because it follows “us for” in this user’s history. No underline.'],
+['14','Email · Swedish name and city','Hi Åsa, the train to Västerås leaves','at  ·  from  ·  early','Åsa and Västerås are both recognised. å is kept.'],
+['15','Notes · Swedish place','Meet Johan at','Järntorget  ·  the  ·  6','Järntorget comes from the personal dictionary and the “Never correct” list.']
+ ]},
+// ---------- 3 autocorrect
+{id:'auto',num:'03',title:'Autocorrect cases',intro:'Autocorrect applies on space or punctuation. Each applied fix shows an Undo chip until the next key. Swedish words are left alone when Swedish words is on. Restore å ä ö only suggests; it never applies by itself.',
+ head:[['#',.3],['Typed',1.2],['Result',1.2],['Action',1.2],['Why',2.6]],
+ col:['k','s','t','s2','n'],
+ rows:[
+['1','teh','the','Auto-applied','Common transposition.'],
+['2','recieve','receive','Auto-applied','Common i/e swap.'],
+['3','definately','definitely','Auto-applied','Common misspelling.'],
+['4','im','I’m','Auto-applied','Missing apostrophe and capital.'],
+['5','wont','won’t','Auto-applied','“wont” is a real word, so it applies only when the sentence needs the contraction (“I wont be late”).'],
+['6','tomorow','tomorrow','Auto-applied','Dropped letter.'],
+['7','seperate','separate','Auto-applied','Common misspelling.'],
+['8','fika','fika','Left alone','Swedish word. No underline, no suggestion to change it.'],
+['9','Liseberg','Liseberg','Left alone','Swedish place name, keeps its capital.'],
+['10','Vasteras','Västerås','Suggested only','Shown as a suggestion in the strip. Needs Restore å ä ö to be on. Tap to accept.']
+ ]},
+// ---------- 4 rewrite
+{id:'rewrite',num:'04',title:'Rewrite in my style',intro:'One neutral message, three personal styles. The prototype picks a style from the habits in My style and shows the result card with Replace, Try again and Undo. Names the habit it used so the result can be traced.',
+ head:[['Style',1],['Habit it follows',1.2],['Text',4]],
+ col:['k','s','t'],
+ rows:[
+['Neutral (selected text)','—','Hi Elin, I can’t make it to the meeting tomorrow. Can we move it to Thursday afternoon? Let me know if that works.'],
+['Brief and direct','Short sentences','Elin, can’t do tomorrow. Thursday afternoon instead? Tell me if that works.'],
+['Warm and chatty','Casual with friends','Hi Elin! So sorry, tomorrow isn’t going to work for me. Could we shift it to Thursday afternoon instead? Let me know if that suits you, and thanks for being flexible!'],
+['Formal','More formal in email','Dear Elin, I am unable to attend tomorrow’s meeting. Would it be possible to reschedule to Thursday afternoon? Please let me know whether this suits you. Kind regards,']
+ ]},
+// ---------- 5 memory
+{id:'memory',num:'05',title:'Private memory examples',intro:'Items appear as a chip above the keys when the trigger phrase is typed. Chip label: “From private memory”. One tap inserts the item. Nothing here is a password. Items are stored only after the user types them and private memory is on.',
+ head:[['#',.3],['Trigger phrase',1.4],['Suggested item',2],['Row in settings',2]],
+ col:['k','s','t','n'],
+ rows:[
+['1','my address is','Kungsgatan 4, 411 19 Göteborg','Home address · Kungsgatan 4, Göteborg'],
+['2','booking ref','ABX42K','Booking ABX42K · SAS, Fri 14:20'],
+['3','my number','070 123 45 67','Phone number · ends 67'],
+['4','dentist is at','Tandläkare Norr, Vasagatan 8','Dentist · Vasagatan 8'],
+['5','email me at','elin.berg@hey.com','Email · elin.berg@hey.com']
+ ]},
+// ---------- 6 chips
+{id:'chips',num:'06',title:'Code chip, password chips and Passwords & codes',intro:'Codes appear only when the user copies one. Passwords come from the user’s password manager through Android autofill. Tyst does not store them. The settings note below replaces the current “never reads your messages” wording, which claims more than a keyboard can promise.',
+ head:[['String key',1.5],['Where',1.2],['Text',3],['Max length',1]],
+ col:['k','s','t','m'],
+ rows:[
+['+chip.code.label','Code chip','{code}','10 · mono, spaced (482 913)'],
+['+chip.code.sub','Code chip','Copied code · hides in {n} s','32'],
+['+chip.code.a11y','Code chip','Insert code {code}. Hides in {n} seconds.','screen reader'],
+['+chip.code.gone','Code chip','Code hidden','16 · after expiry, 2 s'],
+['+chip.pw.title','Password chip','{username}','28 · truncates in the middle'],
+['+chip.pw.sub','Password chip','{manager} · {site}','36'],
+['+chip.pw.a11y','Password chip','Fill {username} from {manager}','screen reader'],
+['+chip.pw.locked.title','Password chip (locked)','Unlock {manager}','28'],
+['+chip.pw.locked.sub','Password chip (locked)','Then your logins show up here','36'],
+['+chip.pw.none','Password chip (no match)','No saved login for this site','32'],
+['+chip.pw.more','Password chip','More','8 · opens manager'],
+['pw.pass.group','2.7','Passwords','16 · label'],
+['pw.suggest.title','2.7','Show password suggestions','28'],
+['pw.suggest.sub','2.7','From your password manager, above the keys','48'],
+['pw.manager.title','2.7','Password manager','20'],
+['pw.manager.sub','2.7','{manager} · change in Android settings','44'],
+['+pw.manager.none','2.7','None chosen · pick one in Android settings','44'],
+['pw.codes.group','2.7','Verification codes','24 · label'],
+['pw.codes.title','2.7','Show copied codes','24'],
+['pw.codes.sub','2.7','A code you copy appears above the keys','48'],
+['pw.expiry.label','2.7','Hide a copied code after','28'],
+['+pw.expiry.options','2.7','30 sec · 1 min · 5 min','8 each · segment'],
+['pw.note','2.7 (revised)','Tyst doesn’t save passwords. They come from {manager} through Android. A code only appears after you copy it.','130 · 3 lines']
+ ]},
+// ---------- 7 store
+{id:'store',num:'07',title:'App store copy',intro:'Short description fits the Play listing limit of 80 characters. Taglines are options for the listing and the welcome screen.',
+ head:[['Item',1],['Text',4],['Length',1]],
+ col:['k','t','m'],
+ rows:[
+['Short description','A keyboard that learns your style and keeps everything on your phone.','68 / 80'],
+['Tagline 1','A quiet keyboard that learns you.','33'],
+['Tagline 2','Your words stay on your phone.','30'],
+['Tagline 3','English keyboard. Swedish words welcome.','40']
+ ]},
+{id:'flags',num:'08',title:'Wording to check',intro:'Three lines in the current screens say more than the product can prove or are ambiguous. Suggested fixes are in the tables above.',
+ head:[['Where',1],['Current',2.4],['Suggested',2.4]],
+ col:['k','s','t'],
+ rows:[
+['2.7 note','Tyst never reads your messages and never stores passwords. Passwords come from NordPass through Android. Codes only appear when you copy one.','Tyst doesn’t save passwords. They come from {manager} through Android. A code only appears after you copy it.'],
+['1.3 body','Tyst has no internet permission, so there is no way for it to send what you write anywhere.','Keep. It is true as long as the app never requests the permission. Pair it with the “Check it yourself” note, as in the current screen.'],
+['1.1 body','A keyboard that learns how you write and never goes online.','Keep. Avoid “private”, “secure” or “safe” as standalone claims elsewhere.']
+ ]}
+];
+class Component extends DCLogic {
+  renderVals(){
+    const sections=S.map(s=>({id:s.id,num:s.num,title:s.title,intro:s.intro,
+      head:s.head.map(h=>({t:h[0],f:h[1]})),
+      rows:s.rows.map((r,i)=>({bt:i?'1px solid #EEF1F0':'none',bg:i%2?'#FAFBFB':'#FFFFFF',
+        cells:r.map((t,j)=>{const nw=j===0&&t[0]==='+',key=s.col[j]==='k'&&(s.id==='ui'||s.id==='chips'),m=s.col[j]==='m';
+          return {t:nw?t.slice(1):t,f:s.head[j][1],nwD:nw?'inline-block':'none',
+            ff:key||m?MONO:SANS,fs:key?'12px':m?'12px':'14px',col:key?'#0D5C58':m?'#46524F':'#161D1B',fw:(j===0&&!key&&!m)||(s.id!=='ui'&&s.id!=='chips'&&j===1&&s.col[j]!=='n')?500:400};})}))}));
+    return {sections,nav:S.map(s=>({id:s.id,label:s.num+' '+s.title}))};
+  }
+}
+</script>
+</body>
+</html>

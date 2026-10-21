@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#ececec;color:#222;font-family:'Hanken Grotesk',sans-serif}a{color:#222}a:hover{color:#000}</style>
+</helmet>
+<div style="width:2160px;padding:64px 64px 120px;display:flex;flex-direction:column;gap:80px">
+<header style="display:flex;flex-direction:column;gap:12px;max-width:900px">
+<p style="margin:0;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#666">Tyst · Low-fi wireframes · Pixel 10 Pro</p>
+<h1 style="margin:0;font-size:44px;font-weight:600;letter-spacing:-.02em">Tyst keyboard flows</h1>
+<div style="display:flex;gap:28px;align-items:center;font-size:13px;color:#444;padding-top:8px">
+<span style="display:flex;gap:8px;align-items:center"><span style="width:28px;height:16px;border-radius:5px;background:#fff;border:1px solid #999;box-shadow:0 0 0 2px #111"></span>Tap target</span>
+<span style="display:flex;gap:8px;align-items:center"><span style="width:28px;height:16px;border-radius:8px;background:#fff;border:1.5px dashed #555"></span>Drawn by the system (autofill)</span>
+<span style="display:flex;gap:8px;align-items:center"><span style="font:500 9px 'JetBrains Mono',monospace;border:1px solid #666;padding:1px 4px;border-radius:3px">SV</span>Swedish word</span>
+<span style="display:flex;gap:8px;align-items:center"><span style="font:500 9px 'JetBrains Mono',monospace;border:1px solid #666;padding:1px 4px;border-radius:3px;background:#ddd">later</span>Not in MVP</span>
+</div>
+</header>
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="8">
+<section id="{{ sec.id }}" style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:6px;border-bottom:1.5px solid #222;padding-bottom:14px">
+<div style="display:flex;align-items:baseline;gap:14px"><span style="font:500 14px 'JetBrains Mono',monospace;color:#666">{{ sec.num }}</span><h2 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.01em">{{ sec.title }}</h2></div>
+<p style="margin:0;font-size:14px;color:#444;max-width:1000px">{{ sec.desc }}</p>
+</div>
+<sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="1">
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#666">{{ r.label }}</span>
+<div style="display:flex;gap:{{ r.gap }}px;align-items:flex-start">
+<sc-for list="{{ r.steps }}" as="s" hint-placeholder-count="4">
+<div style="display:flex;align-items:flex-start;flex:none">
+<sc-if value="{{ s.arrow }}" hint-placeholder-val="{{ false }}">
+<div style="width:64px;margin-top:230px;display:flex;flex-direction:column;align-items:center;gap:4px">
+<span style="font:500 10px 'JetBrains Mono',monospace;color:#666;text-transform:uppercase">{{ s.via }}</span>
+<div style="display:flex;align-items:center;width:56px"><div style="flex:1;height:2px;background:#555"></div><div style="border-left:9px solid #555;border-top:5px solid transparent;border-bottom:5px solid transparent"></div></div>
+</div>
+</sc-if>
+<div style="width:232px;display:flex;flex-direction:column;gap:10px">
+<div style="height:{{ s.fh }};display:flex;flex-direction:column;border-radius:{{ s.fr }}px;background:#2b2b2b;padding:{{ s.fp }}px;box-shadow:0 2px 0 #bbb">
+<div style="flex:1;min-height:0;border-radius:{{ s.ir }}px;background:#fff;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="display:{{ s.sb }};height:20px;flex:none;align-items:center;justify-content:space-between;padding:0 16px;font:500 9px 'JetBrains Mono',monospace;color:#444"><span>9:41</span><span style="width:9px;height:9px;border-radius:50%;background:#2b2b2b;position:absolute;left:50%;top:6px;margin-left:-4px"></span><span>▲ ▮</span></div>
+<sc-for list="{{ s.blocks }}" as="b" hint-placeholder-count="4">
+<div style="display:contents">
+<sc-if value="{{ b.is_bar }}" hint-placeholder-val="{{ false }}"><div style="height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;flex:none;border-bottom:1px solid #ddd"><span style="font-size:14px">←</span><span style="width:{{ b.avw }}px;height:{{ b.avw }}px;border-radius:50%;background:#ccc;flex:none"></span><span style="flex:1;font-size:13px;font-weight:600">{{ b.t }}</span><span style="font-size:10px;color:#666">{{ b.act }}</span></div></sc-if>
+<sc-if value="{{ b.is_h }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;text-align:{{ b.al }}"><div style="font-size:{{ b.fs }}px;font-weight:600;line-height:1.2;letter-spacing:-.01em;text-wrap:pretty">{{ b.t }}</div><div style="font-size:11px;color:#666;margin-top:4px;line-height:1.35;text-wrap:pretty">{{ b.s }}</div></div></sc-if>
+<sc-if value="{{ b.is_p }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;display:flex;flex-direction:column;gap:5px"><span style="font-size:11px;line-height:1.35;color:#555;text-wrap:pretty">{{ b.t }}</span><sc-for list="{{ b.ln }}" as="l" hint-placeholder-count="2"><div style="{{ l.st }}"></div></sc-for></div></sc-if>
+<sc-if value="{{ b.is_lbl }}" hint-placeholder-val="{{ false }}"><div style="margin:4px 12px 0;flex:none;font:500 9px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#777">{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_img }}" hint-placeholder-val="{{ false }}"><div style="margin:0 auto;flex:none;width:{{ b.w }}px;height:{{ b.h }}px;border-radius:{{ b.r }}px;background:#e4e4e4;border:1px dashed #999;display:flex;align-items:center;justify-content:center;font:500 9px 'JetBrains Mono',monospace;color:#777;text-align:center">{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_btn }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:{{ b.bg }};color:{{ b.fg }};border:1.5px solid #333;{{ b.hlst }}">{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_card }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;border:1px solid #aaa;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;background:#fafafa;{{ b.hlst }}"><span style="font-size:12px;font-weight:600">{{ b.t }}</span><span style="font-size:10.5px;color:#666;line-height:1.35">{{ b.s }}</span><sc-for list="{{ b.ln }}" as="l" hint-placeholder-count="1"><div style="{{ l.st }}"></div></sc-for><sc-for list="{{ b.rows }}" as="cr" hint-placeholder-count="1"><div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;border-top:1px solid #ddd;padding-top:6px"><span>{{ cr.t }}</span><span style="color:#555;font-weight:600">{{ cr.v }}</span></div></sc-for></div></sc-if>
+<sc-if value="{{ b.is_row }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;min-height:36px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #ddd;padding:3px 0;{{ b.hlst }}"><span style="display:{{ b.icd }};width:20px;height:20px;border-radius:6px;background:#ddd;flex:none"></span><div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:12px;line-height:1.25">{{ b.t }}</span><span style="font-size:9.5px;color:#666;line-height:1.3">{{ b.s }}</span></div>
+<span style="display:{{ b.d_chev }};font-size:13px;color:#777">›</span><span style="display:{{ b.d_text }};font-size:10px;color:#444;font-weight:600">{{ b.v }}</span><span style="display:{{ b.d_del }};width:22px;height:22px;border:1px solid #888;border-radius:6px;align-items:center;justify-content:center;font-size:10px;{{ b.delhl }}">✕</span><span style="display:{{ b.d_check }};width:16px;height:16px;border:1.5px solid #333;border-radius:4px;align-items:center;justify-content:center;font-size:10px;line-height:1">{{ b.ck }}</span><span style="display:{{ b.d_radio }};width:16px;height:16px;border:1.5px solid #333;border-radius:50%;align-items:center;justify-content:center"><span style="width:8px;height:8px;border-radius:50%;background:{{ b.rdbg }}"></span></span><span style="display:{{ b.d_tog }};{{ b.tgSt }}"><span style="{{ b.knSt }}"></span></span></div></sc-if>
+<sc-if value="{{ b.is_field }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;display:flex;flex-direction:column;gap:3px"><span style="font-size:9.5px;color:#666">{{ b.t }}</span><div style="border:{{ b.bw }}px solid {{ b.bc }};border-radius:6px;padding:8px;font-size:12px;min-height:32px;display:flex;align-items:center;gap:1px;color:{{ b.fc }};letter-spacing:{{ b.ls }}px">{{ b.v }}<span style="display:{{ b.cd }};width:1.5px;height:15px;background:#222"></span></div></div></sc-if>
+<sc-if value="{{ b.is_bub }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;max-width:78%;align-self:{{ b.sf }};background:{{ b.bg }};border-radius:12px;padding:7px 10px;font-size:11.5px;line-height:1.35">{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_inp }}" hint-placeholder-val="{{ false }}"><div style="margin:0 8px 6px;flex:none;display:flex;align-items:flex-end;gap:6px"><span style="width:26px;height:26px;border-radius:50%;border:1px solid #888;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px">+</span><div style="flex:1;min-width:0;border:1.5px solid #444;border-radius:16px;padding:6px 10px;font-size:11.5px;line-height:1.4;min-height:30px;{{ b.hlst }}">{{ b.pre }}<span style="display:{{ b.wd }};border-bottom:1.5px dotted #333;padding-bottom:1px">{{ b.w }}</span><span style="display:{{ b.wd }};font:500 7px 'JetBrains Mono',monospace;border:1px solid #666;border-radius:2px;padding:0 2px;margin-left:2px;vertical-align:super">SV</span>{{ b.post }}<span style="display:inline-block;width:1.5px;height:12px;background:#222;vertical-align:middle"></span></div><span style="width:26px;height:26px;border-radius:50%;background:#333;flex:none"></span></div></sc-if>
+<sc-if value="{{ b.is_sel }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px 6px;flex:none;border:1.5px solid #444;border-radius:12px;padding:8px 10px;font-size:11.5px;line-height:1.5;{{ b.hlst }}">{{ b.pre }}<span style="background:#bbb;border-radius:2px">{{ b.sel }}</span>{{ b.post }}</div></sc-if>
+<sc-if value="{{ b.is_chips }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;display:flex;flex-wrap:wrap;gap:5px"><sc-for list="{{ b.items }}" as="c" hint-placeholder-count="3"><span style="{{ c.cst }}">{{ c.t }}</span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_seg }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;display:flex;border:1px solid #888;border-radius:8px;overflow:hidden"><sc-for list="{{ b.items }}" as="c" hint-placeholder-count="3"><span style="{{ c.sst }}">{{ c.t }}</span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_tabs }}" hint-placeholder-val="{{ false }}"><div style="margin:0;flex:none;display:flex"><sc-for list="{{ b.items }}" as="c" hint-placeholder-count="3"><span style="{{ c.tst }}">{{ c.t }}</span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_search }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;height:32px;border-radius:16px;background:#ececec;border:1px solid #bbb;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#666;gap:6px"><span>⌕</span>{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_sw }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;display:flex;gap:7px;flex-wrap:wrap"><sc-for list="{{ b.items }}" as="c" hint-placeholder-count="8"><span style="{{ c.st }}"></span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_prog }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px;flex:none;height:6px;border-radius:3px;background:#ddd"><div style="width:{{ b.v }}%;height:100%;border-radius:3px;background:#444"></div></div></sc-if>
+<sc-if value="{{ b.is_snack }}" hint-placeholder-val="{{ false }}"><div style="margin:0 12px 8px;flex:none;background:#333;color:#fff;border-radius:6px;padding:9px 12px;font-size:11px;display:flex;justify-content:space-between"><span>{{ b.t }}</span><span style="font-weight:700;{{ b.ahl }}">{{ b.a }}</span></div></sc-if>
+<sc-if value="{{ b.is_dlg }}" hint-placeholder-val="{{ false }}"><div style="margin:0 16px;flex:none;border:1.5px solid #333;border-radius:16px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 0 #ccc"><span style="font-size:14px;font-weight:600">{{ b.t }}</span><span style="font-size:11px;color:#555;line-height:1.4">{{ b.s }}</span><div style="display:flex;justify-content:flex-end;gap:8px"><sc-for list="{{ b.btns }}" as="x" hint-placeholder-count="2"><span style="{{ x.st }}">{{ x.t }}</span></sc-for></div></div></sc-if>
+<sc-if value="{{ b.is_sp }}" hint-placeholder-val="{{ false }}"><div style="height:{{ b.h }}px;flex:none"></div></sc-if>
+<sc-if value="{{ b.is_fl }}" hint-placeholder-val="{{ false }}"><div style="flex:1;min-height:0"></div></sc-if>
+<sc-if value="{{ b.is_sheet }}" hint-placeholder-val="{{ false }}"><div style="margin-top:auto;flex:none;background:#f3f3f3;border-top:1.5px solid #888;border-radius:16px 16px 0 0;padding:6px 10px 10px;display:flex;flex-direction:column;gap:8px;min-height:{{ b.mh }}px"><span style="width:28px;height:3px;border-radius:2px;background:#aaa;align-self:center"></span><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600">{{ b.t }}</span><span style="font-size:10px;color:#666">{{ b.act }}</span></div>
+<div style="display:{{ b.segd }};border:1px solid #888;border-radius:8px;overflow:hidden;background:#fff"><sc-for list="{{ b.segs }}" as="c" hint-placeholder-count="4"><span style="{{ c.sst }}">{{ c.t }}</span></sc-for></div>
+<div style="display:flex;flex-wrap:wrap;gap:5px"><sc-for list="{{ b.chips }}" as="c" hint-placeholder-count="3"><span style="{{ c.cst }}">{{ c.t }}</span></sc-for></div>
+<div style="display:{{ b.bodyd }};background:#fff;border:1px solid #bbb;border-radius:8px;padding:8px;font-size:11.5px;line-height:1.45">{{ b.pre }}<span style="background:#ccc;border-radius:2px">{{ b.mark }}</span>{{ b.post }}</div>
+<div style="display:flex;flex-direction:column;gap:5px"><sc-for list="{{ b.ln }}" as="l" hint-placeholder-count="2"><div style="{{ l.st }}"></div></sc-for></div>
+<span style="font-size:9.5px;color:#666;line-height:1.35">{{ b.s }}</span>
+<div style="display:flex;gap:6px"><sc-for list="{{ b.btns }}" as="x" hint-placeholder-count="3"><span style="{{ x.st }}">{{ x.t }}</span></sc-for></div></div></sc-if>
+<sc-if value="{{ b.is_kb }}" hint-placeholder-val="{{ false }}"><div style="margin-top:auto;flex:none;background:#e6e6e6;border-top:1px solid #aaa;padding-top:2px">
+<sc-for list="{{ b.strips }}" as="sr" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:3px;padding:3px 4px;border-bottom:1px solid #cfcfcf"><sc-for list="{{ sr.items }}" as="i" hint-placeholder-count="5"><div style="{{ i.st }}"><span style="{{ i.icst }}">{{ i.ic }}</span>{{ i.t }}</div></sc-for></div></sc-for>
+<sc-for list="{{ b.keys }}" as="kr" hint-placeholder-count="4"><div style="display:flex;gap:3px;padding:3px 3px 0">
+<sc-for list="{{ kr.ks }}" as="k" hint-placeholder-count="9"><div style="{{ k.st }}">{{ k.l }}</div></sc-for></div></sc-for>
+<div style="height:{{ b.gh }}px;display:flex;align-items:center;justify-content:center"><span style="width:70px;height:3px;border-radius:2px;background:#888"></span></div></div></sc-if>
+</div>
+</sc-for>
+<div style="display:{{ s.nav }};height:14px;flex:none;align-items:center;justify-content:center"><span style="width:64px;height:3px;border-radius:2px;background:#777"></span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:3px;padding:0 4px">
+<div style="display:flex;gap:8px;align-items:baseline"><span style="font:500 10px 'JetBrains Mono',monospace;color:#666">{{ s.id }}</span><span style="font-size:13px;font-weight:600">{{ s.label }}</span></div>
+<span style="font-size:11.5px;color:#555;line-height:1.4;text-wrap:pretty">{{ s.note }}</span>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</section>
+</sc-for>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const ST = (o) => Object.entries(o).map(([k, v]) => k + ':' + v).join(';');
+    const HL = 'box-shadow:0 0 0 2px #111;';
+    const norm = (a, on, hi) => (a || []).map((x, i) => { x = typeof x === 'string' ? { t: x } : { ...x }; if (on === i) x.on = true; if (hi === i) x.hl = true; return x; });
+    const chipSt = (c) => `padding:4px 9px;border-radius:12px;font-size:10px;line-height:14px;border:1px solid ${c.on ? '#222' : '#aaa'};background:${c.on ? '#222' : '#fff'};color:${c.on ? '#fff' : '#333'};${c.hl ? HL : ''}`;
+    const segSt = (c) => `flex:1;text-align:center;padding:6px 2px;font-size:10px;background:${c.on ? '#333' : '#fff'};color:${c.on ? '#fff' : '#333'};${c.hl ? 'box-shadow:inset 0 0 0 2px #111;' : ''}`;
+    const tabSt = (c) => `flex:1;text-align:center;padding:9px 0;font-size:11px;border-bottom:2px solid ${c.on ? '#222' : '#ccc'};font-weight:${c.on ? 700 : 400};color:${c.on ? '#222' : '#777'}`;
+    const lines = (n, w) => Array.from({ length: n || 0 }, (_, i) => ({ st: `height:6px;border-radius:3px;background:#d4d4d4;width:${i == n - 1 ? 60 : 100}%` }));
+    const btnSt = (x) => `flex:1;text-align:center;padding:8px 6px;border-radius:16px;font-size:10.5px;font-weight:600;border:1.5px solid #333;background:${x.p ? '#333' : '#fff'};color:${x.p ? '#fff' : '#222'};${x.hl ? 'box-shadow:0 0 0 2px #111;' : ''}`;
+
+    const mkItem = (i) => {
+      i = typeof i === 'string' ? { t: i } : i;
+      const k = i.k || 'slot';
+      let st = 'display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#222;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:1;';
+      const base = {
+        slot: 'flex:1;height:28px;',
+        hi: 'flex:1;height:28px;background:#f8f8f8;border-radius:8px;font-weight:700;border:1px solid #bbb;',
+        div: 'width:1px;height:16px;background:#aaa;flex:none;',
+        ic: 'flex:none;width:28px;height:28px;border:1px solid #999;border-radius:7px;font-size:8.5px;background:#f6f6f6;',
+        chip: 'flex:1;height:28px;border:1.5px solid #444;border-radius:14px;background:#fff;padding:0 9px;justify-content:flex-start;font-size:10.5px;',
+        pill: 'flex:1;height:28px;border:1.5px dashed #555;border-radius:14px;padding:0 8px;background:#fff;font-size:9.5px;',
+        tool: 'flex:1;height:30px;border:1px solid #999;border-radius:8px;background:#f6f6f6;font-size:9px;flex-direction:column;gap:0;line-height:1.15;padding:0 1px;white-space:normal;text-align:center;overflow:visible;font-size:8.5px;',
+        note: 'flex:1;height:28px;color:#555;font-size:10.5px;'
+      };
+      st += base[k] + (i.hl ? HL : '');
+      return { t: i.t || '', ic: i.ic || '', icst: i.ic ? 'font:500 8px JetBrains Mono,monospace;border:1px solid #666;border-radius:3px;padding:0 3px;flex:none;' : 'display:none', st };
+    };
+    const preds = (a, b, c) => [{ t: a }, { k: 'div' }, { k: 'hi', t: b }, { k: 'div' }, { t: c }];
+    const AI = (hl) => ({ k: 'ic', t: 'AI', hl });
+    const CL = { k: 'ic', t: 'clip' };
+
+    const KEYS = (bottom, o) => {
+      const key = (l, f, sp) => ({ l, st: sp === 'gap' ? `flex:${f}` : `flex:${f};min-width:0;height:31px;border-radius:5px;background:${sp ? '#d2d2d2' : '#fff'};border:1px solid #b2b2b2;display:flex;align-items:center;justify-content:center;font-size:${l.length > 2 ? 9 : 11}px` });
+      const r1 = [...'qwertyuiop'].map((l) => key(l, 1));
+      const r2 = [key('', .5, 'gap'), ...[...'asdfghjkl'].map((l) => key(l, 1)), key('', .5, 'gap')];
+      const r3 = [key('⇧', 1.5, 1), ...[...'zxcvbnm'].map((l) => key(l, 1)), key('⌫', 1.5, 1)];
+      const r4 = bottom.map((b) => key(b[0], b[1], b[2]));
+      return [r1, r2, r3, r4].map((ks) => ({ ks }));
+    };
+    const BOT_A = [['?123', 1.5, 1], [',', 1], ['space', 5], ['.', 1], ['↵', 1.5, 1]];
+    const BOT_C = [['?123', 1.5, 1], ['AI', 1.2, 1], ['space', 4.5], ['.', 1], ['↵', 1.5, 1]];
+    const NUM = () => {
+      const key = (l, sp) => ({ l, st: `flex:1;height:33px;border-radius:5px;background:${sp ? '#d2d2d2' : '#fff'};border:1px solid #b2b2b2;display:flex;align-items:center;justify-content:center;font-size:14px` });
+      return [['1', '2', '3', '⌫'], ['4', '5', '6', '↵'], ['7', '8', '9', ','], ['?', '0', '.', '-']].map((r) => ({ ks: r.map((l, i) => key(l, '⌫↵,?-.'.includes(l) && l !== '.' || l === '.')) }));
+    };
+    const kb = (strips, o = {}) => ({ k: 'kb', strips: strips.map((r) => ({ items: r.map(mkItem) })), keys: o.nokeys ? [] : o.num ? NUM() : KEYS(o.c ? BOT_C : BOT_A), gh: o.nokeys ? 0 : 12, ...(o.nokeys ? { ngh: 1 } : {}) });
+
+    const mk = (b) => {
+      const o = { ...b };
+      o['is_' + b.k] = true;
+      o.hlst = b.hl ? HL : '';
+      o.s = b.s || '';
+      const n = (b.n) || 0;
+      o.ln = lines(n);
+      if (b.k === 'bar') { o.avw = b.av ? 22 : 0; }
+      if (b.k === 'h') { o.fs = b.fs || 18; o.al = b.al || 'left'; }
+      if (b.k === 'btn') { o.bg = b.o ? '#fff' : '#333'; o.fg = b.o ? '#222' : '#fff'; }
+      if (b.k === 'img') { o.w = b.w || 120; o.h = b.h || 80; o.r = b.r || 10; }
+      if (b.k === 'bub') { o.sf = b.me ? 'flex-end' : 'flex-start'; o.bg = b.me ? '#cfcfcf' : '#eee'; }
+      if (b.k === 'field') {
+        o.bw = b.foc ? 2 : 1; o.bc = b.foc ? '#222' : '#aaa';
+        o.v = b.v || b.ph || ''; o.fc = b.v ? '#222' : '#999'; o.ls = b.dots ? 2 : 0;
+        o.cd = b.foc ? 'inline-block' : 'none';
+      }
+      if (b.k === 'inp') { o.pre = b.pre || ''; o.post = b.post || ''; o.w = b.w || ''; o.wd = b.w ? 'inline' : 'none'; }
+      if (b.k === 'sel') { o.pre = b.pre; o.post = b.post; }
+      if (b.k === 'chips' || b.k === 'seg' || b.k === 'tabs') {
+        o.items = norm(b.items, b.on, b.hi).map((c) => ({ ...c, cst: chipSt(c), sst: segSt(c), tst: tabSt(c) }));
+      }
+      if (b.k === 'sw') o.items = Array.from({ length: b.n || 9 }, (_, i) => ({ st: `width:22px;height:22px;border-radius:50%;background:${i === 0 ? '#fff' : '#ccc'};border:${i === (b.on || 0) ? '2.5px solid #111' : '1px solid #888'}` }));
+      if (b.k === 'row') {
+        const tr = b.tr || 'chev';
+        ['chev', 'text', 'del', 'check', 'radio', 'tog'].forEach((x) => (o['d_' + x] = tr === x ? (x === 'del' || x === 'check' || x === 'radio' ? 'flex' : 'inline-block') : 'none'));
+        o.icd = b.ic === false ? 'none' : 'block';
+        const on = b.on !== false;
+        o.tgSt = `width:30px;height:16px;border-radius:8px;background:${on ? '#333' : '#fff'};border:1.5px solid #333;position:relative;flex:none;`;
+        o.knSt = `position:absolute;top:1.5px;${on ? 'right' : 'left'}:2px;width:10px;height:10px;border-radius:50%;background:${on ? '#fff' : '#333'}`;
+        o.ck = b.on ? '✓' : '';
+        o.rdbg = b.on ? '#333' : 'transparent';
+        o.delhl = b.delhl ? HL : '';
+        o.v = b.v || '';
+      }
+      if (b.k === 'snack') o.ahl = b.hl ? 'box-shadow:0 0 0 2px #fff;border-radius:3px;padding:0 3px;' : '';
+      if (b.k === 'dlg') o.btns = (b.btns || []).map((x) => ({ ...x, st: btnSt(x).replace('flex:1;', 'padding:8px 14px;').replace('padding:8px 6px;', '') }));
+      if (b.k === 'sp') o.h = b.h || 8;
+      if (b.k === 'card') o.rows = b.rows || [];
+      if (b.k === 'sheet') {
+        o.mh = b.mh || 210;
+        o.segs = norm(b.seg, b.segOn, b.segHi).map((c) => ({ ...c, sst: segSt(c) }));
+        o.segd = b.seg ? 'flex' : 'none';
+        o.chips = norm(b.chips, b.on, b.hi).map((c) => ({ ...c, cst: chipSt(c) }));
+        o.bodyd = b.pre !== undefined || b.mark ? 'block' : 'none';
+        o.pre = b.pre || ''; o.mark = b.mark || ''; o.post = b.post || '';
+        o.btns = (b.btns || []).map((x) => ({ ...x, st: btnSt(x) }));
+        o.act = b.act || '';
+      }
+      return o;
+    };
+
+    const step = (id, label, note, blocks, o = {}) => ({ id, label, note, blocks: blocks.map(mk), ...o });
+    const row = (steps, o = {}) => ({ label: o.label || '', steps, noArrows: o.noArrows });
+    const sec = (num, title, desc, rows) => ({ id: 'flow' + num, num, title, desc, rows });
+
+    const chat = (t) => ({ k: 'bar', t: t || 'Anna', av: true, act: '⋮' });
+    const FL = { k: 'fl' };
+    const H = (t, s, fs, al) => ({ k: 'h', t, s, fs, al });
+    const R = (t, s, tr, o) => ({ k: 'row', t, s, tr, ...o });
+    const TG = (t, s, on, o) => ({ k: 'row', t, s, tr: 'tog', on, ...o });
+    const L = (t) => ({ k: 'lbl', t });
+    const BAR = (t, act) => ({ k: 'bar', t, act });
+    const BTN = (t, o) => ({ k: 'btn', t, ...o });
+
+    /* ---------- 1 setup ---------- */
+    const f1 = sec('01', 'First-time setup', 'Welcome, enable and select are merged into one screen to stay within five screens. The app detects each system step and ticks it off on return.', [row([
+      step('1.1', 'Welcome', 'Promise, plus a live permissions card: internet not requested.', [{ k: 'sp', h: 30 }, { k: 'img', t: 'logo', w: 84, h: 84, r: 24 }, { k: 'sp', h: 6 }, H('Tyst', 'The keyboard that writes like you and never goes online.', 26, 'center'), { k: 'sp', h: 4 }, { k: 'card', t: 'Permissions', rows: [{ t: 'Internet', v: 'Not requested' }, { t: 'Microphone', v: 'Ask on first use' }] }, FL, BTN('Get started', { hl: 1 }), { k: 'sp', h: 10 }]),
+      step('1.2', 'Enable & select', 'Opens system input settings, then the keyboard picker. Each row ticks when the app sees the change.', [BAR('Set up', '1 / 3'), { k: 'sp', h: 10 }, H('Turn on Tyst', 'Two quick system steps.'), { k: 'sp', h: 4 }, R('1  Enable Tyst keyboard', 'Opens input settings', 'check', { on: true }), R('2  Choose Tyst as default', 'System keyboard picker', 'check', { on: false, hl: 1 }), { k: 'sp', h: 6 }, { k: 'card', t: 'System picker (preview)', rows: [{ t: 'Gboard', v: '○' }, { t: 'Tyst', v: '●' }] }, FL, BTN('Show keyboard picker', { hl: 1 }), { k: 'sp', h: 10 }]),
+      step('1.3', 'Privacy explainer', 'Separate opt-ins. Style learning is pre-selected; private memory stays off.', [BAR('Your data', '2 / 3'), { k: 'sp', h: 10 }, H('Stays on this phone', 'No internet permission, so nothing can be sent.'), { k: 'sp', h: 4 }, TG('Learn my writing style', 'From text you accept', true), TG('Private memory', 'Opt in · addresses, bookings', false), { k: 'sp', h: 6 }, { k: 'p', t: 'Check it yourself: system Settings › Apps › Tyst › Permissions.' }, FL, BTN('Continue', { hl: 1 }), { k: 'sp', h: 10 }]),
+      step('1.4', 'Pick theme', 'System mode and dynamic colour pre-selected. Live preview below.', [BAR('Look & feel', '3 / 3'), { k: 'sp', h: 8 }, { k: 'seg', items: ['Light', 'Dark', 'System'], on: 2 }, { k: 'sp', h: 6 }, { k: 'lbl', t: 'Accent · first is dynamic' }, { k: 'sw', n: 9, on: 0 }, { k: 'sp', h: 8 }, BTN('Continue', { hl: 1 }), kb([[AI(), ...preds('Hello', 'Hi', 'Hey'), CL]], { c: 0 })]),
+      step('1.5', 'Done', 'Practice field. AI keys show model download progress until the pack lands.', [BAR('Try it', ''), { k: 'sp', h: 10 }, H('You are set', 'Type “fika in Västerås” to see it left alone.'), { k: 'sp', h: 6 }, { k: 'field', t: 'Practice field', ph: 'Type here', foc: true }, { k: 'sp', h: 10 }, { k: 'card', t: 'Writing model', s: 'Preparing writing model · 62%' }, { k: 'prog', v: 62 }, FL, BTN('Done', { hl: 1 }), { k: 'sp', h: 10 }])
+    ])]);
+
+    /* ---------- 2 typing ---------- */
+    const bubs = [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Where should we meet tomorrow?' }, { k: 'sp', h: 0 }, FL];
+    const f2 = sec('02', 'Typing with predictions', 'Chat app with the three-slot strip. Centre slot is the most likely word.', [row([
+      step('2.1', 'English prediction', 'Tap the centre slot to commit “station”.', [...bubs, { k: 'inp', pre: 'Let’s meet at the ' }, kb([[AI(), ...preds('café', 'station', 'office'), CL]])].map((x, i) => i === 7 ? { ...x, hl: 0 } : x)),
+      step('2.2', 'Swedish place name', 'Typing “Väst” offers “Västerås” from the place list.', [...bubs, { k: 'inp', pre: 'Let’s meet in Väst' }, kb([[AI(), ...preds('Väst', 'Västerås', 'Växjö'), CL]])]),
+      step('2.3', 'Recognised, not corrected', 'Space commits “Västerås” unchanged. Dotted underline and SV badge are for this wireframe only.', [...bubs, { k: 'inp', pre: 'Let’s meet in ', w: 'Västerås', post: ' ' }, kb([[AI(), ...preds('on', 'at', 'tomorrow'), CL]])]),
+      step('2.4', 'Missing diacritics', '“Vasteras” stays as typed. “Västerås” is suggested, never swapped in automatically.', [...bubs, { k: 'inp', pre: 'Let’s meet in Vasteras' }, kb([[AI(), { t: 'Vasteras' }, { k: 'div' }, { k: 'hi', t: 'Västerås', hl: 1 }, { k: 'div' }, { t: 'Västra' }, CL]])])
+    ])]);
+
+    /* ---------- 3 AI panel ---------- */
+    const draft = 'Hey, can you send me the report when you get a chance please';
+    const f3 = sec('03', 'AI panel', 'Select text, open the AI toolbar, pick an action, preview, insert. Translate and Reply are listed as later features in the spec.', [
+      row([
+        step('3.1', 'Select text', 'Long-press and drag. The AI key in the strip is the entry point.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sel', pre: '', sel: draft, post: ' thanks' }, kb([[AI(1), { t: 'Rewrite' }, { k: 'div' }, { t: 'Check' }, { k: 'div' }, { t: 'More' }, CL]])]),
+        step('3.2', 'Open panel', 'AI toolbar replaces the strip. Translate and Reply are marked later.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sel', pre: '', sel: draft, post: ' thanks' }, kb([[{ k: 'tool', t: 'Rewrite', ic: 'AI', hl: 1 }, { k: 'tool', t: 'Proofread' }, { k: 'tool', t: 'Translate (later)' }, { k: 'tool', t: 'Reply (later)' }]])], { via: 'tap AI' }),
+        step('3.3', 'Choose tone', 'Sheet opens preset to the app default (Slack: My style · Shorter). Text streams in.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sel', pre: '', sel: draft, post: ' thanks' }, { k: 'sheet', t: 'Rewrite', act: '✕', seg: ['Rewrite', 'Proofread', 'Translate', 'Reply'], segOn: 0, chips: ['My style', 'Warmer', 'Formal', 'Shorter', 'Longer'], on: 0, hi: 3, n: 3, s: 'Writing…', mh: 215 }]),
+        step('3.4', 'Preview', 'Swipe through up to three variants. Changed words are highlighted.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sel', pre: '', sel: draft, post: ' thanks' }, { k: 'sheet', t: 'Variant 1 of 3', act: '‹  ›', chips: ['My style', 'Shorter'], on: 0, pre: 'Can you send me the ', mark: 'report', post: ' when you can? Thanks.', btns: [{ t: 'Replace', p: 1, hl: 1 }, { t: 'Insert below' }, { t: 'Copy' }], mh: 215 }]),
+        step('3.5', 'Inserted', 'Replace swaps the selection. Undo stays for 5 s.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'snack', t: 'Replaced', a: 'Undo', hl: 1 }, { k: 'inp', pre: 'Can you send me the report when you can? Thanks.' }, kb([[AI(), ...preds('I', 'The', 'Thanks'), CL]])])
+      ].map((s, i) => ({ ...s, arrow: i > 0 })),),
+      row([
+        step('3.a', 'Proofread review', 'Step through each fix: accept or skip.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sheet', t: 'Proofread · fix 1 of 3', act: '✕', seg: ['Rewrite', 'Proofread', 'Translate', 'Reply'], segOn: 1, pre: 'Can you send me the ', mark: 'repport → report', post: ' when you get a chance?', s: 'Underlined inline in the field as well.', btns: [{ t: 'Skip' }, { t: 'Accept', p: 1, hl: 1 }], mh: 215 }]),
+        step('3.b', 'Translate preview · later', 'Needs the second model pack. Swedish tokens stay locked.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you share it today?' }, FL, { k: 'sheet', t: 'Translate · EN → SV', act: '✕', seg: ['Rewrite', 'Proofread', 'Translate', 'Reply'], segOn: 2, pre: 'Kan du skicka rapporten när du har tid? Tack.', post: '', mark: '', btns: [{ t: 'Replace', p: 1 }, { t: 'Insert below' }, { t: 'Copy' }], mh: 215 }]),
+        step('3.c', 'Reply preview · later', 'Works from copied or selected text only; the keyboard cannot see incoming messages.', [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Can you join at 3?' }, FL, { k: 'sheet', t: 'Reply to copied text', act: '✕', seg: ['Rewrite', 'Proofread', 'Translate', 'Reply'], segOn: 3, chips: ['Yes', 'No', 'Later'], on: 0, pre: 'Yes, 3 works for me. See you then.', post: '', mark: '', btns: [{ t: 'Insert', p: 1 }, { t: 'Copy' }], mh: 215 }])
+      ], { label: 'Other actions use the same sheet', noArrows: true })
+    ]);
+    f3.rows[0].steps = f3.rows[0].steps;
+
+    /* ---------- 4 memory ---------- */
+    const f4 = sec('04', 'Private memory', 'Opt-in. A memory chip with a lock outranks predictions; code and autofill outrank memory.', [row([
+      step('4.1', 'Start typing', 'Normal predictions while the phrase forms.', [...bubs.slice(0, 2), { k: 'bub', t: 'Can you send the parcel?' }, FL, { k: 'inp', pre: 'my address' }, kb([[AI(), ...preds('is', 'was', 'will'), CL]])]),
+      step('4.2', 'Chip offered', 'Phrase match shows the saved address. Long-press: source app, date, Forget, Pin.', [...bubs.slice(0, 2), { k: 'bub', t: 'Can you send the parcel?' }, FL, { k: 'inp', pre: 'my address is ' }, kb([[AI(), { k: 'chip', ic: 'lock', t: 'Storgatan 12, 111 29 Stockholm', hl: 1 }, CL]])]),
+      step('4.3', 'Inserted', 'Tap inserts the full address. Strip returns to predictions.', [...bubs.slice(0, 2), { k: 'bub', t: 'Can you send the parcel?' }, FL, { k: 'inp', pre: 'my address is Storgatan 12, 111 29 Stockholm' }, kb([[AI(), ...preds('.', 'and', 'please'), CL]])])
+    ])]);
+
+    /* ---------- 5 settings ---------- */
+    const f5 = sec('05', 'Settings', 'Seven screens from the settings home. Rows keep to one pattern: title, optional subtitle, trailing control.', [row([
+      step('5.1', 'Home', 'Status summary and section list.', [BAR('Tyst', ''), { k: 'sp', h: 8 }, { k: 'card', t: 'Status', rows: [{ t: 'Default keyboard', v: 'On' }, { t: 'Writing model', v: 'Ready' }, { k: 'x', t: 'Learning', v: 'On' }] }, { k: 'sp', h: 6 }, R('Typing & dictionaries', 'Autocorrect, English + Swedish'), R('AI features', 'Rewrite, proofread, voice'), R('My style', 'Tone per app'), R('Privacy & memory', 'Permissions, saved items'), R('Appearance', 'Mode, accent'), R('About & models', 'Versions, licences')]),
+      step('5.2', 'Typing & dictionaries', 'English is built in. Swedish words is a recognition layer, not a second language.', [BAR('Typing & dictionaries', ''), L('Typing'), R('Autocorrect strength', '', 'text', { v: 'Medium' }), TG('Swipe typing', '', true), L('Dictionaries'), R('English', 'Built in', 'check', { on: true }), TG('Swedish words', 'Recognise inside English', true), TG('Restore å ä ö', 'Vasteras → Västerås, suggested', true), TG('å ä ö keys', '', false), R('Never-correct list', 'fika, Västerås +12'), R('Personal words', '142 · EN 118 · SV 24')]),
+      step('5.3', 'AI features', 'Model status first. Later features are shown but inactive.', [BAR('AI features', ''), { k: 'sp', h: 8 }, { k: 'card', t: 'Writing model', s: 'Ready · 0.9 GB · on this device' }, { k: 'sp', h: 4 }, TG('Rewrite in my style', '', true), TG('Proofread', '', true), TG('Voice typing', 'On-device recogniser', true), R('Translate EN ↔ SV', 'Needs second model', 'text', { v: 'Later' }), R('Summarise', '', 'text', { v: 'Later' }), R('Smart replies', '', 'text', { v: 'Later' }), R('Practice field', '')]),
+      step('5.4', 'My style', 'Default tone per app and the style notes the model has picked up.', [BAR('My style', ''), TG('Learn my writing style', 'From text you accept', true), L('Default tone per app'), R('Slack', '', 'text', { v: 'My style · Shorter' }), R('Gmail', '', 'text', { v: 'Formal' }), R('WhatsApp', '', 'text', { v: 'Warmer' }), L('Picked up'), TG('Short sentences in Slack', '', true), TG('Sign off “Hej hej” with family', '', true), R('Open What I learned', '')]),
+      step('5.5', 'Privacy & memory', 'Permissions are read live from the system.', [BAR('Privacy & memory', ''), { k: 'sp', h: 6 }, { k: 'card', t: 'Privacy proof', rows: [{ t: 'Internet', v: 'Not requested' }, { t: 'Microphone', v: 'Ask' }, { t: 'Storage used', v: '38 MB' }] }, L('Memory'), TG('Private memory', '', true), R('Expire after', '', 'text', { v: '90 days' }), TG('Biometric lock', '', true), R('Excluded apps', ''), L('Data'), R('What I learned', ''), TG('Pause learning', '', false)]),
+      step('5.6', 'Appearance', 'Changes apply at once; live preview pinned to the bottom.', [BAR('Appearance', ''), { k: 'sp', h: 6 }, { k: 'seg', items: ['Light', 'Dark', 'System'], on: 2 }, L('Accent'), { k: 'sw', n: 9, on: 0 }, L('Auto-rotate'), { k: 'seg', items: ['Off', 'Daily', 'Weekly'], on: 0 }, TG('Key borders', '', false), kb([[AI(), ...preds('Hello', 'Hi', 'Hey'), CL]])]),
+      step('5.7', 'About', 'Model versions, sizes and licences. Local stats are shared only as a file.', [BAR('About & models', ''), { k: 'sp', h: 8 }, { k: 'card', t: 'Tyst 0.1', s: 'Android 17 · Pixel 10 Pro' }, L('Models'), R('Prediction model', 'v1 · 24 MB'), R('Writing model', '~1B int4 · 0.9 GB'), R('Swedish lexicon', 'v1 · 6 MB'), R('Licences', ''), L('Local stats'), R('Share stats file', 'You choose where it goes')])
+    ].map((s, i, a) => ({ ...s, arrow: i > 0, via: '' })).map((s) => s), { noArrows: true })]);
+    f5.rows[0].steps = f5.rows[0].steps.map((s) => ({ ...s, arrow: false }));
+    f5.rows[0].noArrows = true;
+    // fix the "Status" card placeholder row
+    f5.rows[0].steps[0].blocks[2].rows = [{ t: 'Default keyboard', v: 'On' }, { t: 'Writing model', v: 'Ready' }, { t: 'Learning', v: 'On' }];
+
+    /* ---------- 6 login ---------- */
+    const lg = (t) => [BAR(t, ''), { k: 'sp', h: 12 }];
+    const f6 = sec('06', 'Login: password and code', 'Autofill pills are drawn by the system, so the keyboard does not know what they contain. The code chip comes from a fresh clipboard item.', [row([
+      step('6.1', 'Password field', 'NordPass pills sit in the strip. Tap fills username and password.', [...lg('Sign in'), H('Welcome back', ''), { k: 'sp', h: 8 }, { k: 'field', t: 'Email', ph: 'you@example.com' }, { k: 'sp', h: 6 }, { k: 'field', t: 'Password', ph: 'Password', foc: true }, { k: 'sp', h: 10 }, BTN('Sign in'), FL, kb([[{ k: 'ic', t: 'inc' }, { k: 'pill', t: 'NordPass · Work', hl: 1 }, { k: 'pill', t: 'NordPass · Home' }]])]),
+      step('6.2', 'Filled', 'Biometric check may appear first. Password field stays incognito: no learning, indicator shown.', [...lg('Sign in'), H('Welcome back', ''), { k: 'sp', h: 8 }, { k: 'field', t: 'Email', v: 'elin@example.com' }, { k: 'sp', h: 6 }, { k: 'field', t: 'Password', v: '••••••••••', dots: 1, foc: true }, { k: 'sp', h: 10 }, BTN('Sign in', { hl: 1 }), FL, kb([[{ k: 'ic', t: 'inc' }, { k: 'note', t: 'Incognito · not learning' }]])], { via: 'tap' }),
+      step('6.3', 'Code field', 'Chip appears for clips under 3 minutes that look like a 4–8 digit code.', [...lg('Verify'), H('Enter your code', 'We sent a 6-digit code.'), { k: 'sp', h: 8 }, { k: 'field', t: 'Code', ph: '— — — — — —', foc: true }, { k: 'sp', h: 10 }, BTN('Verify', { o: 1 }), FL, kb([[{ k: 'chip', ic: 'code', t: '482 913 · clipboard · 40 s', hl: 1 }]], { num: 1 })], { via: 'then' }),
+      step('6.4', 'Filled', 'Chip disappears after use. The code is not kept in history or memory.', [...lg('Verify'), H('Enter your code', 'We sent a 6-digit code.'), { k: 'sp', h: 8 }, { k: 'field', t: 'Code', v: '482 913', foc: true }, { k: 'sp', h: 10 }, BTN('Verify', { hl: 1 }), FL, kb([[{ k: 'note', t: 'Code used · chip cleared' }]], { num: 1 })], { via: 'tap' })
+    ])]);
+
+    /* ---------- 7 learned data ---------- */
+    const wh = (on) => [BAR('What I learned', 'Pause'), { k: 'tabs', items: ['Words', 'Phrases', 'Memory'], on }, { k: 'sp', h: 8 }, { k: 'search', t: 'Search' }, { k: 'sp', h: 6 }];
+    const f7 = sec('07', 'Learned data manager', 'Words, phrases and memory items, each with search, filter chips and per-item delete. Delete all lives under Data.', [row([
+      step('7.1', 'Words', 'SV words are flagged in the subtitle. Filter by new, Swedish or blocked.', [...wh(0), { k: 'chips', items: ['All', 'New 12', 'Swedish', 'Blocked'], on: 0 }, { k: 'sp', h: 4 }, R('Västerås', 'SV · WhatsApp · 2 d', 'del', { ic: false, delhl: 1 }), R('fika', 'SV · Messages · 3 d', 'del', { ic: false }), R('Kubernetes', 'EN · Slack · 5 d', 'del', { ic: false }), R('Götgatan', 'SV · Maps note · 6 d', 'del', { ic: false }), R('Elin’s', 'EN · Gmail · 8 d', 'del', { ic: false })]),
+      step('7.2', 'Phrases', 'Multi-word patterns used by style learning.', [...wh(1), { k: 'chips', items: ['All', 'Greetings', 'Sign-offs'], on: 0 }, { k: 'sp', h: 4 }, R('Hej hej', 'Sign-off · WhatsApp', 'del', { ic: false }), R('Thanks for flagging', 'Opener · Slack', 'del', { ic: false }), R('Best regards', 'Sign-off · Gmail', 'del', { ic: false }), R('Talk soon', 'Sign-off · Messages', 'del', { ic: false })]),
+      step('7.3', 'Memory', 'Biometric prompt first if the lock is on. Pinned items do not expire.', [...wh(2), { k: 'chips', items: ['All', 'Address', 'Booking', 'Name', 'Email'], on: 0 }, { k: 'sp', h: 4 }, R('Storgatan 12, 111 29 Stockholm', 'Address · Gmail · pinned', 'del', { ic: false }), R('ABX4KT · SAS', 'Booking · Chrome · 3 d', 'del', { ic: false }), R('elin@example.com', 'Email · Slack · 12 d', 'del', { ic: false })]),
+      step('7.4', 'Delete one', 'Tap the cross: removed at once with Undo.', [...wh(0), { k: 'chips', items: ['All', 'New 11', 'Swedish', 'Blocked'], on: 0 }, { k: 'sp', h: 4 }, R('Västerås', 'SV · WhatsApp · 2 d', 'del', { ic: false }), R('fika', 'SV · Messages · 3 d', 'del', { ic: false }), R('Götgatan', 'SV · Maps note · 6 d', 'del', { ic: false }), FL, { k: 'snack', t: 'Deleted “Kubernetes”', a: 'Undo', hl: 1 }, { k: 'sp', h: 8 }]),
+      step('7.5', 'Delete everything', 'Under Privacy & memory › Data. Confirms, then the encryption key is destroyed.', [BAR('Data', ''), { k: 'sp', h: 8 }, R('Pause learning', '', 'tog', { on: false }), R('Export (encrypted)', ''), R('Delete everything', '', 'chev', { hl: 1 }), FL, { k: 'dlg', t: 'Delete everything?', s: 'Words, phrases, style notes and memory are removed and the encryption key is destroyed. This cannot be undone.', btns: [{ t: 'Cancel' }, { t: 'Delete', p: 1, hl: 1 }] }, FL])
+    ])], );
+    f7.rows[0].steps.forEach((s) => (s.arrow = false));
+    f7.rows[0].noArrows = true;
+
+    /* ---------- variants ---------- */
+    const mainBlocks = (c) => [chat(), { k: 'sp', h: 8 }, { k: 'bub', t: 'Where should we meet?' }, FL, { k: 'inp', pre: 'Let’s meet in Väst' }, c];
+    const crop = (id, label, c) => ({ id, label, note: '', blocks: [mk(c)], crop: true });
+    const TOOLS = [{ k: 'tool', t: 'Rewrite', ic: 'AI' }, { k: 'tool', t: 'Proofread' }, { k: 'tool', t: 'Memory' }, { k: 'tool', t: 'Clipboard' }, { k: 'tool', t: 'Voice' }];
+    const Ch = (t, ic) => ({ k: 'chip', ic, t });
+    const MEM = Ch('Storgatan 12, 111 29 …', 'lock'), COD = Ch('482 913 · clipboard · 40 s', 'code');
+    const PA = [{ k: 'pill', t: 'NordPass · Work' }, { k: 'pill', t: 'NordPass · Home' }];
+    const INC = [{ k: 'ic', t: 'inc' }, { k: 'note', t: 'Incognito · not learning' }];
+    const vA = [
+      ['Predictions', [[AI(), ...preds('Väst', 'Västerås', 'Växjö'), CL]]],
+      ['Memory chip', [[AI(), MEM, CL]]],
+      ['Autofill pill', [[AI(), ...PA]]],
+      ['Code chip', [[AI(), COD]]],
+      ['Incognito', [INC]],
+      ['AI toolbar open', [TOOLS]]
+    ];
+    const vB = [
+      ['Predictions', [TOOLS, preds('Väst', 'Västerås', 'Växjö')]],
+      ['Memory chip', [TOOLS, [MEM]]],
+      ['Autofill pill', [TOOLS, PA]],
+      ['Code chip', [TOOLS, [COD]]],
+      ['Incognito', [TOOLS, INC]]
+    ];
+    const vC = [
+      ['Predictions', [preds('Väst', 'Västerås', 'Växjö')]],
+      ['Memory chip', [[MEM], preds('Väst', 'Västerås', 'Växjö')]],
+      ['Autofill pill', [PA, preds('Väst', 'Västerås', 'Växjö')]],
+      ['Code chip', [[COD], preds('Väst', 'Västerås', 'Växjö')]],
+      ['Incognito', [INC]],
+      ['AI toolbar open (AI key)', [TOOLS]]
+    ];
+    const variant = (letter, title, trade, main, states) => ({
+      id: 'var' + letter, num: letter, title, desc: trade,
+      rows: [{ label: 'Full keyboard · then the five strip states', gap: 28, noArrows: true, steps: [step(letter + '.0', 'In context', '', mainBlocks(main)), ...states.map((s, i) => crop(letter + '.' + (i + 1), s[0], kb(s[1], { nokeys: true })))] }]
+    });
+    const v = [
+      variant('A', 'Single strip', 'Trade-off: lowest height and familiar to Gboard users, but chips take over all three prediction slots while they show.', kb([[AI(), ...preds('Väst', 'Västerås', 'Växjö'), CL]]), vA),
+      variant('B', 'Strip with tool row', 'Trade-off: every AI tool is visible and one tap away, at the cost of a second row (about 40 dp) of keyboard height.', kb([TOOLS, preds('Väst', 'Västerås', 'Växjö')]), vB),
+      variant('C', 'Strip plus context lane', 'Trade-off: predictions never disappear and tools live on one key, but the keyboard grows by a row when a chip appears.', kb([preds('Väst', 'Västerås', 'Växjö')], { c: 1 }), vC)
+    ];
+    // variant section header number sits in the same slot
+    const sections = [v[0], v[1], v[2]].length ? [f1, f2, f3, f4, f5, f6, f7, ...v] : [];
+
+    // finalise steps
+    sections.forEach((s) => s.rows.forEach((r) => {
+      r.gap = r.gap || (r.noArrows ? 28 : 0);
+      r.steps.forEach((st, i) => {
+        st.arrow = !r.noArrows && i > 0;
+        const c = !!st.crop;
+        st.fh = c ? 'auto' : '508px'; st.fr = c ? 18 : 32; st.fp = c ? 5 : 6; st.ir = c ? 13 : 26;
+        st.sb = c ? 'none' : 'flex'; st.nav = c ? 'none' : 'flex';
+        st.via = st.via || '';
+      });
+    }));
+    sections.forEach((s) => s.rows.forEach((r) => r.steps.forEach((st) => st.blocks.forEach((b) => { if (b.is_kb && b.ngh) b.gh = 0; }))));
+    return { sections };
+  }
+}
+
+</script>
+</body>
+</html>

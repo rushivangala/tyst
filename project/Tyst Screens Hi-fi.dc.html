@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400..700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&amp;display=block" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#E8ECEA;color:#161D1B;font-family:'Google Sans Flex','Roboto Flex',sans-serif;-webkit-font-smoothing:antialiased}a{color:#0D5C58}a:hover{color:#00201D}input::placeholder{color:inherit;opacity:.6}</style>
+</helmet>
+<div style="width:2960px;padding:72px 64px 120px;display:flex;flex-direction:column;gap:96px">
+<header style="display:flex;flex-direction:column;gap:20px;max-width:1900px">
+<p style="margin:0;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#46524F">Tyst · High fidelity · Onboarding, settings and AI panel states · Pixel 10 Pro, 412 × 915dp at 1× · placeholder copy</p>
+<h1 style="margin:0;font-size:56px;line-height:1.05;font-weight:500;letter-spacing:-.025em">App screens</h1>
+<p style="margin:0;max-width:820px;font-size:17px;line-height:1.55;color:#2C3533;text-wrap:pretty">Built on the keyboard tokens: green-grey neutrals, one accent role, 24dp grouped lists and 52 × 32dp toggles. Toggles, the mode selector, accent swatches, search and swipe-to-delete all work. The accent you pick in Appearance (2.6) re-themes every screen.</p>
+<div style="display:flex;flex-direction:column;gap:16px;padding-top:16px">
+<h2 style="margin:0;font-size:24px;font-weight:500">Missing from the design system</h2>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px">
+<sc-for list="{{ gaps }}" as="g" hint-placeholder-count="12">
+<div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid #C9D2CF;padding-top:12px">
+<div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:16px;font-weight:600">{{ g.t }}</span><a href="{{ g.href }}" style="font:500 12px 'JetBrains Mono',monospace">{{ g.ref }}</a></div>
+<span style="font-size:14px;line-height:21px;color:#2C3533;text-wrap:pretty">{{ g.s }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</header>
+
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+<section style="display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #161D1B;padding-bottom:16px">
+<span style="font:500 14px 'JetBrains Mono',monospace;color:#0D5C58">{{ sec.num }}</span>
+<h2 style="margin:0;font-size:40px;font-weight:500;letter-spacing:-.02em">{{ sec.title }}</h2>
+<span style="font-size:16px;color:#46524F">{{ sec.desc }}</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:80px 64px">
+<sc-for list="{{ sec.screens }}" as="sc" hint-placeholder-count="3">
+<div id="{{ sc.id }}" data-screen-label="{{ sc.num }} {{ sc.title }}" style="display:flex;flex-direction:column;gap:18px;width:{{ sc.w }}px">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="min-width:36px;height:36px;padding:0 10px;border-radius:18px;background:#161D1B;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font:500 14px 'JetBrains Mono',monospace">{{ sc.num }}</span>
+<span style="font-size:20px;font-weight:500">{{ sc.title }}</span>
+</div>
+<div style="display:flex;gap:24px">
+<sc-for list="{{ sc.frames }}" as="f" hint-placeholder-count="2">
+<div style="width:436px;height:939px;flex:none;border-radius:58px;background:#1A1E1D;padding:12px;box-shadow:inset 0 0 0 2px #4D5754, inset 0 0 0 5px #1A1E1D, 0 24px 48px rgba(22,29,27,.18)">
+<div style="width:412px;height:915px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:{{ f.n.surface }};color:{{ f.n.t1 }}">
+<span style="position:absolute;left:50%;top:14px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#050606;z-index:8"></span>
+<div style="height:42px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0">
+<span style="font-size:15px;font-weight:500;font-variant-numeric:tabular-nums">14:32</span>
+<span style="display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">{{ f.batt }}</span></span>
+</div>
+
+<sc-if value="{{ f.isApp }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ f.blocks }}" as="b" hint-placeholder-count="6">
+<div style="display:contents">
+<sc-if value="{{ b.is_top }}" hint-placeholder-val="{{ false }}"><div style="height:64px;flex:none;display:flex;align-items:center;padding:0 8px 0 4px"><span style="display:{{ b.backD }};width:48px;height:48px;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga'">arrow_back</span><span style="flex:1"></span><span style="font-size:14px;font-weight:500;color:{{ f.n.t2 }};padding:0 16px;font-variant-numeric:tabular-nums">{{ b.step }}</span><span style="display:{{ b.actD }};width:48px;height:48px;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ f.n.t2 }};font-feature-settings:'liga'">{{ b.act }}</span></div></sc-if>
+
+<sc-if value="{{ b.is_h }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:4px 24px 20px;display:flex;flex-direction:column;gap:10px;text-align:{{ b.ta }}"><span style="font-size:32px;line-height:40px;font-weight:400;letter-spacing:-.01em;text-wrap:pretty">{{ b.t }}</span><span style="display:{{ b.sD }};font-size:15px;line-height:22px;color:{{ f.n.t2 }};text-wrap:pretty">{{ b.s }}</span></div></sc-if>
+
+<sc-if value="{{ b.is_lbl }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:16px 28px 8px;font-size:14px;line-height:20px;font-weight:500;color:{{ f.a.accent }}">{{ b.t }}</div></sc-if>
+
+<sc-if value="{{ b.is_logo }}" hint-placeholder-val="{{ false }}"><div style="flex:none;align-self:center;width:96px;height:96px;border-radius:28px;border:1.5px dashed {{ f.n.t2 }};display:flex;align-items:center;justify-content:center;font:500 11px 'JetBrains Mono',monospace;color:{{ f.n.t2 }}">App icon</div></sc-if>
+
+<sc-if value="{{ b.is_grp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ f.n.kb }};overflow:hidden;display:flex;flex-direction:column">
+<sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="3">
+<div onClick="{{ r.click }}" style="flex:none;min-height:{{ r.mh }}px;padding:12px 16px;display:flex;align-items:center;gap:16px;border-top:{{ r.bt }};opacity:{{ r.op }};cursor:{{ r.cur }}">
+<span style="display:{{ r.icD }};flex:none;font-family:'Material Symbols Rounded';font-size:24px;color:{{ r.icC }};font-feature-settings:'liga'">{{ r.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;line-height:24px">{{ r.t }}</span><span style="display:{{ r.sD }};font-size:14px;line-height:20px;color:{{ f.n.t2 }};text-wrap:pretty">{{ r.s }}</span></div>
+<span style="display:{{ r.vD }};flex:none;font-size:14px;font-weight:500;color:{{ r.vc }}">{{ r.v }}</span>
+<span style="display:{{ r.bdD }};flex:none;height:24px;padding:0 10px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};align-items:center;font-size:12px;font-weight:500;color:{{ f.n.t2 }}">{{ r.bd }}</span>
+<span style="display:{{ r.trD }};flex:none;font-family:'Material Symbols Rounded';font-size:22px;color:{{ r.trC }};font-feature-settings:'liga'">{{ r.trIc }}</span>
+<span style="display:{{ r.tgD }};position:relative;flex:none;width:52px;height:32px;border-radius:16px;background:{{ r.tg.track }};box-shadow:{{ r.tg.outline }};transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="position:absolute;top:{{ r.tg.top }}px;left:{{ r.tg.left }}px;width:{{ r.tg.size }}px;height:{{ r.tg.size }}px;border-radius:50%;background:{{ r.tg.handle }};color:{{ f.a.accent }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:16px;font-feature-settings:'liga';transition:all 250ms cubic-bezier(0.2,0,0,1)">{{ r.tg.icon }}</span></span>
+</div>
+</sc-for>
+</div></sc-if>
+
+<sc-if value="{{ b.is_status }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px 16px;border-radius:24px;background:{{ f.n.kb }};padding:16px;display:flex;align-items:flex-start;gap:16px">
+<span style="width:48px;height:48px;flex:none;border-radius:16px;background:{{ f.a.cont }};color:{{ f.a.onCont }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga'">{{ b.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;line-height:24px;font-weight:500">{{ b.t }}</span><span style="font-size:14px;line-height:20px;color:{{ f.n.t2 }}">{{ b.s }}</span>
+<span style="align-self:flex-start;margin-top:8px;height:24px;padding:0 10px 0 8px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:{{ f.n.t2 }}"><span style="display:{{ b.dotD }};width:6px;height:6px;margin-left:2px;border-radius:50%;background:{{ f.n.success }}"></span><span style="display:{{ b.wD }};font-family:'Material Symbols Rounded';font-size:15px;color:{{ f.n.success }};font-feature-settings:'liga'">wifi_off</span>{{ b.badge }}</span></div>
+</div></sc-if>
+
+<sc-if value="{{ b.is_note }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:20px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};padding:16px;display:flex;gap:14px;align-items:flex-start"><span style="flex:none;font-family:'Material Symbols Rounded';font-size:22px;color:{{ f.n.t2 }};font-feature-settings:'liga'">{{ b.ic }}</span><span style="font-size:14px;line-height:20px;text-wrap:pretty">{{ b.t }}</span></div></sc-if>
+
+<sc-if value="{{ b.is_meter }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ f.n.kb }};padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:500">Storage on this phone</span><span style="font-size:14px;font-weight:500;color:{{ f.n.t2 }};font-variant-numeric:tabular-nums">{{ b.total }}</span></div>
+<div style="display:flex;gap:3px;height:12px"><sc-for list="{{ b.segs }}" as="g" hint-placeholder-count="3"><span style="flex:{{ g.flex }};min-width:6px;border-radius:6px;background:{{ g.c }}"></span></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ b.segs }}" as="g" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px"><span style="width:10px;height:10px;border-radius:3px;background:{{ g.c }}"></span><span style="flex:1">{{ g.t }}</span><span style="color:{{ f.n.t2 }};font-variant-numeric:tabular-nums">{{ g.v }}</span></div></sc-for></div>
+</div></sc-if>
+
+<sc-if value="{{ b.is_prog }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ f.n.kb }};padding:16px 20px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;font-weight:500">{{ b.t }}</span><span style="font-size:14px;font-weight:500;color:{{ f.a.accent }};font-variant-numeric:tabular-nums">{{ b.pct }}</span></div><div style="height:6px;border-radius:3px;background:{{ f.n.special }};overflow:hidden"><div style="width:{{ b.pct }};height:100%;border-radius:3px;background:{{ f.a.accent }}"></div></div><span style="font-size:13px;line-height:18px;color:{{ f.n.t2 }}">{{ b.s }}</span></div></sc-if>
+
+<sc-if value="{{ b.is_seg }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;display:flex;flex-direction:column;gap:8px;opacity:{{ b.op }}">
+<span style="display:{{ b.lD }};font-size:14px;font-weight:500;color:{{ f.n.t2 }};padding:0 4px">{{ b.label }}</span>
+<div style="display:flex;height:48px;border-radius:24px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};padding:4px;gap:4px">
+<sc-for list="{{ b.items }}" as="x" hint-placeholder-count="3"><span onClick="{{ x.click }}" style="flex:1;min-width:0;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="display:{{ x.ckD }};font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">check</span>{{ x.t }}</span></sc-for>
+</div></div></sc-if>
+
+<sc-if value="{{ b.is_sw }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;justify-content:space-between;padding:4px 24px 8px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="6"><div onClick="{{ x.click }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:52px"><span style="width:44px;height:44px;border-radius:50%;background:{{ x.bg }};box-shadow:{{ x.ring }}"></span><span style="font-size:12px;font-weight:{{ x.fw }}">{{ x.name }}</span></div></sc-for></div></sc-if>
+
+<sc-if value="{{ b.is_kbp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:28px;overflow:hidden;background:{{ b.pn.kb }};color:{{ b.pn.t1 }};box-shadow:inset 0 0 0 1px {{ f.n.divider }};transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<div style="padding:12px 12px 6px;background:{{ b.pn.surface }};transition:background-color 300ms cubic-bezier(0.2,0,0,1)"><div style="background:{{ b.pn.key }};border-radius:20px;padding:8px 16px;font-size:15px;line-height:22px;display:flex;align-items:center">See you at Järntorget<span style="display:inline-block;width:2px;height:20px;margin-left:1px;border-radius:1px;background:{{ b.pa.accent }};transition:background-color 600ms cubic-bezier(0.2,0,0,1)"></span></div></div>
+<div style="height:44px;display:flex;align-items:center;padding:0 4px"><span style="width:44px;flex:none;display:flex;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;color:{{ b.pn.t2 }};font-feature-settings:'liga'">auto_awesome</span><div style="flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding-right:40px"><sc-for list="{{ b.sugs }}" as="s" hint-placeholder-count="3"><div style="display:flex;align-items:center"><span style="width:1px;height:18px;background:{{ s.bl }}"></span><span style="flex:1;text-align:center;font-size:15px;font-weight:{{ s.fw }}">{{ s.t }}</span></div></sc-for></div></div>
+<div style="padding:4px 4px 8px;display:flex;flex-direction:column;gap:8px"><sc-for list="{{ b.rows }}" as="row" hint-placeholder-count="4"><div style="display:flex;gap:5px"><sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10"><div style="flex:{{ k.flex }};min-width:0;height:{{ k.h }}px;border-radius:12px;background:{{ k.bg }};color:{{ k.fg }};box-shadow:{{ k.shadow }};display:flex;align-items:center;justify-content:center;font-size:{{ k.fs }}px;font-weight:500;line-height:1;transition:background-color 300ms cubic-bezier(0.2,0,0,1), color 300ms cubic-bezier(0.2,0,0,1)"><span style="display:{{ k.icd }};font-family:'Material Symbols Rounded';font-size:20px;font-feature-settings:'liga'">{{ k.icon }}</span><span>{{ k.label }}</span></div></sc-for></div></sc-for></div>
+</div></sc-if>
+
+<sc-if value="{{ b.is_search }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px 12px;height:56px;border-radius:28px;background:{{ f.n.kb }};display:flex;align-items:center;gap:12px;padding:0 20px"><span style="font-family:'Material Symbols Rounded';font-size:24px;color:{{ f.n.t2 }};font-feature-settings:'liga'">search</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search remembered items" style="flex:1;min-width:0;border:none;outline:none;background:transparent;color:{{ f.n.t1 }};font-family:inherit;font-size:16px"></div></sc-if>
+
+<sc-if value="{{ b.is_mem }}" hint-placeholder-val="{{ false }}"><div style="flex:0 1 auto;min-height:0;margin:0 16px;border-radius:24px;background:{{ f.n.kb }};overflow:hidden;display:flex;flex-direction:column">
+<sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4">
+<div style="flex:none;position:relative;border-top:{{ x.bt }};background:{{ x.behind }}">
+<span onClick="{{ x.del }}" style="position:absolute;right:0;top:0;bottom:0;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:{{ f.n.onErr }};cursor:pointer;font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">delete</span>Delete</span>
+<div onClick="{{ x.click }}" style="position:relative;min-height:72px;padding:12px 16px;display:flex;align-items:center;gap:16px;background:{{ f.n.kb }};transform:translateX({{ x.x }}px);transition:transform 250ms cubic-bezier(0.2,0,0,1);cursor:pointer">
+<span style="width:40px;height:40px;flex:none;border-radius:12px;background:{{ f.a.cont }};color:{{ f.a.onCont }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;font-feature-settings:'liga'">{{ x.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.t }}</span><span style="font-size:14px;line-height:20px;color:{{ f.n.t2 }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.s }}</span></div>
+</div>
+</div>
+</sc-for>
+<div style="display:{{ b.emptyD }};padding:28px 24px;text-align:center;font-size:14px;line-height:20px;color:{{ f.n.t2 }}">{{ b.emptyT }}</div>
+</div></sc-if>
+
+<sc-if value="{{ b.is_chips }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:0 16px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4"><span style="height:36px;padding:0 10px 0 14px;border-radius:18px;background:{{ f.n.key }};box-shadow:inset 0 0 0 1px {{ f.n.divider }};display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500">{{ x.t }}<span style="font-family:'Material Symbols Rounded';font-size:16px;color:{{ f.n.t2 }};font-feature-settings:'liga'">close</span></span></sc-for></div></sc-if>
+
+<sc-if value="{{ b.is_field }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 24px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">{{ b.t }}</span><div style="min-height:56px;border-radius:12px;box-shadow:inset 0 0 0 2px {{ f.n.t1 }};display:flex;align-items:center;padding:0 16px;font-size:16px">{{ b.v }}<span style="display:inline-block;width:2px;height:22px;margin-left:1px;border-radius:1px;background:{{ f.a.accent }}"></span></div></div></sc-if>
+
+<sc-if value="{{ b.is_btns }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;gap:8px;padding:12px 16px 16px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="1"><span onClick="{{ x.click }}" style="flex:{{ x.flex }};height:48px;padding:0 24px;border-radius:24px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">{{ x.t }}</span></sc-for></div></sc-if>
+
+<sc-if value="{{ b.is_dots }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;justify-content:center;gap:8px;padding:4px 0 12px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="5"><span style="width:{{ x.w }}px;height:8px;border-radius:4px;background:{{ x.c }}"></span></sc-for></div></sc-if>
+
+<sc-if value="{{ b.is_kb }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin-top:auto;background:{{ f.n.kb }};display:flex;flex-direction:column">
+<div style="height:48px;display:flex;align-items:center;gap:4px;padding:0 4px">
+<span style="width:48px;height:48px;flex:none;position:relative;display:flex;align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 40 40" style="position:absolute;left:4px;top:4px"><circle cx="20" cy="20" r="18" fill="none" stroke="{{ f.n.divider }}" stroke-width="2.5"></circle><circle cx="20" cy="20" r="18" fill="none" stroke="{{ f.a.accent }}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="42.98" transform="rotate(-90 20 20)"></circle></svg><span style="font-family:'Material Symbols Rounded';font-size:20px;color:{{ f.n.t2 }};font-feature-settings:'liga'">auto_awesome</span></span>
+<div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding-right:44px"><sc-for list="{{ b.sugs }}" as="s" hint-placeholder-count="3"><div style="height:48px;display:flex;align-items:center"><span style="width:1px;height:20px;background:{{ s.bl }}"></span><span style="flex:1;text-align:center;font-size:16px;font-weight:{{ s.fw }}">{{ s.t }}</span></div></sc-for></div>
+</div>
+<div style="padding:8px 4px 4px;display:flex;flex-direction:column;gap:10px"><sc-for list="{{ b.rows }}" as="row" hint-placeholder-count="4"><div style="display:flex;gap:6px"><sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10"><div style="flex:{{ k.flex }};min-width:0;height:{{ k.h }}px;border-radius:12px;background:{{ k.bg }};color:{{ k.fg }};box-shadow:{{ k.shadow }};display:flex;align-items:center;justify-content:center;font-size:{{ k.fs }}px;font-weight:500;line-height:1"><span style="display:{{ k.icd }};font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">{{ k.icon }}</span><span>{{ k.label }}</span></div></sc-for></div></sc-for></div>
+<div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ f.n.t2 }};opacity:.6"></span></div>
+</div></sc-if>
+
+<sc-if value="{{ b.is_sheet }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;z-index:5;background:{{ f.n.scrim }};display:flex;flex-direction:column;justify-content:flex-end">
+<div style="background:{{ f.n.sheet }};border-radius:28px 28px 0 0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:center;padding:16px 0 20px"><span style="width:32px;height:4px;border-radius:2px;background:{{ f.n.t2 }};opacity:.5"></span></div>
+<div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-size:22px;line-height:28px;font-weight:500">{{ b.t }}</span><span style="font-size:14px;line-height:20px;color:{{ f.n.t2 }};text-wrap:pretty">{{ b.s }}</span></div>
+<div style="margin:0 16px;display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500;color:{{ f.n.t2 }};padding:0 4px">{{ b.segLabel }}</span><div style="display:flex;height:48px;border-radius:24px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};padding:4px;gap:4px"><sc-for list="{{ b.segItems }}" as="x" hint-placeholder-count="3"><span onClick="{{ x.click }}" style="flex:1;min-width:0;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="display:{{ x.ckD }};font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">check</span>{{ x.t }}</span></sc-for></div></div>
+<span style="font-size:14px;font-weight:500;color:{{ f.n.t2 }};padding:20px 28px 4px">Learn from these apps</span>
+<div style="margin:0 8px;display:flex;flex-direction:column">
+<sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="2">
+<div onClick="{{ r.click }}" style="flex:none;min-height:{{ r.mh }}px;padding:12px 16px;display:flex;align-items:center;gap:16px;border-top:{{ r.bt }};opacity:{{ r.op }};cursor:{{ r.cur }}">
+<span style="display:{{ r.icD }};flex:none;font-family:'Material Symbols Rounded';font-size:24px;color:{{ r.icC }};font-feature-settings:'liga'">{{ r.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;line-height:24px">{{ r.t }}</span><span style="display:{{ r.sD }};font-size:14px;line-height:20px;color:{{ f.n.t2 }}">{{ r.s }}</span></div>
+<span style="display:{{ r.tgD }};position:relative;flex:none;width:52px;height:32px;border-radius:16px;background:{{ r.tg.track }};box-shadow:{{ r.tg.outline }};transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="position:absolute;top:{{ r.tg.top }}px;left:{{ r.tg.left }}px;width:{{ r.tg.size }}px;height:{{ r.tg.size }}px;border-radius:50%;background:{{ r.tg.handle }};color:{{ f.a.accent }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:16px;font-feature-settings:'liga';transition:all 250ms cubic-bezier(0.2,0,0,1)">{{ r.tg.icon }}</span></span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;padding:16px 16px 8px"><sc-for list="{{ b.btns }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="flex:1;height:48px;padding:0 24px;border-radius:24px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer">{{ x.t }}</span></sc-for></div>
+<div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ f.n.t2 }};opacity:.6"></span></div>
+</div></div></sc-if>
+
+<sc-if value="{{ b.is_dlg }}" hint-placeholder-val="{{ false }}"><div style="display:{{ b.show }};position:absolute;inset:0;z-index:5;background:{{ f.n.scrim }};align-items:center;justify-content:center;padding:0 28px">
+<div style="width:100%;background:{{ f.n.sheet }};border-radius:28px;padding:24px 24px 20px;display:flex;flex-direction:column;gap:16px">
+<span style="align-self:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ f.n.error }};font-feature-settings:'liga'">delete_forever</span>
+<span style="font-size:24px;line-height:32px;text-align:center">Delete all learned data?</span>
+<span style="font-size:14px;line-height:20px;color:{{ f.n.t2 }};text-wrap:pretty">Your words, phrases, writing style and everything in private memory are removed from this phone. This can’t be undone.</span>
+<div style="display:flex;justify-content:flex-end;gap:8px;padding-top:8px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="height:40px;padding:0 20px;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer">{{ x.t }}</span></sc-for></div>
+</div></div></sc-if>
+
+<sc-if value="{{ b.is_snack }}" hint-placeholder-val="{{ false }}"><div style="display:{{ b.show }};position:absolute;left:16px;right:16px;bottom:40px;z-index:6;min-height:48px;border-radius:12px;background:{{ f.n.inv }};color:{{ f.n.onInv }};align-items:center;gap:12px;padding:0 8px 0 16px;box-shadow:0 4px 12px rgba(0,0,0,.2)"><span style="flex:1;min-width:0;font-size:14px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.t }}</span><span onClick="{{ b.undo }}" style="height:40px;padding:0 12px;display:flex;align-items:center;font-size:14px;font-weight:600;color:{{ b.ac }};cursor:pointer">Undo</span></div></sc-if>
+
+<sc-if value="{{ b.is_sp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;height:{{ b.h }}px"></div></sc-if>
+<sc-if value="{{ b.is_fl }}" hint-placeholder-val="{{ false }}"><div style="flex:1;min-height:0"></div></sc-if>
+</div>
+</sc-for>
+<div style="display:{{ f.navD }};margin-top:auto;height:24px;flex:none;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ f.n.t2 }};opacity:.6"></span></div>
+</sc-if>
+
+<sc-if value="{{ f.isChat }}" hint-placeholder-val="{{ false }}">
+<div style="height:64px;flex:none;display:flex;align-items:center;gap:4px;padding:0 4px">
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga'">arrow_back</span>
+<span style="width:40px;height:40px;flex:none;border-radius:50%;background:{{ f.app.av }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">SL</span>
+<span style="flex:1;min-width:0;padding-left:8px;font-size:18px;font-weight:500">Sara Lindqvist</span>
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ f.n.t2 }};font-feature-settings:'liga'">call</span>
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ f.n.t2 }};font-feature-settings:'liga'">more_vert</span>
+</div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:12px 16px">
+<span style="align-self:center;font-size:12px;font-weight:500;color:{{ f.n.t2 }};padding-bottom:6px">Today</span>
+<sc-for list="{{ f.msgs }}" as="m" hint-placeholder-count="3"><div style="align-self:{{ m.al }};max-width:78%;background:{{ m.bg }};border-radius:{{ m.rad }};padding:10px 14px;font-size:16px;line-height:22px;text-wrap:pretty">{{ m.t }}</div></sc-for>
+</div>
+<div style="flex:none;display:flex;align-items:flex-end;gap:4px;padding:8px 8px 10px">
+<span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:26px;color:{{ f.n.t2 }};font-feature-settings:'liga'">add_circle</span>
+<div style="flex:1;min-width:0;min-height:48px;border-radius:24px;background:{{ f.app.field }};box-shadow:inset 0 0 0 1px {{ f.app.line }};padding:12px 18px;font-size:16px;line-height:24px"><sc-for list="{{ f.segs }}" as="s" hint-placeholder-count="1"><span style="background:{{ s.bg }};border-radius:3px">{{ s.t }}</span></sc-for><span style="display:{{ f.curD }};width:2px;height:22px;border-radius:1px;vertical-align:-5px;background:{{ f.a.accent }}"></span><span style="display:{{ f.phD }};color:{{ f.n.t2 }}">Message</span></div>
+<span style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ f.app.out }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">send</span>
+</div>
+<div style="flex:none;background:{{ f.n.kb }};display:flex;flex-direction:column">
+<div style="height:48px;display:flex;align-items:center;gap:4px;padding:0 12px 0 4px">
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;color:{{ f.n.t2 }};font-feature-settings:'liga'">close</span>
+<span style="flex:1;font-size:16px;font-weight:500">Writing tools</span>
+<span style="height:24px;padding:0 10px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:{{ f.n.t2 }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ f.ps.dotC }}"></span>{{ f.ps.badge }}</span>
+</div>
+<div style="padding:8px 4px 4px"><div style="height:238px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+<div style="flex:none;display:flex;flex-wrap:nowrap;overflow:hidden;gap:8px;margin-right:-8px;opacity:{{ f.ps.chipOp }};-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)"><sc-for list="{{ f.chips }}" as="c" hint-placeholder-count="4"><span style="flex:none;white-space:nowrap;height:36px;padding:0 14px 0 10px;border-radius:18px;background:{{ c.bg }};color:{{ c.fg }};box-shadow:{{ c.ring }};display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ c.ic }};font-feature-settings:'liga'">{{ c.icon }}</span>{{ c.t }}</span></sc-for></div>
+<div style="flex:1;min-height:0;background:{{ f.n.key }};border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<sc-if value="{{ f.ps.isLoad }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px"><span style="height:24px;padding:0 10px 0 8px;border-radius:12px;background:{{ f.a.cont }};color:{{ f.a.onCont }};display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500"><span style="font-family:'Material Symbols Rounded';font-size:15px;font-feature-settings:'liga'">signature</span>In my style · Messages</span></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding-top:4px"><span style="height:14px;width:92%;border-radius:7px;background:{{ f.n.special }}"></span><span style="height:14px;width:100%;border-radius:7px;background:{{ f.n.special }}"></span><span style="height:14px;width:58%;border-radius:7px;background:{{ f.n.special }}"></span></div>
+<span style="flex:1"></span>
+<div style="display:flex;align-items:center;gap:8px"><span style="height:36px;padding:0 14px 0 10px;border-radius:18px;background:{{ f.n.pressed }};display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500"><span style="width:14px;height:14px;border-radius:50%;border:2px solid {{ f.a.accent }};border-right-color:transparent"></span>Writing…</span><span style="flex:1"></span><span style="height:40px;padding:0 18px;border-radius:20px;box-shadow:inset 0 0 0 1px {{ f.n.divider }};display:flex;align-items:center;font-size:14px;font-weight:500">Stop</span></div>
+</sc-if>
+<sc-if value="{{ f.ps.isMsg }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:14px;align-items:flex-start"><span style="width:40px;height:40px;flex:none;border-radius:12px;background:{{ f.n.special }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">{{ f.ps.tile }}</span><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;line-height:22px;font-weight:600">{{ f.ps.t }}</span><span style="font-size:14px;line-height:20px;color:{{ f.n.t2 }};text-wrap:pretty">{{ f.ps.s }}</span></div></div>
+<div style="display:{{ f.ps.pD }};align-items:center;gap:10px;padding-left:54px"><div style="flex:1;height:6px;border-radius:3px;background:{{ f.n.special }};overflow:hidden"><div style="width:{{ f.ps.pct }};height:100%;border-radius:3px;background:{{ f.a.accent }}"></div></div><span style="font-size:12px;font-weight:500;color:{{ f.n.t2 }};font-variant-numeric:tabular-nums">{{ f.ps.pct }}</span></div>
+<span style="flex:1"></span>
+<div style="display:flex;justify-content:flex-end;gap:8px"><sc-for list="{{ f.ps.btns }}" as="x" hint-placeholder-count="1"><span style="height:40px;padding:0 18px;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:600">{{ x.t }}</span></sc-for></div>
+</sc-if>
+</div>
+</div></div>
+<div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ f.n.t2 }};opacity:.6"></span></div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;line-height:21px;color:#2C3533;text-wrap:pretty;padding:0 4px;max-width:880px">{{ sc.note }}</span></sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light and dark&quot;,&quot;Light&quot;,&quot;Dark&quot;],&quot;default&quot;:&quot;Light and dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Board&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Board&quot;}}">
+const N={
+light:{surface:'#F7F9F8',kb:'#E8ECEA',key:'#FFFFFF',pressed:'#C4CDCA',special:'#D2DAD7',space:'#FFFFFF',popup:'#FFFFFF',t1:'#161D1B',t2:'#46524F',divider:'#C9D2CF',error:'#B3261E',onErr:'#FFFFFF',success:'#1F6C3B',shadow:'0 1px 0 rgba(22,29,27,.14)',inv:'#2B3230',onInv:'#E2E8E6',scrim:'rgba(14,18,17,.32)',sheet:'#FFFFFF'},
+dark:{surface:'#0E1211',kb:'#141918',key:'#2B3230',pressed:'#4D5754',special:'#3A4341',space:'#2B3230',popup:'#3A4341',t1:'#E2E8E6',t2:'#A7B2AF',divider:'#2E3634',error:'#F2B8B5',onErr:'#601410',success:'#8DD5A1',shadow:'0 1px 0 rgba(0,0,0,.45)',inv:'#E2E8E6',onInv:'#161D1B',scrim:'rgba(0,0,0,.55)',sheet:'#2B3230'}};
+const APP={light:{in:'#E8ECEA',out:'#D2DAD7',field:'#FFFFFF',line:'#C9D2CF',av:'#D2DAD7'},dark:{in:'#2B3230',out:'#3A4341',field:'#141918',line:'#2E3634',av:'#3A4341'}};
+const PAL=[
+{id:'hav',name:'Hav',light:{accent:'#0D5C58',on:'#FFFFFF',cont:'#CDEBE6',onCont:'#00201D'},dark:{accent:'#86D4CA',on:'#00332F',cont:'#164A45',onCont:'#CDEBE6'}},
+{id:'fjall',name:'Fjäll',light:{accent:'#36598F',on:'#FFFFFF',cont:'#D8E2FF',onCont:'#0B1C3A'},dark:{accent:'#AAC7FF',on:'#0A2C5C',cont:'#23436F',onCont:'#D8E2FF'}},
+{id:'mossa',name:'Mossa',light:{accent:'#43602C',on:'#FFFFFF',cont:'#D4EBBD',onCont:'#0E2003'},dark:{accent:'#B3D398',on:'#1D3608',cont:'#2E4A1A',onCont:'#D4EBBD'}},
+{id:'lingon',name:'Lingon',light:{accent:'#A02541',on:'#FFFFFF',cont:'#FFD9DD',onCont:'#3F0012'},dark:{accent:'#FFB2BC',on:'#5C0F24',cont:'#7C1D33',onCont:'#FFD9DD'}},
+{id:'barnsten',name:'Bärnsten',light:{accent:'#7F4D00',on:'#FFFFFF',cont:'#FFDDB6',onCont:'#2A1700'},dark:{accent:'#FFB866',on:'#462A00',cont:'#653E00',onCont:'#FFDDB6'}},
+{id:'skymning',name:'Skymning',light:{accent:'#5D4A8C',on:'#FFFFFF',cont:'#E8DDFF',onCont:'#1A0C40'},dark:{accent:'#CEBDFF',on:'#2F1F5B',cont:'#463673',onCont:'#E8DDFF'}}];
+const WALL={id:'wall',name:'Wallpaper',light:{accent:'#6E4A64',on:'#FFFFFF',cont:'#F6D9EC',onCont:'#2A0F22'},dark:{accent:'#DEB8D1',on:'#3F1F36',cont:'#573449',onCont:'#F6D9EC'}};
+const WIN=[[5,8,'barnsten','Dawn'],[8,12,'hav','Morning'],[12,16,'mossa','Afternoon'],[16,19,'lingon','Early evening'],[19,22,'skymning','Dusk'],[22,29,'fjall','Night']];
+const pal=id=>PAL.find(p=>p.id===id);
+const MEM=[{id:'addr',ic:'home',t:'Linnégatan 14, 413 04 Göteborg',s:'Address · Messages · pinned'},{id:'abx',ic:'confirmation_number',t:'ABX42K',s:'Booking ref · Gmail · 3 days ago'},{id:'mail',ic:'mail',t:'elin.berg@hey.com',s:'Email · Slack · 12 days ago'},{id:'name',ic:'person',t:'Sara Lindqvist',s:'Name · WhatsApp · 2 weeks ago'},{id:'num',ic:'tag',t:'Kvarter member 448 120 93',s:'Number · Chrome · 1 month ago'}];
+const TGD={learn:true,obMem:false,memory:true,sv:true,restore:true,aaRow:false,rewrite:true,proof:true,voice:true,autofill:true,codes:true,apWa:true,apMsg:true};
+const MSGS=[['in','Free on Saturday? I’m in town all afternoon.'],['out','Yes! Want to grab something to eat?'],['in','Perfect. Where and when?']];
+const DRAFT='Hi! I was wondering if it would be possible for us to meet up at Järntorget at around six o’clock?';
+const PS={
+empty:{sel:false,chipOn:-1,chipOp:.38,badge:'On device',dot:'success',tile:'edit_note',t:'Nothing to work with yet',s:'Type a message or select some text, then pick a tool.',btns:[]},
+loading:{sel:true,chipOn:0,chipOp:1,load:true,badge:'On device',dot:'success'},
+download:{sel:true,chipOn:-1,chipOp:.38,badge:'Downloading',dot:'t2',tile:'downloading',t:'Writing model is downloading',s:'540 of 870 MB. Typing and suggestions work as usual.',prog:62,btns:[{t:'Pause download',kind:'out'}]},
+battery:{sel:true,chipOn:-1,chipOp:.38,badge:'Paused',dot:'t2',tile:'battery_saver',t:'Paused while Battery Saver is on',s:'Writing tools use a lot of power. Suggestions and autocorrect still work.',btns:[{t:'Battery settings',kind:'out'},{t:'Run once',kind:'fill'}],batt:'battery_2_bar'},
+na:{sel:true,chipOn:2,chipOp:1,badge:'On device',dot:'success',tile:'block',t:'Translate isn’t available yet',s:'It needs a second language model, coming in a later update.',btns:[{t:'Use Rewrite',kind:'out'}]}};
+const GAPS=[
+['Buttons','No filled, outlined or text buttons outside keyboard chips. Used a 48dp pill: accent fill for primary, 1dp divider outline for secondary.','1.1'],
+['Top app bar and page header','Only type tokens exist. Used a 64dp bar with back arrow, then settings.headline 32/40.','2.2'],
+['Section header color','Not specified. Used accent at 14/20 · 500.','2.2'],
+['Segmented button','Needed for mode and code expiry. Built from toggle tokens: accent container with a check when selected.','2.6'],
+['Search field','No pattern. Built as a 56dp pill on kb.background.','2.5'],
+['Swipe-to-delete row','No pattern, and kb.error is defined only for code expiry. Added an on-error value (M3 baseline) for the label.','2.5'],
+['Dialog, sheet and scrim','No container, elevation or scrim tokens. Used kb.key / white surfaces, 28dp radius and a 32% (light) / 55% (dark) scrim.','2.5b'],
+['Snackbar and inverse colors','No inverse-surface or inverse-accent tokens. Borrowed the opposite mode’s values.','2.5'],
+['Progress and storage meter','No linear progress. Built a 6dp track on kb.key.shift with an accent fill.','2.3'],
+['Empty and error states','No pattern for the AI panel. Used a 40dp icon tile, a title and one line of help.','3.1'],
+['Warning color','Battery Saver needs a caution tone; none exists, so the state stays neutral.','3.4'],
+['Page indicator','Onboarding dots built from accent and divider.','1.2'],
+['App icon','No logo or app icon in the system. Placeholder.','1.1'],
+['Wallpaper sample','Dynamic color needs a real seed to preview. Used a muted heather as a stand-in.','2.6']
+];
+const T=o=>({k:'top',...o}),H=(t,s,o)=>({k:'h',t,s,...o}),LB=t=>({k:'lbl',t}),G=rows=>({k:'grp',rows}),R=(t,s,tr,o)=>({t,s,tr,...o}),SP=h=>({k:'sp',h}),FL={k:'fl'},B=items=>({k:'btns',items}),NOTE=(ic,t)=>({k:'note',ic,t}),DOTS=i=>({k:'dots',on:i});
+
+class Component extends DCLogic {
+  state={mode:'system',dyn:false,acc:'hav',rot:false,tg:{...TGD},q:'',mem:MEM.slice(),sw:'abx',snack:null,dlg:false,expiry:1,tone:0};
+  componentWillUnmount(){clearTimeout(this.st)}
+  get(k){const s=this.state;return k==='dyn'?s.dyn:k==='rot'?s.rot:!!s.tg[k]}
+  flip(k){this.setState(s=>k==='dyn'?{dyn:!s.dyn,rot:false}:k==='rot'?{rot:!s.rot,dyn:false}:{tg:{...s.tg,[k]:!s.tg[k]}})}
+  win(){const h=new Date().getHours();return WIN.find(([a,b])=>(h>=a&&h<b)||(h+24>=a&&h+24<b))}
+  cur(){const s=this.state;return s.rot?pal(this.win()[2]):s.dyn?WALL:pal(s.acc)}
+  toast(t,undo){clearTimeout(this.st);this.setState({snack:{t,undo}});this.st=setTimeout(()=>this.setState({snack:null}),5000)}
+  delMem(id){const prev=this.state.mem,it=prev.find(x=>x.id===id);this.setState({mem:prev.filter(x=>x.id!==id),sw:null});this.toast('Deleted “'+it.t+'”',()=>this.setState({mem:prev,snack:null}))}
+  delAll(){const prev=this.state.mem;this.setState({mem:[],dlg:false,sw:null});this.toast('All learned data deleted',()=>this.setState({mem:prev,snack:null}))}
+  rows(n,a,kh,fs){
+    const K=(label,x)=>Object.assign({label,icon:'',icd:'none',flex:1,bg:n.key,fg:n.t1,fs,shadow:n.shadow,h:kh},x||{});
+    const S=(icon,x)=>K('',Object.assign({icon,icd:'inline',bg:n.special},x||{}));
+    const sp={label:'',icon:'',icd:'none',flex:.5,bg:'transparent',fg:'transparent',shadow:'none',h:kh,fs:0};
+    const L=t=>[...t].map(c=>K(c));
+    return [{keys:L('qwertyuiop')},{keys:[sp,...L('asdfghjkl'),sp]},{keys:[S('shift',{flex:1.5}),...L('zxcvbnm'),S('backspace',{flex:1.5})]},
+      {keys:[K('?123',{flex:1.5,bg:n.special,fs:14}),K(',',{bg:n.special}),K('',{flex:5,bg:n.space}),K('.',{bg:n.special}),S('keyboard_return',{flex:1.5,bg:a.accent,fg:a.on,shadow:'none'})]}];
+  }
+  screens(){
+    const s=this.state,w=this.win(),learn=s.tg.learn;
+    const apName=s.rot?'time of day':s.dyn?'Wallpaper':pal(s.acc).name;
+    const modeName={light:'Light',dark:'Dark',system:'System'}[s.mode];
+    const myStyle=[T({act:'more_vert'}),H('My style','What Tyst has learned from how you write.'),
+      G([R('Learn my style',learn?'From 1,240 messages you sent since August':'Paused. What it learned so far is kept.','tog',{key:'learn',ic:'signature'})]),
+      LB('How you write'),G([R('Short sentences','Slack, Messages','edit',{ic:'short_text'}),R('Casual with friends','WhatsApp, Messages','edit',{ic:'mood'}),R('More formal in email','Gmail','edit',{ic:'mail'}),R('Digits for times','“at 6” rather than “at six”','edit',{ic:'schedule'})]),
+      LB('Phrases you use often'),{k:'chips',items:['Hej hej','Sounds good','Talk soon','No worries','Thanks for flagging']},FL,
+      B([{t:learn?'Pause learning':'Resume learning',kind:'out',flex:1,act:()=>this.flip('learn')},{t:'Reset my style',kind:'dangerText',flex:1}])];
+    const privacy=[T({}),H('Privacy & memory'),
+      G([R('Internet access','Not requested. Nothing leaves this phone.','none',{ic:'wifi_off',icC:'success'}),R('Private memory',s.tg.memory?'Remembers things you type, like addresses':'Paused. Saved items are kept.','tog',{key:'memory',ic:'lock'})]),
+      LB('Remembered · '+s.mem.length),{k:'search'},{k:'mem'},FL,
+      B([{t:'Delete all learned data',kind:'dangerOut',flex:1,act:()=>this.setState({dlg:true})}])];
+    return [
+    {num:'01',title:'Onboarding',desc:'Five screens, from welcome to a working keyboard.',screens:[
+      {id:'1.1',title:'Welcome',note:'Leads with the promise and shows the two permissions up front. Internet is listed as “not requested” so the claim is checkable from the first screen.',blocks:[SP(64),{k:'logo'},SP(28),H('Tyst','A keyboard that learns how you write and never goes online.',{center:1}),FL,LB('What Tyst can access'),G([R('Internet','Not requested','none',{ic:'wifi_off',icC:'success'}),R('Microphone','Asks the first time you use voice typing','none',{ic:'mic'})]),SP(8),B([{t:'Get started',kind:'fill',flex:1}]),DOTS(0)]},
+      {id:'1.2',title:'Turn on Tyst',note:'Enable and select are merged. Each row ticks off when the app sees the system change on return.',blocks:[T({step:'2 of 5'}),H('Turn on Tyst','Two quick steps in Android settings. Each one ticks off when you come back.'),G([R('Enable Tyst','Done','none',{ic:'check_circle',icC:'success'}),R('Choose Tyst as your keyboard','Opens the keyboard picker','chev',{ic:'radio_button_unchecked'})]),SP(16),NOTE('info','Android warns that keyboards can collect what you type. Every keyboard gets this warning. Tyst keeps everything on this phone.'),FL,B([{t:'Open keyboard picker',kind:'fill',flex:1}]),DOTS(1)]},
+      {id:'1.3',title:'Privacy',note:'The headline is the requested line, verbatim. Two separate opt-ins: style learning on, private memory off until the user chooses it.',blocks:[T({step:'3 of 5'}),H('Everything you type stays on this phone.','Tyst has no internet permission, so there is no way for it to send what you write anywhere.'),LB('You choose what it learns'),G([R('Learn my writing style','From messages you send. Turn off any time.','tog',{key:'learn',ic:'signature'}),R('Private memory','Remembers addresses and booking codes you type. Off until you turn it on.','tog',{key:'obMem',ic:'lock'})]),SP(16),NOTE('verified_user','Check it yourself: Android Settings › Apps › Tyst › Permissions.'),FL,B([{t:'Continue',kind:'fill',flex:1}]),DOTS(2)]},
+      {id:'1.4',title:'Pick a look',note:'Same controls as Appearance, trimmed. The preview follows the mode and accent live. Shares state with 2.6.',blocks:[T({step:'4 of 5'}),H('Pick a look','Change it any time in Settings.'),{k:'kbp'},SP(16),{k:'seg',key:'mode'},SP(8),G([R('Match wallpaper','Takes the accent from your wallpaper','tog',{key:'dyn',ic:'wallpaper'})]),SP(12),{k:'sw'},FL,B([{t:'Continue',kind:'fill',flex:1}]),DOTS(3)]},
+      {id:'1.5',title:'Ready',note:'Practice field with the real keyboard. The ring around the AI key shows model download progress until the pack lands.',blocks:[T({step:'5 of 5'}),H('You’re set','Try it below. Writing tools switch on when the model finishes downloading.'),{k:'field',t:'Practice',v:'Fika in Västerås at 3'},SP(16),{k:'prog',t:'Writing model',s:'540 of 870 MB · keeps going in the background',v:62},SP(4),B([{t:'Done',kind:'fill',flex:1}]),{k:'kb'}]}
+    ]},
+    {num:'02',title:'Settings',desc:'Home and sub-screens. One row pattern throughout: icon, title, one line of support, trailing control.',screens:[
+      {id:'2.1',title:'Settings home',note:'Status card first, so the two questions people ask (is it on, is it private) are answered before the list.',blocks:[T({back:false,act:'search'}),H('Tyst'),{k:'status',ic:'keyboard',t:'Tyst is your keyboard',s:'Writing model ready · learning '+(learn?'on':'paused'),badge:'On device'},
+        G([R('Typing & dictionaries','English · Swedish words '+(s.tg.sv?'on':'off'),'chev',{ic:'keyboard_keys'}),R('AI features','Rewrite, Proofread, Voice','chev',{ic:'auto_awesome'}),R('My style',learn?'Learning · 4 habits':'Paused','chev',{ic:'signature'}),R('Privacy & memory',s.mem.length+' remembered items','chev',{ic:'shield_lock'}),R('Passwords & codes','NordPass · copied codes','chev',{ic:'key'}),R('Appearance',modeName+' · '+apName,'chev',{ic:'palette'}),R('About','Version 0.1.0','chev',{ic:'info'})])]},
+      {id:'2.2',title:'Typing & dictionaries',note:'English is the only language. Swedish words is a recognition layer on top, so there is no language key. Restore å ä ö depends on it and greys out when it is off.',blocks:[T({}),H('Typing & dictionaries'),LB('Languages'),G([R('English','Main language for autocorrect and predictions','check',{ic:'language'}),R('Swedish words','Recognise Swedish names and words in English','tog',{key:'sv',ic:'translate'}),R('Restore å ä ö','Suggest Västerås when you type Vasteras','tog',{key:'restore',ic:'spellcheck',dep:'sv'})]),LB('Typing'),G([R('Autocorrect','','val',{v:'Medium',ic:'auto_fix_high'}),R('Show å ä ö row','A small row above the letters','tog',{key:'aaRow',ic:'keyboard'}),R('Personal dictionary','142 words, 24 of them Swedish','chev',{ic:'menu_book'}),R('Never correct','fika, Järntorget and 12 more','chev',{ic:'block'})])]},
+      {id:'2.3',title:'AI features',note:'One toggle per tool with a one-line explanation. Later features are listed but inactive. Storage is broken down by model so people can see what the 1 GB is.',blocks:[T({}),H('AI features','Everything runs on this phone, so it works offline.'),{k:'meter'},LB('Tools'),G([R('Rewrite in my style','Rewrites selected text the way you usually write','tog',{key:'rewrite',ic:'signature'}),R('Proofread','Finds spelling and grammar slips, one at a time','tog',{key:'proof',ic:'spellcheck'}),R('Voice typing','Speech to text without a network','tog',{key:'voice',ic:'mic'}),R('Translate','English ↔ Swedish','badge',{bd:'Later',ic:'translate',dis:1}),R('Reply','Draft a reply to copied text','badge',{bd:'Later',ic:'reply',dis:1})])]},
+      {id:'2.4',title:'My style',note:'Habits are shown in plain words with where they were learned. Edit opens a sheet per habit (2.4b). Pause keeps what was learned; Reset clears it.',blocks:myStyle},
+      {id:'2.4b',title:'My style · edit a habit',note:'Change the tone, choose which apps it learns from, or forget the habit.',blocks:[...myStyle,{k:'sheet',t:'Casual with friends',s:'Learned from 312 messages in WhatsApp and Messages.',segLabel:'Tone with friends',rows:[R('WhatsApp','','tog',{key:'apWa'}),R('Messages','','tog',{key:'apMsg'})],btns:[{t:'Forget this',kind:'dangerText'},{t:'Done',kind:'fill'}]}]},
+      {id:'2.5',title:'Privacy & memory',note:'Search filters live. Tap a row to reveal Delete (stands in for swipe); deleting shows Undo for 5s. Pause memory keeps saved items.',blocks:[...privacy,{k:'dlg'},{k:'snack'}]},
+      {id:'2.5b',title:'Delete all · confirm',note:'Names exactly what goes, says it can’t be undone. The destructive action is the only error-filled button in the app.',blocks:[...privacy,{k:'dlg',always:1}]},
+      {id:'2.6',title:'Appearance',note:'Preview sits at the top so it stays visible while editing. Picking a swatch turns off wallpaper color and rotation; each of those turns the other off.',blocks:[T({}),H('Appearance'),{k:'kbp'},SP(16),{k:'seg',key:'mode'},LB('Accent'),G([R('Match wallpaper','Uses colours from your wallpaper','tog',{key:'dyn',ic:'wallpaper'})]),SP(12),{k:'sw'},SP(4),G([R('Change with the time of day',s.rot?'Now: '+w[3].toLowerCase()+' · '+pal(w[2]).name:'Six palettes through the day','tog',{key:'rot',ic:'schedule'})])]},
+      {id:'2.7',title:'Passwords & codes',note:'Password manager choice is a system setting, so the row opens Android autofill settings. Expiry greys out when copied codes are off.',blocks:[T({}),H('Passwords & codes'),LB('Passwords'),G([R('Show password suggestions','From your password manager, above the keys','tog',{key:'autofill',ic:'key'}),R('Password manager','NordPass · change in Android settings','ext',{ic:'passkey',dep:'autofill'})]),LB('Verification codes'),G([R('Show copied codes','A code you copy appears above the keys','tog',{key:'codes',ic:'sms'})]),SP(16),{k:'seg',key:'expiry',label:'Hide a copied code after',dep:'codes'},SP(20),NOTE('lock','Tyst never reads your messages and never stores passwords. Passwords come from NordPass through Android. Codes only appear when you copy one.')]},
+      {id:'2.8',title:'About',note:'Model versions and sizes. Usage stats are only ever a file the user shares themselves.',blocks:[T({}),H('About'),{k:'status',ic:'keyboard',t:'Tyst 0.1.0',s:'Android 17 · Pixel 10 Pro',badge:'No network permission',wifi:1},LB('Models on this phone'),G([R('Writing model','870 MB','val',{v:'v1.2',ic:'neurology'}),R('Voice model','120 MB','val',{v:'v1.0',ic:'mic'}),R('Prediction model','24 MB','val',{v:'v1.4',ic:'keyboard'}),R('Swedish word list','6 MB','val',{v:'v1',ic:'translate'})]),LB('More'),G([R('Privacy policy','','chev',{ic:'policy'}),R('Open-source licences','','chev',{ic:'description'}),R('Share usage stats file','You choose where it goes','chev',{ic:'ios_share'})])]}
+    ]},
+    {num:'03',title:'AI panel states',desc:'Empty, loading and unavailable states. The panel keeps its height in every state, so the conversation never jumps.',screens:[
+      {id:'3.1',title:'Empty · nothing selected',note:'Tools are visible but dimmed, with one line on what to do.',chat:'empty'},
+      {id:'3.2',title:'Loading · writing',note:'Skeleton lines in the result card and the busy chip from the system. Stop cancels and keeps the original text.',chat:'loading'},
+      {id:'3.3',title:'Model still downloading',note:'Shows progress in the panel and in the header badge. Typing is unaffected.',chat:'download'},
+      {id:'3.4',title:'Battery Saver on',note:'Paused by default; Run once is an explicit override. No warning color exists, so the state stays neutral.',chat:'battery'},
+      {id:'3.5',title:'Feature not available',note:'Translate is selected but not shipped yet. Points to the tool that does work.',chat:'na'}
+    ]}];
+  }
+  frame(sc,m,P){
+    const n=N[m],a=P[m],s=this.state;
+    const C=k=>k==='success'?n.success:k==='accent'?a.accent:k==='error'?n.error:n.t2;
+    const KB={fill:{bg:a.accent,fg:a.on,ring:'none'},out:{bg:'transparent',fg:n.t1,ring:'inset 0 0 0 1px '+n.divider},text:{bg:'transparent',fg:a.accent,ring:'none'},dangerText:{bg:'transparent',fg:n.error,ring:'none'},dangerOut:{bg:'transparent',fg:n.error,ring:'inset 0 0 0 1px '+n.error},dangerFill:{bg:n.error,fg:n.onErr,ring:'none'}};
+    const btn=x=>({t:x.t,...KB[x.kind||'fill'],flex:x.flex?'1':'none',click:x.act||null});
+    const tog=on=>on?{track:a.accent,outline:'none',top:4,left:24,size:24,handle:a.on,icon:'check'}:{track:n.special,outline:'inset 0 0 0 2px '+n.t2,top:8,left:8,size:16,handle:n.t2,icon:''};
+    const TR={chev:'chevron_right',ext:'open_in_new',edit:'edit',check:'check'};
+    const row=(r,i)=>{const on=r.key?this.get(r.key):false,dis=!!r.dis||(r.dep&&!this.get(r.dep));
+      return {t:r.t,s:r.s||'',sD:r.s?'block':'none',ic:r.ic||'',icD:r.ic?'block':'none',icC:C(r.icC),mh:r.s?72:56,bt:i?'1px solid '+n.divider:'none',op:dis?.38:1,
+        vD:r.tr==='val'?'block':'none',v:r.v||'',vc:C(r.vc),bdD:r.tr==='badge'?'flex':'none',bd:r.bd||'',
+        trD:TR[r.tr]?'block':'none',trIc:TR[r.tr]||'',trC:r.tr==='check'?a.accent:n.t2,
+        tgD:r.tr==='tog'?'block':'none',tg:tog(on),click:r.tr==='tog'&&!dis?()=>this.flip(r.key):null,cur:(r.tr==='tog'&&!dis)||TR[r.tr]?'pointer':'default'}};
+    const segItems=(opts,val,set,dis)=>opts.map(([t,v])=>{const on=v===val;return {t,bg:on?a.cont:'transparent',fg:on?a.onCont:n.t1,ckD:on?'inline':'none',click:dis?null:()=>set(v)}});
+    if(sc.chat){
+      const app=APP[m],ps=PS[sc.chat];
+      return {n,a,app,isChat:true,isApp:false,batt:ps.batt||'battery_full',
+        msgs:MSGS.map(([w,t])=>({t,al:w==='out'?'flex-end':'flex-start',bg:w==='out'?app.out:app.in,rad:w==='out'?'20px 20px 6px 20px':'20px 20px 20px 6px'})),
+        segs:ps.sel?[{t:DRAFT,bg:a.cont}]:[],curD:ps.sel?'none':'inline-block',phD:'none',
+        chips:[['Rewrite in my style','signature'],['Proofread','spellcheck'],['Translate','translate'],['Reply','reply']].map(([t,icon],i)=>{const on=i===ps.chipOn;return {t,icon,bg:on?a.cont:n.key,fg:on?a.onCont:n.t1,ic:on?a.onCont:a.accent,ring:on?'none':'inset 0 0 0 1px '+n.divider}}),
+        ps:{...ps,badge:ps.prog?'Downloading · '+ps.prog+'%':ps.badge,isLoad:!!ps.load,isMsg:!ps.load,dotC:C(ps.dot),pD:ps.prog?'flex':'none',pct:(ps.prog||0)+'%',btns:(ps.btns||[]).map(btn)}};
+    }
+    const blocks=sc.blocks.map(b=>{const o={...b,['is_'+b.k]:true};
+      switch(b.k){
+        case 'top':o.backD=b.back===false?'none':'flex';o.actD=b.act?'flex':'none';o.act=b.act||'';o.step=b.step||'';break;
+        case 'h':o.ta=b.center?'center':'left';o.sD=b.s?'block':'none';o.s=b.s||'';break;
+        case 'grp':o.rows=b.rows.map(row);break;
+        case 'status':o.dotD=b.wifi?'none':'block';o.wD=b.wifi?'block':'none';break;
+        case 'meter':o.total='1.0 GB';o.segs=[['Writing model',870,a.accent],['Voice model',120,n.t2],['Prediction and word lists',30,n.pressed]].map(([t,v,c])=>({t,c,flex:v,v:v+' MB'}));break;
+        case 'prog':o.pct=b.v+'%';break;
+        case 'btns':o.items=b.items.map(btn);break;
+        case 'seg':{const md=b.key==='mode',dis=b.dep&&!this.get(b.dep);o.op=dis?.38:1;o.lD=b.label?'block':'none';o.label=b.label||'';
+          o.items=segItems(md?[['Light','light'],['Dark','dark'],['System','system']]:[['1 min',0],['3 min',1],['5 min',2]],md?s.mode:s.expiry,v=>this.setState(md?{mode:v}:{expiry:v}),dis);break}
+        case 'sw':o.items=PAL.map(p=>{const sel=!s.dyn&&!s.rot&&p.id===s.acc;return {name:p.name,fw:sel?600:400,bg:'linear-gradient(135deg, '+p[m].accent+' 50%, '+p[m].cont+' 50%)',ring:sel?'0 0 0 3px '+n.surface+', 0 0 0 5px '+p[m].accent:'inset 0 0 0 1px '+n.divider,click:()=>this.setState({acc:p.id,dyn:false,rot:false})}});break;
+        case 'kbp':{const pm=s.mode==='system'?m:s.mode;o.pn=N[pm];o.pa=P[pm];o.rows=this.rows(o.pn,o.pa,44,19);o.sugs=[['at',0],['tonight',1],['around',0]].map(([t,p],i)=>({t,fw:p?600:400,bl:i?o.pn.divider:'transparent'}));break}
+        case 'mem':{const q=s.q.trim().toLowerCase(),list=s.mem.filter(x=>!q||(x.t+' '+x.s).toLowerCase().includes(q));
+          o.items=list.map((x,i)=>{const sw=s.sw===x.id;return {...x,bt:i?'1px solid '+n.divider:'none',x:sw?-96:0,behind:sw?n.error:'transparent',click:()=>this.setState(st=>({sw:st.sw===x.id?null:x.id})),del:()=>this.delMem(x.id)}});
+          o.emptyD=list.length?'none':'block';o.emptyT=q?'No remembered items match “'+s.q+'”.':'Nothing remembered yet.';break}
+        case 'chips':o.items=b.items.map(t=>({t}));break;
+        case 'dots':o.items=[0,1,2,3,4].map(i=>i===b.on?{w:24,c:a.accent}:{w:8,c:n.divider});break;
+        case 'kb':o.rows=this.rows(n,a,52,22);o.sugs=[['and',0],['at',1],['on',0]].map(([t,p],i)=>({t,fw:p?600:400,bl:i?n.divider:'transparent'}));break;
+        case 'sheet':o.segItems=segItems([['Casual',0],['Neutral',1],['Formal',2]],s.tone,v=>this.setState({tone:v}));o.rows=b.rows.map(row);o.btns=b.btns.map(btn);break;
+        case 'dlg':o.show=(b.always||s.dlg)?'flex':'none';o.items=[btn({t:'Cancel',kind:'text',act:()=>this.setState({dlg:false})}),btn({t:'Delete all',kind:'dangerFill',act:()=>this.delAll()})];break;
+        case 'snack':o.show=s.snack?'flex':'none';o.t=s.snack?s.snack.t:'';o.undo=s.snack?s.snack.undo:null;o.ac=P[m==='light'?'dark':'light'].accent;break;
+      }
+      return o;});
+    return {n,a,isApp:true,isChat:false,batt:'battery_full',blocks,navD:sc.blocks.some(b=>b.k==='kb')?'none':'flex'};
+  }
+  renderVals(){
+    const P=this.cur(),layout=this.props.layout??'Light and dark';
+    const modes=layout==='Light'?['light']:layout==='Dark'?['dark']:['light','dark'];
+    const sections=this.screens().map(sec=>({...sec,screens:sec.screens.map(sc=>({id:'s'+sc.id.replace('.','-'),num:sc.id,title:sc.title,note:sc.note,w:modes.length*436+(modes.length-1)*24,frames:modes.map(m=>this.frame(sc,m,P))}))}));
+    return {sections,showNotes:this.props.showNotes??true,q:this.state.q,onQ:e=>this.setState({q:e.target.value}),
+      gaps:GAPS.map(([t,s,ref])=>({t,s,ref,href:'#s'+ref.replace('.','-')}))};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400..700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&amp;display=block" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#E8ECEA;color:#161D1B;font-family:'Google Sans Flex','Roboto Flex',sans-serif;-webkit-font-smoothing:antialiased}a{color:#0D5C58}a:hover{color:#00201D}input::placeholder{color:inherit;opacity:.6}@keyframes tystBlink{0%,49%{opacity:1}50%,100%{opacity:0}}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;justify-content:center;align-items:flex-start;gap:56px;padding:24px;flex-wrap:wrap">
+
+<sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+<aside style="width:280px;flex:none;display:flex;flex-direction:column;gap:28px;padding-top:20px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#46524F">Tyst · Interactive prototype</span>
+<span style="font-size:30px;line-height:36px;font-weight:500;letter-spacing:-.015em">Keyboard demo</span>
+<span style="font-size:14px;line-height:20px;color:#46524F;text-wrap:pretty">Pixel 10 Pro. Scripted demo data, nothing leaves this page.</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#46524F">Screens</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ railScreens }}" as="x" hint-placeholder-count="4"><span onClick="{{ x.click }}" style="height:36px;padding:0 14px;border-radius:18px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:500;cursor:pointer">{{ x.t }}</span></sc-for></div>
+</div>
+<sc-for list="{{ railTry }}" as="g" hint-placeholder-count="2">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#46524F">{{ g.t }}</span>
+<div style="display:flex;flex-direction:column;gap:2px"><sc-for list="{{ g.items }}" as="x" hint-placeholder-count="5"><div onClick="{{ x.click }}" style="min-height:36px;padding:6px 10px;margin:0 -10px;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px;cursor:pointer" style-hover="background:#DDE3E1"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#46524F;font-feature-settings:'liga'">{{ x.ic }}</span><span style="flex:1;min-width:0">{{ x.t }}</span></div></sc-for></div>
+</div>
+</sc-for>
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#46524F">Look</span>
+<div style="display:flex;height:40px;border-radius:20px;box-shadow:inset 0 0 0 1px #C9D2CF;padding:4px;gap:4px"><sc-for list="{{ railModes }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="flex:1;border-radius:16px;background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">{{ x.ic }}</span>{{ x.t }}</span></sc-for></div>
+<div style="display:flex;flex-wrap:wrap;gap:10px"><sc-for list="{{ railSw }}" as="x" hint-placeholder-count="6"><div onClick="{{ x.click }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:38px"><span style="width:32px;height:32px;border-radius:50%;background:{{ x.bg }};box-shadow:{{ x.ring }}"></span><span style="font-size:11px;font-weight:{{ x.fw }}">{{ x.name }}</span></div></sc-for></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid #C9D2CF;padding-top:14px">
+<sc-for list="{{ hints }}" as="h" hint-placeholder-count="4"><span style="font-size:13px;line-height:19px;color:#46524F;text-wrap:pretty">{{ h }}</span></sc-for>
+</div>
+</aside>
+</sc-if>
+
+<div style="flex:none;zoom:{{ zoom }}">
+<div style="width:436px;height:939px;border-radius:58px;background:#1A1E1D;padding:12px;box-shadow:inset 0 0 0 2px #4D5754, inset 0 0 0 5px #1A1E1D, 0 24px 48px rgba(22,29,27,.18)">
+<div style="width:412px;height:915px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:{{ n.surface }};color:{{ n.t1 }};transition:background-color 300ms cubic-bezier(0.2,0,0,1), color 300ms cubic-bezier(0.2,0,0,1);-webkit-user-select:none;user-select:none">
+<span style="position:absolute;left:50%;top:14px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#050606;z-index:9"></span>
+<div style="height:42px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0">
+<span style="font-size:15px;font-weight:500;font-variant-numeric:tabular-nums">14:32</span>
+<span style="display:flex;gap:4px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:18px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">battery_full</span></span>
+</div>
+
+<sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+<div style="height:64px;flex:none;display:flex;align-items:center;gap:4px;padding:0 4px">
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga'">arrow_back</span>
+<span style="width:40px;height:40px;flex:none;border-radius:50%;background:{{ app.av }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">EB</span>
+<span style="flex:1;min-width:0;padding-left:8px;font-size:18px;font-weight:500">Elin Berg</span>
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ n.t2 }};font-feature-settings:'liga'">call</span>
+<span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ n.t2 }};font-feature-settings:'liga'">more_vert</span>
+</div>
+<div ref="{{ msgRef }}" style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:6px;padding:12px 16px">
+<span style="margin-top:auto;align-self:center;font-size:12px;font-weight:500;color:{{ n.t2 }};padding-bottom:6px">Today</span>
+<sc-for list="{{ msgs }}" as="m" hint-placeholder-count="2"><div style="flex:none;align-self:{{ m.al }};max-width:78%;background:{{ m.bg }};border-radius:{{ m.rad }};padding:10px 14px;font-size:16px;line-height:22px;text-wrap:pretty;-webkit-user-select:text;user-select:text;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">{{ m.t }}</div></sc-for>
+</div>
+<div style="flex:none;display:flex;align-items:flex-end;gap:4px;padding:8px 8px 10px">
+<span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:26px;color:{{ n.t2 }};font-feature-settings:'liga'">add_circle</span>
+<div onClick="{{ focusChat }}" style="flex:1;min-width:0;min-height:48px;max-height:124px;overflow-y:auto;scrollbar-width:none;border-radius:24px;background:{{ app.field }};box-shadow:inset 0 0 0 1px {{ app.line }};padding:12px 18px;font-size:16px;line-height:24px;white-space:pre-wrap;overflow-wrap:anywhere;cursor:text;transition:background-color 300ms cubic-bezier(0.2,0,0,1)"><sc-for list="{{ chatSegs }}" as="s" hint-placeholder-count="1"><span style="background:{{ s.bg }};text-decoration:{{ s.deco }};text-decoration-color:{{ a.accent }};text-decoration-thickness:2px;text-underline-offset:5px;border-radius:3px">{{ s.t }}</span></sc-for><span style="display:{{ chatCur }};width:2px;height:22px;margin-left:1px;border-radius:1px;vertical-align:-5px;background:{{ a.accent }};animation:tystBlink 1s steps(1) infinite"></span><span style="display:{{ chatPh }};color:{{ n.t2 }}">Message</span></div>
+<span onClick="{{ send }}" style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ app.out }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga';cursor:pointer;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">send</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:16px;padding:36px 24px 20px;overflow:hidden">
+<span style="font-size:32px;line-height:40px;font-weight:400">Sign in</span>
+<span style="font-size:15px;line-height:22px;color:{{ n.t2 }};margin-top:-8px">Use your Kvarter account.</span>
+<div style="height:4px"></div>
+<div onClick="{{ lg.focusEmail }}" style="display:flex;flex-direction:column;gap:6px;cursor:text"><span style="font-size:13px;font-weight:500;color:{{ lg.emailLbl }}">Email</span><div style="height:56px;border-radius:12px;box-shadow:{{ lg.emailRing }};display:flex;align-items:center;padding:0 16px;font-size:16px;white-space:nowrap;overflow:hidden">{{ lg.email }}<span style="display:{{ lg.emailCur }};width:2px;height:22px;margin-left:1px;border-radius:1px;background:{{ a.accent }};animation:tystBlink 1s steps(1) infinite"></span><span style="display:{{ lg.emailPh }};color:{{ n.t2 }}">Email</span></div></div>
+<div onClick="{{ lg.focusPw }}" style="display:flex;flex-direction:column;gap:6px;cursor:text"><span style="font-size:13px;font-weight:500;color:{{ lg.pwLbl }}">Password</span><div style="height:56px;border-radius:12px;box-shadow:{{ lg.pwRing }};display:flex;align-items:center;padding:0 16px;font-size:16px;letter-spacing:.12em;white-space:nowrap;overflow:hidden">{{ lg.pw }}<span style="display:{{ lg.pwCur }};width:2px;height:22px;margin-left:1px;border-radius:1px;background:{{ a.accent }};animation:tystBlink 1s steps(1) infinite"></span><span style="display:{{ lg.pwPh }};color:{{ n.t2 }};letter-spacing:0">Password</span></div></div>
+<div style="height:4px"></div>
+<div onClick="{{ lg.signIn }}" style="flex:none;height:48px;border-radius:24px;background:{{ lg.btnBg }};color:{{ lg.btnFg }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">Sign in</div>
+<span style="align-self:center;font-size:14px;font-weight:500;color:{{ n.t2 }}">Forgot password?</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCode }}" hint-placeholder-val="{{ false }}">
+<div style="height:64px;flex:none;display:flex;align-items:center;padding:0 4px"><span onClick="{{ back }}" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga';cursor:pointer">arrow_back</span></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:16px;padding:16px 24px 24px">
+<span style="font-size:32px;line-height:40px;font-weight:400">Enter code</span>
+<span style="font-size:15px;line-height:22px;color:{{ n.t2 }};margin-top:-8px;text-wrap:pretty">We sent a 6-digit code to +46 70 ··· ·· 18.</span>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding-top:12px">
+<sc-for list="{{ boxes }}" as="b" hint-placeholder-count="6"><div style="height:60px;border-radius:12px;box-shadow:{{ b.ring }};display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;transition:box-shadow 150ms linear">{{ b.t }}<span style="display:{{ b.cur }};width:2px;height:24px;border-radius:1px;background:{{ a.accent }};animation:tystBlink 1s steps(1) infinite"></span></div></sc-for>
+</div>
+<sc-if value="{{ codeDone }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding-top:4px"><span style="font-family:'Material Symbols Rounded';font-size:22px;color:{{ n.success }};font-variation-settings:'FILL' 1;font-feature-settings:'liga'">check_circle</span><span style="font-size:15px;font-weight:500">Signed in as elin.berg@hey.com</span></div></sc-if>
+<sc-if value="{{ codeWait }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;color:{{ n.t2 }};font-variant-numeric:tabular-nums">Resend code in 0:41</span></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none">
+<sc-for list="{{ blocks }}" as="b" hint-placeholder-count="6">
+<div style="display:contents">
+<sc-if value="{{ b.is_top }}" hint-placeholder-val="{{ false }}"><div style="height:64px;flex:none;display:flex;align-items:center;padding:0 8px 0 4px"><span onClick="{{ back }}" style="display:{{ b.backD }};width:48px;height:48px;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga';cursor:pointer">arrow_back</span><span style="flex:1"></span><span style="font-size:14px;font-weight:500;color:{{ n.t2 }};padding:0 16px;font-variant-numeric:tabular-nums">{{ b.step }}</span><span style="display:{{ b.actD }};width:48px;height:48px;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ n.t2 }};font-feature-settings:'liga'">{{ b.act }}</span></div></sc-if>
+<sc-if value="{{ b.is_h }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:4px 24px 20px;display:flex;flex-direction:column;gap:10px;text-align:{{ b.ta }}"><span style="font-size:32px;line-height:40px;font-weight:400;letter-spacing:-.01em;text-wrap:pretty">{{ b.t }}</span><span style="display:{{ b.sD }};font-size:15px;line-height:22px;color:{{ n.t2 }};text-wrap:pretty">{{ b.s }}</span></div></sc-if>
+<sc-if value="{{ b.is_lbl }}" hint-placeholder-val="{{ false }}"><div style="flex:none;padding:16px 28px 8px;font-size:14px;line-height:20px;font-weight:500;color:{{ a.accent }};transition:color 600ms cubic-bezier(0.2,0,0,1)">{{ b.t }}</div></sc-if>
+<sc-if value="{{ b.is_logo }}" hint-placeholder-val="{{ false }}"><div style="flex:none;align-self:center;width:96px;height:96px;border-radius:28px;border:1.5px dashed {{ n.t2 }};display:flex;align-items:center;justify-content:center;font:500 11px 'JetBrains Mono',monospace;color:{{ n.t2 }}">App icon</div></sc-if>
+<sc-if value="{{ b.is_grp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ n.kb }};overflow:hidden;display:flex;flex-direction:column;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="3">
+<div onClick="{{ r.click }}" style="flex:none;min-height:{{ r.mh }}px;padding:12px 16px;display:flex;align-items:center;gap:16px;border-top:{{ r.bt }};opacity:{{ r.op }};cursor:{{ r.cur }}" style-hover="background:rgba(127,140,136,.08)">
+<span style="display:{{ r.icD }};flex:none;font-family:'Material Symbols Rounded';font-size:24px;color:{{ r.icC }};font-feature-settings:'liga'">{{ r.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;line-height:24px">{{ r.t }}</span><span style="display:{{ r.sD }};font-size:14px;line-height:20px;color:{{ n.t2 }};text-wrap:pretty">{{ r.s }}</span></div>
+<span style="display:{{ r.vD }};flex:none;font-size:14px;font-weight:500;color:{{ n.t2 }}">{{ r.v }}</span>
+<span style="display:{{ r.bdD }};flex:none;height:24px;padding:0 10px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ n.divider }};align-items:center;font-size:12px;font-weight:500;color:{{ n.t2 }}">{{ r.bd }}</span>
+<span style="display:{{ r.trD }};flex:none;font-family:'Material Symbols Rounded';font-size:22px;color:{{ r.trC }};font-feature-settings:'liga'">{{ r.trIc }}</span>
+<span style="display:{{ r.tgD }};position:relative;flex:none;width:52px;height:32px;border-radius:16px;background:{{ r.tg.track }};box-shadow:{{ r.tg.outline }};transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="position:absolute;top:{{ r.tg.top }}px;left:{{ r.tg.left }}px;width:{{ r.tg.size }}px;height:{{ r.tg.size }}px;border-radius:50%;background:{{ r.tg.handle }};color:{{ a.accent }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:16px;font-feature-settings:'liga';transition:all 250ms cubic-bezier(0.2,0,0,1)">{{ r.tg.icon }}</span></span>
+</div>
+</sc-for>
+</div></sc-if>
+<sc-if value="{{ b.is_status }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px 16px;border-radius:24px;background:{{ n.kb }};padding:16px;display:flex;align-items:flex-start;gap:16px;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<span style="width:48px;height:48px;flex:none;border-radius:16px;background:{{ a.cont }};color:{{ a.onCont }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;font-feature-settings:'liga';transition:background-color 600ms cubic-bezier(0.2,0,0,1), color 600ms cubic-bezier(0.2,0,0,1)">{{ b.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;line-height:24px;font-weight:500">{{ b.t }}</span><span style="font-size:14px;line-height:20px;color:{{ n.t2 }}">{{ b.s }}</span>
+<span style="align-self:flex-start;margin-top:8px;height:24px;padding:0 10px 0 8px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:{{ n.t2 }}"><span style="display:{{ b.dotD }};width:6px;height:6px;margin-left:2px;border-radius:50%;background:{{ n.success }}"></span><span style="display:{{ b.wD }};font-family:'Material Symbols Rounded';font-size:15px;color:{{ n.success }};font-feature-settings:'liga'">wifi_off</span>{{ b.badge }}</span></div>
+</div></sc-if>
+<sc-if value="{{ b.is_note }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:20px;box-shadow:inset 0 0 0 1px {{ n.divider }};padding:16px;display:flex;gap:14px;align-items:flex-start"><span style="flex:none;font-family:'Material Symbols Rounded';font-size:22px;color:{{ n.t2 }};font-feature-settings:'liga'">{{ b.ic }}</span><span style="font-size:14px;line-height:20px;text-wrap:pretty">{{ b.t }}</span></div></sc-if>
+<sc-if value="{{ b.is_meter }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ n.kb }};padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:500">Storage on this phone</span><span style="font-size:14px;font-weight:500;color:{{ n.t2 }};font-variant-numeric:tabular-nums">1.0 GB</span></div>
+<div style="display:flex;gap:3px;height:12px"><sc-for list="{{ b.segs }}" as="g" hint-placeholder-count="3"><span style="flex:{{ g.flex }};min-width:6px;border-radius:6px;background:{{ g.c }}"></span></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ b.segs }}" as="g" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:10px;font-size:14px;line-height:20px"><span style="width:10px;height:10px;border-radius:3px;background:{{ g.c }}"></span><span style="flex:1">{{ g.t }}</span><span style="color:{{ n.t2 }};font-variant-numeric:tabular-nums">{{ g.v }}</span></div></sc-for></div>
+</div></sc-if>
+<sc-if value="{{ b.is_prog }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ n.kb }};padding:16px 20px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;font-weight:500">{{ b.t }}</span><span style="font-size:14px;font-weight:500;color:{{ a.accent }};font-variant-numeric:tabular-nums">{{ b.pct }}</span></div><div style="height:6px;border-radius:3px;background:{{ n.special }};overflow:hidden"><div style="width:{{ b.pct }};height:100%;border-radius:3px;background:{{ a.accent }};transition:width 500ms linear"></div></div><span style="font-size:13px;line-height:18px;color:{{ n.t2 }}">{{ b.s }}</span></div></sc-if>
+<sc-if value="{{ b.is_seg }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;display:flex;flex-direction:column;gap:8px;opacity:{{ b.op }}">
+<span style="display:{{ b.lD }};font-size:14px;font-weight:500;color:{{ n.t2 }};padding:0 4px">{{ b.label }}</span>
+<div style="display:flex;height:48px;border-radius:24px;box-shadow:inset 0 0 0 1px {{ n.divider }};padding:4px;gap:4px">
+<sc-for list="{{ b.items }}" as="x" hint-placeholder-count="3"><span onClick="{{ x.click }}" style="flex:1;min-width:0;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="display:{{ x.ckD }};font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">check</span>{{ x.t }}</span></sc-for>
+</div></div></sc-if>
+<sc-if value="{{ b.is_sw }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;justify-content:space-between;padding:4px 24px 8px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="6"><div onClick="{{ x.click }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:52px"><span style="width:44px;height:44px;border-radius:50%;background:{{ x.bg }};box-shadow:{{ x.ring }}"></span><span style="font-size:12px;font-weight:{{ x.fw }}">{{ x.name }}</span></div></sc-for></div></sc-if>
+<sc-if value="{{ b.is_kbp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:28px;overflow:hidden;background:{{ n.kb }};box-shadow:inset 0 0 0 1px {{ n.divider }};transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<div style="padding:12px 12px 6px;background:{{ n.surface }};transition:background-color 300ms cubic-bezier(0.2,0,0,1)"><div style="background:{{ n.key }};border-radius:20px;padding:8px 16px;font-size:15px;line-height:22px;display:flex;align-items:center;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">See you at Järntorget<span style="display:inline-block;width:2px;height:20px;margin-left:1px;border-radius:1px;background:{{ a.accent }};transition:background-color 600ms cubic-bezier(0.2,0,0,1)"></span></div></div>
+<div style="height:44px;display:flex;align-items:center;padding:0 4px"><span style="width:44px;flex:none;display:flex;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;color:{{ n.t2 }};font-feature-settings:'liga'">auto_awesome</span><div style="flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding-right:40px"><sc-for list="{{ b.sugs }}" as="s" hint-placeholder-count="3"><div style="display:flex;align-items:center"><span style="width:1px;height:18px;background:{{ s.bl }}"></span><span style="flex:1;text-align:center;font-size:15px;font-weight:{{ s.fw }}">{{ s.t }}</span></div></sc-for></div></div>
+<div style="padding:4px 4px 8px;display:flex;flex-direction:column;gap:8px"><sc-for list="{{ b.rows }}" as="row" hint-placeholder-count="4"><div style="display:flex;gap:5px"><sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10"><div style="flex:{{ k.flex }};min-width:0;height:{{ k.h }}px;border-radius:12px;background:{{ k.bg }};color:{{ k.fg }};box-shadow:{{ k.shadow }};display:flex;align-items:center;justify-content:center;font-size:{{ k.fs }}px;font-weight:500;line-height:1;transition:{{ k.trans }}"><span style="display:{{ k.icd }};font-family:'Material Symbols Rounded';font-size:20px;font-feature-settings:'liga'">{{ k.icon }}</span><span>{{ k.label }}</span></div></sc-for></div></sc-for></div>
+</div></sc-if>
+<sc-if value="{{ b.is_search }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px 12px;height:56px;border-radius:28px;background:{{ n.kb }};display:flex;align-items:center;gap:12px;padding:0 20px"><span style="font-family:'Material Symbols Rounded';font-size:24px;color:{{ n.t2 }};font-feature-settings:'liga'">search</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search what’s remembered" style="flex:1;min-width:0;border:none;outline:none;background:transparent;color:{{ n.t1 }};font-family:inherit;font-size:16px"></div></sc-if>
+<sc-if value="{{ b.is_mem }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 16px;border-radius:24px;background:{{ n.kb }};overflow:hidden;display:flex;flex-direction:column">
+<sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4">
+<div style="flex:none;position:relative;border-top:{{ x.bt }};background:{{ x.behind }}">
+<span onClick="{{ x.del }}" style="position:absolute;right:0;top:0;bottom:0;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:{{ n.onErr }};cursor:pointer;font-size:12px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">delete</span>Delete</span>
+<div onClick="{{ x.click }}" style="position:relative;min-height:72px;padding:12px 16px;display:flex;align-items:center;gap:16px;background:{{ n.kb }};transform:translateX({{ x.x }}px);transition:transform 250ms cubic-bezier(0.2,0,0,1);cursor:pointer">
+<span style="width:40px;height:40px;flex:none;border-radius:12px;background:{{ a.cont }};color:{{ a.onCont }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;font-feature-settings:'liga'">{{ x.ic }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:16px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.t }}</span><span style="font-size:14px;line-height:20px;color:{{ n.t2 }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.s }}</span></div>
+</div>
+</div>
+</sc-for>
+<div style="display:{{ b.emptyD }};padding:28px 24px;text-align:center;font-size:14px;line-height:20px;color:{{ n.t2 }};text-wrap:pretty">{{ b.emptyT }}</div>
+</div></sc-if>
+<sc-if value="{{ b.is_chips }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:0 16px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="4"><span style="height:36px;padding:0 10px 0 14px;border-radius:18px;background:{{ n.key }};box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500">{{ x.t }}<span style="font-family:'Material Symbols Rounded';font-size:16px;color:{{ n.t2 }};font-feature-settings:'liga'">close</span></span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_field }}" hint-placeholder-val="{{ false }}"><div style="flex:none;margin:0 24px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">{{ b.t }}</span><div style="min-height:56px;border-radius:12px;box-shadow:inset 0 0 0 2px {{ n.t1 }};padding:16px;font-size:16px;line-height:24px;white-space:pre-wrap;overflow-wrap:anywhere"><sc-for list="{{ b.segs }}" as="s" hint-placeholder-count="1"><span style="text-decoration:{{ s.deco }};text-decoration-color:{{ a.accent }};text-decoration-thickness:2px;text-underline-offset:5px">{{ s.t }}</span></sc-for><span style="display:inline-block;width:2px;height:22px;margin-left:1px;border-radius:1px;vertical-align:-5px;background:{{ a.accent }};animation:tystBlink 1s steps(1) infinite"></span></div></div></sc-if>
+<sc-if value="{{ b.is_btns }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;gap:8px;padding:12px 16px 16px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="1"><span onClick="{{ x.click }}" style="flex:{{ x.flex }};height:48px;padding:0 24px;border-radius:24px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background-color 600ms cubic-bezier(0.2,0,0,1), color 600ms cubic-bezier(0.2,0,0,1)">{{ x.t }}</span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_dots }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;justify-content:center;gap:8px;padding:4px 0 12px"><sc-for list="{{ b.items }}" as="x" hint-placeholder-count="5"><span style="width:{{ x.w }}px;height:8px;border-radius:4px;background:{{ x.c }};transition:width 250ms cubic-bezier(0.2,0,0,1)"></span></sc-for></div></sc-if>
+<sc-if value="{{ b.is_sp }}" hint-placeholder-val="{{ false }}"><div style="flex:none;height:{{ b.h }}px"></div></sc-if>
+<sc-if value="{{ b.is_fl }}" hint-placeholder-val="{{ false }}"><div style="flex:1;min-height:0"></div></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ kbVisible }}" hint-placeholder-val="{{ true }}">
+<div style="flex:none;background:{{ n.kb }};display:flex;flex-direction:column;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<div style="height:48px;display:flex;align-items:center;gap:4px;padding:0 4px">
+<sc-if value="{{ st.panel }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ closeAI }}" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;color:{{ n.t2 }};font-feature-settings:'liga';cursor:pointer">close</span>
+<span style="flex:1;font-size:16px;font-weight:500">Writing tools</span>
+<span style="margin-right:8px;height:24px;padding:0 10px;border-radius:12px;box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:{{ n.t2 }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ ai.dotC }}"></span>{{ ai.head }}</span>
+</sc-if>
+<sc-if value="{{ st.ai }}" hint-placeholder-val="{{ true }}"><span onClick="{{ openAI }}" style="width:48px;height:48px;flex:none;border-radius:24px;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="40" height="40" viewBox="0 0 40 40" style="position:absolute;left:4px;top:4px;display:{{ ring.d }}"><circle cx="20" cy="20" r="18" fill="none" stroke="{{ n.divider }}" stroke-width="2.5"></circle><circle cx="20" cy="20" r="18" fill="none" stroke="{{ a.accent }}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="{{ ring.off }}" transform="rotate(-90 20 20)" style="transition:stroke-dashoffset 500ms linear"></circle></svg><span style="font-family:'Material Symbols Rounded';font-size:22px;color:{{ n.t2 }};font-feature-settings:'liga'">auto_awesome</span></span></sc-if>
+<sc-if value="{{ st.preds }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding-right:44px">
+<sc-for list="{{ sugs }}" as="s" hint-placeholder-count="3"><div onClick="{{ s.click }}" style="height:48px;display:flex;align-items:center;min-width:0;cursor:pointer;border-radius:20px" style-active="background:rgba(127,140,136,.22)"><span style="width:1px;height:20px;flex:none;background:{{ s.bl }}"></span><span style="flex:1;min-width:0;text-align:center;font-size:16px;line-height:24px;font-weight:{{ s.fw }};text-decoration:{{ s.deco }};text-decoration-color:{{ a.accent }};text-decoration-thickness:2px;text-underline-offset:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px">{{ s.t }}</span></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ st.mem }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ mem.click }}" style="flex:1;min-width:0;height:40px;margin-right:4px;border-radius:20px;background:{{ a.cont }};color:{{ a.onCont }};display:flex;align-items:center;gap:8px;padding:0 16px 0 12px;cursor:pointer;transition:background-color 600ms cubic-bezier(0.2,0,0,1), color 600ms cubic-bezier(0.2,0,0,1)">
+<span style="font-family:'Material Symbols Rounded';font-size:17px;font-variation-settings:'FILL' 1;font-feature-settings:'liga'">lock</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:14px;line-height:17px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mem.t }}</span><span style="font-size:11px;line-height:14px;opacity:.8">From private memory</span></div>
+<span style="font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">north_west</span>
+</div>
+</sc-if>
+<sc-if value="{{ st.fill }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;min-width:0;display:flex;gap:8px;padding:0 4px">
+<div onClick="{{ fillLogin }}" style="flex:1;min-width:0;height:40px;border-radius:20px;background:{{ n.key }};box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:8px;padding:0 14px 0 10px;cursor:pointer">
+<span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ n.t2 }};font-feature-settings:'liga'">person</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:14px;line-height:17px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">elin.berg@hey.com</span><span style="font-size:11px;line-height:14px;color:{{ n.t2 }}">NordPass · kvarter.se</span></div>
+</div>
+<div style="flex:none;height:40px;border-radius:20px;background:{{ n.key }};box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:6px;padding:0 14px 0 10px"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ n.t2 }};font-feature-settings:'liga'">key</span><span style="font-size:14px;font-weight:500">More</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ st.code }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ code.click }}" style="flex:1;min-width:0;height:40px;margin:0 4px;border-radius:20px;background:{{ n.key }};box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;gap:10px;padding:0 10px 0 14px;cursor:pointer">
+<span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ n.t2 }};font-feature-settings:'liga'">sms</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:17px;line-height:19px;font-weight:600;letter-spacing:.06em;font-variant-numeric:tabular-nums">482 913</span><span style="font-size:11px;line-height:14px;color:{{ n.t2 }};font-variant-numeric:tabular-nums">{{ code.sub }}</span></div>
+<svg width="24" height="24" viewBox="0 0 24 24" style="flex:none"><circle cx="12" cy="12" r="9" fill="none" stroke="{{ n.divider }}" stroke-width="2.5"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="{{ code.c }}" stroke-opacity="{{ code.op }}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="56.55" stroke-dashoffset="{{ code.off }}" transform="rotate(-90 12 12)" style="transition:stroke-dashoffset 500ms linear"></circle></svg>
+</div>
+</sc-if>
+<sc-if value="{{ st.gone }}" hint-placeholder-val="{{ false }}"><span style="flex:1;text-align:center;font-size:14px;font-weight:500;color:{{ n.t2 }}">Code hidden</span></sc-if>
+</div>
+
+<div style="padding:8px 4px 4px">
+<sc-if value="{{ kbAlpha }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ aaRow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;justify-content:center"><sc-for list="{{ aaKeys }}" as="k" hint-placeholder-count="3"><div onPointerDown="{{ k.down }}" onPointerUp="{{ k.up }}" onPointerCancel="{{ k.cancel }}" style="width:56px;height:40px;border-radius:{{ k.r }}px;background:{{ k.bg }};box-shadow:{{ k.shadow }};transform:scale({{ k.sc }});transition:{{ k.trans }};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;cursor:pointer;touch-action:none">{{ k.label }}</div></sc-for></div></sc-if>
+<sc-for list="{{ rows }}" as="row" hint-placeholder-count="4">
+<div style="display:flex;gap:6px">
+<sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10">
+<div onPointerDown="{{ k.down }}" onPointerUp="{{ k.up }}" onPointerMove="{{ k.move }}" onPointerCancel="{{ k.cancel }}" style="position:relative;flex:{{ k.flex }};min-width:0;height:{{ k.h }}px;border-radius:{{ k.r }}px;background:{{ k.bg }};color:{{ k.fg }};box-shadow:{{ k.shadow }};transform:scale({{ k.sc }});transition:{{ k.trans }};display:flex;align-items:center;justify-content:center;font-size:{{ k.fs }}px;font-weight:500;line-height:1;cursor:{{ k.cur }};touch-action:none">
+<span style="display:{{ k.icd }};font-family:'Material Symbols Rounded';font-size:22px;font-variation-settings:'FILL' {{ k.fill }};font-feature-settings:'liga';pointer-events:none">{{ k.icon }}</span><span style="pointer-events:none">{{ k.label }}</span>
+<sc-if value="{{ k.prev }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-5px;right:-5px;bottom:calc(100% + 8px);height:60px;border-radius:20px;background:{{ n.popup }};color:{{ n.t1 }};box-shadow:{{ n.lift }};display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:500;pointer-events:none;z-index:4">{{ k.label }}</span></sc-if>
+<sc-if value="{{ k.pop }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;bottom:calc(100% + 6px);left:{{ k.popL }};transform:{{ k.popTf }};z-index:5;background:{{ n.popup }};border-radius:20px;box-shadow:{{ n.lift }};padding:6px;display:flex;gap:4px"><sc-for list="{{ k.popCells }}" as="c" hint-placeholder-count="2"><span data-alt="{{ c.t }}" style="width:44px;height:56px;border-radius:12px;background:{{ c.bg }};color:{{ c.fg }};display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500">{{ c.t }}</span></sc-for></div></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ kbNum }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:{{ kh }}px;gap:10px 6px">
+<sc-for list="{{ numKeys }}" as="k" hint-placeholder-count="15"><div onPointerDown="{{ k.down }}" onPointerUp="{{ k.up }}" onPointerCancel="{{ k.cancel }}" style="grid-column:{{ k.gc }};grid-row:{{ k.gr }};border-radius:{{ k.r }}px;background:{{ k.bg }};color:{{ k.fg }};box-shadow:{{ k.shadow }};transform:scale({{ k.sc }});transition:{{ k.trans }};display:flex;align-items:center;justify-content:center;font-size:{{ k.fs }}px;font-weight:500;line-height:1;cursor:pointer;touch-action:none"><span style="display:{{ k.icd }};font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga';pointer-events:none">{{ k.icon }}</span><span style="pointer-events:none">{{ k.label }}</span></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ st.panel }}" hint-placeholder-val="{{ false }}">
+<div style="height:{{ bodyH }}px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+<div style="flex:none;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none">
+<sc-for list="{{ aiChips }}" as="c" hint-placeholder-count="4"><span onClick="{{ c.click }}" style="flex:none;white-space:nowrap;height:36px;padding:0 12px 0 8px;border-radius:18px;background:{{ c.bg }};color:{{ c.fg }};box-shadow:{{ c.ring }};display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ c.ic }};font-feature-settings:'liga'">{{ c.icon }}</span>{{ c.t }}</span></sc-for>
+</div>
+<div style="flex:1;min-height:0;background:{{ n.key }};border-radius:16px;padding:14px 16px 12px;display:flex;flex-direction:column;gap:10px;transition:background-color 300ms cubic-bezier(0.2,0,0,1)">
+<sc-if value="{{ ai.isLoad }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px"><span style="height:24px;padding:0 10px 0 8px;border-radius:12px;background:{{ a.cont }};color:{{ a.onCont }};display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500"><span style="font-family:'Material Symbols Rounded';font-size:15px;font-feature-settings:'liga'">{{ ai.bIc }}</span>{{ ai.badge }}</span></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding-top:4px"><span style="height:14px;width:92%;border-radius:7px;background:{{ n.special }}"></span><span style="height:14px;width:100%;border-radius:7px;background:{{ n.special }}"></span><span style="height:14px;width:58%;border-radius:7px;background:{{ n.special }}"></span></div>
+<span style="flex:1"></span>
+<div style="display:flex;align-items:center;gap:8px"><span style="height:36px;padding:0 14px 0 10px;border-radius:18px;background:{{ n.pressed }};display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500"><span style="width:14px;height:14px;border-radius:50%;border:2px solid {{ a.accent }};border-right-color:transparent"></span>Writing…</span><span style="flex:1"></span><span onClick="{{ closeAI }}" style="height:40px;padding:0 18px;border-radius:20px;box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;font-size:14px;font-weight:500;cursor:pointer">Stop</span></div>
+</sc-if>
+<sc-if value="{{ ai.isMsg }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:14px;align-items:flex-start"><span style="width:40px;height:40px;flex:none;border-radius:12px;background:{{ n.special }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;font-feature-settings:'liga'">{{ ai.tile }}</span><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;line-height:22px;font-weight:600">{{ ai.t }}</span><span style="font-size:14px;line-height:20px;color:{{ n.t2 }};text-wrap:pretty">{{ ai.s }}</span></div></div>
+<div style="display:{{ ai.pD }};align-items:center;gap:10px;padding-left:54px"><div style="flex:1;height:6px;border-radius:3px;background:{{ n.special }};overflow:hidden"><div style="width:{{ ai.pct }};height:100%;border-radius:3px;background:{{ a.accent }};transition:width 500ms linear"></div></div><span style="font-size:12px;font-weight:500;color:{{ n.t2 }};font-variant-numeric:tabular-nums">{{ ai.pct }}</span></div>
+<span style="flex:1"></span>
+<div style="display:flex;justify-content:flex-end;gap:8px"><sc-for list="{{ ai.btns }}" as="x" hint-placeholder-count="1"><span onClick="{{ x.click }}" style="height:40px;padding:0 18px;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer">{{ x.t }}</span></sc-for></div>
+</sc-if>
+<sc-if value="{{ ai.isRes }}" hint-placeholder-val="{{ false }}">
+<div style="flex:none;display:flex;align-items:center;gap:8px;min-height:28px">
+<span style="height:24px;padding:0 10px 0 8px;border-radius:12px;background:{{ ai.bBg }};color:{{ ai.bFg }};box-shadow:{{ ai.bRing }};display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;white-space:nowrap;transition:background-color 600ms cubic-bezier(0.2,0,0,1)"><span style="font-family:'Material Symbols Rounded';font-size:15px;font-feature-settings:'liga'">{{ ai.bIc }}</span>{{ ai.badge }}</span>
+<span style="flex:1"></span>
+<div style="display:{{ ai.stepD }};align-items:center;gap:0"><span onClick="{{ ai.prevS }}" style="width:32px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;color:{{ n.t2 }};font-feature-settings:'liga';cursor:pointer">chevron_left</span><span style="font-size:12px;color:{{ n.t2 }};font-variant-numeric:tabular-nums">{{ ai.stepLbl }}</span><span onClick="{{ ai.nextS }}" style="width:32px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;color:{{ n.t2 }};font-feature-settings:'liga';cursor:pointer">chevron_right</span></div>
+</div>
+<div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;font-size:16px;line-height:23px;text-wrap:pretty"><sc-for list="{{ ai.segs }}" as="g" hint-placeholder-count="1"><span style="color:{{ g.c }};background:{{ g.bg }};text-decoration:{{ g.deco }};text-decoration-color:{{ g.dc }};text-decoration-thickness:2px;text-underline-offset:5px;border-radius:4px;padding:{{ g.pad }}">{{ g.t }}</span></sc-for></div>
+<div style="flex:none;display:flex;align-items:center;gap:8px"><sc-for list="{{ ai.btns }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="height:40px;padding:0 18px;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer;margin-left:{{ x.ml }};transition:background-color 600ms cubic-bezier(0.2,0,0,1)">{{ x.t }}</span></sc-for></div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+</div>
+<div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ n.t2 }};opacity:.6"></span></div>
+</div>
+</sc-if>
+<sc-if value="{{ navBar }}" hint-placeholder-val="{{ false }}"><div style="height:24px;flex:none;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ n.t2 }};opacity:.6"></span></div></sc-if>
+
+<div style="position:absolute;left:8px;right:8px;top:8px;z-index:7;transform:translateY({{ notifY }});transition:transform 400ms cubic-bezier(0.2,0,0,1);background:{{ n.sheet }};border-radius:24px;box-shadow:{{ n.lift }};padding:14px 16px 12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:12px;align-items:flex-start"><span style="width:36px;height:36px;flex:none;border-radius:18px;background:{{ n.special }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;font-feature-settings:'liga'">sms</span><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;color:{{ n.t2 }}">Messages · now</span><span style="font-size:15px;font-weight:600">Kvarter</span><span style="font-size:14px;line-height:20px">482 913 is your Kvarter sign-in code.</span></div></div>
+<div style="display:flex;justify-content:flex-end"><span onClick="{{ copyCode }}" style="height:36px;padding:0 16px;border-radius:18px;box-shadow:inset 0 0 0 1px {{ n.divider }};display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer">Copy code</span></div>
+</div>
+
+<sc-if value="{{ sheet.on }}" hint-placeholder-val="{{ false }}"><div onClick="{{ sheet.close }}" style="position:absolute;inset:0;z-index:5;background:{{ n.scrim }};display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ stop }}" style="background:{{ n.sheet }};border-radius:28px 28px 0 0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:center;padding:16px 0 20px"><span style="width:32px;height:4px;border-radius:2px;background:{{ n.t2 }};opacity:.5"></span></div>
+<div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-size:22px;line-height:28px;font-weight:500">Casual with friends</span><span style="font-size:14px;line-height:20px;color:{{ n.t2 }};text-wrap:pretty">Learned from 312 messages in WhatsApp and Messages.</span></div>
+<div style="margin:0 16px;display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500;color:{{ n.t2 }};padding:0 4px">Tone with friends</span><div style="display:flex;height:48px;border-radius:24px;box-shadow:inset 0 0 0 1px {{ n.divider }};padding:4px;gap:4px"><sc-for list="{{ sheet.seg }}" as="x" hint-placeholder-count="3"><span onClick="{{ x.click }}" style="flex:1;min-width:0;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="display:{{ x.ckD }};font-family:'Material Symbols Rounded';font-size:18px;font-feature-settings:'liga'">check</span>{{ x.t }}</span></sc-for></div></div>
+<span style="font-size:14px;font-weight:500;color:{{ n.t2 }};padding:20px 28px 4px">Learn from these apps</span>
+<div style="margin:0 8px;display:flex;flex-direction:column">
+<sc-for list="{{ sheet.rows }}" as="r" hint-placeholder-count="2">
+<div onClick="{{ r.click }}" style="flex:none;min-height:56px;padding:12px 16px;display:flex;align-items:center;gap:16px;border-top:{{ r.bt }};cursor:pointer">
+<span style="flex:1;font-size:16px;line-height:24px">{{ r.t }}</span>
+<span style="position:relative;flex:none;width:52px;height:32px;border-radius:16px;background:{{ r.tg.track }};box-shadow:{{ r.tg.outline }};transition:background-color 200ms cubic-bezier(0.2,0,0,1)"><span style="position:absolute;top:{{ r.tg.top }}px;left:{{ r.tg.left }}px;width:{{ r.tg.size }}px;height:{{ r.tg.size }}px;border-radius:50%;background:{{ r.tg.handle }};color:{{ a.accent }};display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:16px;font-feature-settings:'liga';transition:all 250ms cubic-bezier(0.2,0,0,1)">{{ r.tg.icon }}</span></span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;padding:16px 16px 8px"><sc-for list="{{ sheet.btns }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="flex:1;height:48px;padding:0 24px;border-radius:24px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer">{{ x.t }}</span></sc-for></div>
+<div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:108px;height:4px;border-radius:2px;background:{{ n.t2 }};opacity:.6"></span></div>
+</div></div></sc-if>
+
+<sc-if value="{{ dlg.on }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;z-index:6;background:{{ n.scrim }};display:flex;align-items:center;justify-content:center;padding:0 28px">
+<div style="width:100%;background:{{ n.sheet }};border-radius:28px;padding:24px 24px 20px;display:flex;flex-direction:column;gap:16px">
+<span style="align-self:center;font-family:'Material Symbols Rounded';font-size:24px;color:{{ n.error }};font-feature-settings:'liga'">{{ dlg.ic }}</span>
+<span style="font-size:24px;line-height:32px;text-align:center;text-wrap:pretty">{{ dlg.t }}</span>
+<span style="font-size:14px;line-height:20px;color:{{ n.t2 }};text-wrap:pretty">{{ dlg.s }}</span>
+<div style="display:flex;justify-content:flex-end;gap:8px;padding-top:8px"><sc-for list="{{ dlg.btns }}" as="x" hint-placeholder-count="2"><span onClick="{{ x.click }}" style="height:40px;padding:0 20px;border-radius:20px;background:{{ x.bg }};color:{{ x.fg }};box-shadow:{{ x.ring }};display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer">{{ x.t }}</span></sc-for></div>
+</div></div></sc-if>
+
+<sc-if value="{{ snack.on }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:16px;right:16px;bottom:40px;z-index:6;min-height:48px;border-radius:12px;background:{{ n.inv }};color:{{ n.onInv }};display:flex;align-items:center;gap:12px;padding:0 8px 0 16px;box-shadow:0 4px 12px rgba(0,0,0,.2)"><span style="flex:1;min-width:0;font-size:14px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ snack.t }}</span><span onClick="{{ snack.undo }}" style="height:40px;padding:0 12px;display:flex;align-items:center;font-size:14px;font-weight:600;color:{{ snack.ac }};cursor:pointer">Undo</span></div></sc-if>
+</div>
+</div>
+</div>
+</div>
+<span onClick="{{ reset }}" title="Reset demo" style="position:fixed;right:10px;bottom:10px;width:14px;height:14px;border-radius:50%;background:#46524F;opacity:.12;cursor:pointer;z-index:20" style-hover="opacity:.85"></span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;keyHeight&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;46&quot;,&quot;52&quot;,&quot;58&quot;],&quot;default&quot;:&quot;52&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Keyboard&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Message&quot;,&quot;Onboarding&quot;,&quot;Settings&quot;],&quot;default&quot;:&quot;Message&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;showRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+const N={
+light:{surface:'#F7F9F8',kb:'#E8ECEA',key:'#FFFFFF',pressed:'#C4CDCA',special:'#D2DAD7',space:'#FFFFFF',popup:'#FFFFFF',t1:'#161D1B',t2:'#46524F',divider:'#C9D2CF',error:'#B3261E',onErr:'#FFFFFF',success:'#1F6C3B',shadow:'0 1px 0 rgba(22,29,27,.14)',lift:'0 6px 20px rgba(22,29,27,.16), 0 1px 3px rgba(22,29,27,.12)',inv:'#2B3230',onInv:'#E2E8E6',scrim:'rgba(14,18,17,.32)',sheet:'#FFFFFF'},
+dark:{surface:'#0E1211',kb:'#141918',key:'#2B3230',pressed:'#4D5754',special:'#3A4341',space:'#2B3230',popup:'#3A4341',t1:'#E2E8E6',t2:'#A7B2AF',divider:'#2E3634',error:'#F2B8B5',onErr:'#601410',success:'#8DD5A1',shadow:'0 1px 0 rgba(0,0,0,.45)',lift:'0 8px 24px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4)',inv:'#E2E8E6',onInv:'#161D1B',scrim:'rgba(0,0,0,.55)',sheet:'#2B3230'}};
+const APP={light:{in:'#E8ECEA',out:'#D2DAD7',field:'#FFFFFF',line:'#C9D2CF',av:'#D2DAD7'},dark:{in:'#2B3230',out:'#3A4341',field:'#141918',line:'#2E3634',av:'#3A4341'}};
+const PAL=[
+{id:'hav',name:'Hav',light:{accent:'#0D5C58',on:'#FFFFFF',cont:'#CDEBE6',onCont:'#00201D'},dark:{accent:'#86D4CA',on:'#00332F',cont:'#164A45',onCont:'#CDEBE6'}},
+{id:'fjall',name:'Fjäll',light:{accent:'#36598F',on:'#FFFFFF',cont:'#D8E2FF',onCont:'#0B1C3A'},dark:{accent:'#AAC7FF',on:'#0A2C5C',cont:'#23436F',onCont:'#D8E2FF'}},
+{id:'mossa',name:'Mossa',light:{accent:'#43602C',on:'#FFFFFF',cont:'#D4EBBD',onCont:'#0E2003'},dark:{accent:'#B3D398',on:'#1D3608',cont:'#2E4A1A',onCont:'#D4EBBD'}},
+{id:'lingon',name:'Lingon',light:{accent:'#A02541',on:'#FFFFFF',cont:'#FFD9DD',onCont:'#3F0012'},dark:{accent:'#FFB2BC',on:'#5C0F24',cont:'#7C1D33',onCont:'#FFD9DD'}},
+{id:'barnsten',name:'Bärnsten',light:{accent:'#7F4D00',on:'#FFFFFF',cont:'#FFDDB6',onCont:'#2A1700'},dark:{accent:'#FFB866',on:'#462A00',cont:'#653E00',onCont:'#FFDDB6'}},
+{id:'skymning',name:'Skymning',light:{accent:'#5D4A8C',on:'#FFFFFF',cont:'#E8DDFF',onCont:'#1A0C40'},dark:{accent:'#CEBDFF',on:'#2F1F5B',cont:'#463673',onCont:'#E8DDFF'}}];
+const WALL={id:'wall',name:'Wallpaper',light:{accent:'#6E4A64',on:'#FFFFFF',cont:'#F6D9EC',onCont:'#2A0F22'},dark:{accent:'#DEB8D1',on:'#3F1F36',cont:'#573449',onCont:'#F6D9EC'}};
+const WIN=[[5,8,'barnsten','Dawn'],[8,12,'hav','Morning'],[12,16,'mossa','Afternoon'],[16,19,'lingon','Early evening'],[19,22,'skymning','Dusk'],[22,29,'fjall','Night']];
+const pal=id=>PAL.find(p=>p.id===id);
+const EZ={std:'cubic-bezier(0.2,0,0,1)',dec:'cubic-bezier(0.05,0.7,0.1,1)',accS:'cubic-bezier(0.3,0,1,1)'};
+const PRESS=`transform 50ms ${EZ.accS}, border-radius 50ms ${EZ.accS}, background-color 50ms linear`;
+const REL=`transform 150ms ${EZ.dec}, border-radius 150ms ${EZ.dec}, background-color 150ms linear, color 150ms linear`;
+const THM=`transform 150ms ${EZ.dec}, border-radius 150ms ${EZ.dec}, background-color 300ms ${EZ.std}, color 300ms ${EZ.std}, box-shadow 300ms ${EZ.std}`;
+const ACT=`transform 150ms ${EZ.dec}, border-radius 150ms ${EZ.dec}, background-color 600ms ${EZ.std}, color 600ms ${EZ.std}`;
+const fold=x=>(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’‘]/g,"'");
+const norm=x=>(x||'').replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+const cap1=x=>x?x[0].toUpperCase()+x.slice(1):x;
+const SCN=[
+['Can you send me the',['report','link','file']],['Running 10 minutes',['late','behind','over']],['Thanks for flagging',['this','that','it']],
+['Let’s move the meeting to',['Thursday','tomorrow','3 pm']],['Don’t forget to pick up',['milk','the','Alma']],['Dinner is at',['6','home','seven']],
+['See you',['soon','later','at']],['Hi Elin, I hope you',['are','had','and']],['Best',['regards','wishes',',']],['Buy',['milk','bread','batteries']],
+['Call the dentist about',['Tuesday','my','the']],['Let’s go to Liseberg on',['Saturday','Sunday','Friday']],['Are you joining us for',['fika','lunch','the']],
+['Hi Åsa, the train to Västerås leaves',['at','from','early']],['Meet Johan at',['Järntorget','the','6']]].sort((x,y)=>y[0].length-x[0].length);
+const AC={teh:'the',recieve:'receive',definately:'definitely',im:'I’m',wont:'won’t',tomorow:'tomorrow',seperate:'separate'};
+const LEX=[...new Set('the to and you I a it is in for that of on at me my we be this have can are with so just will get see let do not but your what all about if up out now how was one good love when there time going like know think back here well really today later tonight tomorrow thanks thank yes no hi hey morning meeting meet send sent report link file late lunch dinner home soon behind over flagging Thursday Friday Saturday Sunday Monday Tuesday Wednesday milk bread batteries dentist regards wishes best hope had train leaves early from forget pick call move running minutes joining us afternoon evening works work sounds great sure address number email booking please sorry could would should again office still message I’m'.split(' '))];
+const SV='Järntorget Västerås Liseberg fika Åsa Johan Alma Göteborg Kungsgatan Växjö Åre Malmö Linnégatan Vasagatan Elin Sara hej tack'.split(' ');
+const TRIG=[{trig:'my address is',id:'addr',v:'Kungsgatan 4, 411 19 Göteborg'},{trig:'booking ref',id:'abx',v:'ABX42K'},{trig:'my number',id:'num',v:'070 123 45 67'},{trig:'dentist is at',id:'dent',v:'Tandläkare Norr, Vasagatan 8'},{trig:'email me at',id:'mail',v:'elin.berg@hey.com'}];
+const MEM=[{id:'addr',ic:'home',t:'Home address',s:'Kungsgatan 4, Göteborg'},{id:'abx',ic:'confirmation_number',t:'Booking ABX42K',s:'SAS, Fri 14:20'},{id:'num',ic:'call',t:'Phone number',s:'ends 67'},{id:'dent',ic:'dentistry',t:'Dentist',s:'Vasagatan 8'},{id:'mail',ic:'mail',t:'Email',s:'elin.berg@hey.com'}];
+const MSGS0=[['in','Morning! Quick one about the roadmap review.'],['in','Are we still on for tomorrow at 10?']];
+const NEUTRAL='Hi Elin, I can’t make it to the meeting tomorrow. Can we move it to Thursday afternoon? Let me know if that works.';
+const STYLES=[{habit:'Short sentences',t:'Elin, can’t do tomorrow. Thursday afternoon instead? Tell me if that works.'},{habit:'Casual with friends',t:'Hi Elin! So sorry, tomorrow isn’t going to work for me. Could we shift it to Thursday afternoon instead? Let me know if that suits you, and thanks for being flexible!'},{habit:'More formal in email',t:'Dear Elin, I am unable to attend tomorrow’s meeting. Would it be possible to reschedule to Thursday afternoon? Please let me know whether this suits you. Kind regards,'}];
+const PROOF_SRC='Hi Elin, i cant make it to the meeting tommorow. Can we move it to thursday afternoon? Let me know if that work.';
+const PROOF=['Hi Elin, ',['i','I'],' ',['cant','can’t'],' make it to the meeting ',['tommorow','tomorrow'],'. Can we move it to ',['thursday','Thursday'],' afternoon? Let me know if that ',['work','works'],'.'];
+const TRANSLATE='Hej Elin, jag kan inte komma på mötet i morgon. Kan vi flytta det till torsdag eftermiddag? Säg till om det passar.';
+const REPLIES=['Yes, see you at 10!','Tomorrow’s tricky for me. Could we do Thursday afternoon instead?','Running behind this week. Can we move it to Thursday?'];
+const TGD={learn:true,memory:true,sv:true,restore:true,aaRow:false,rewrite:true,proof:true,voice:true,autofill:true,codes:true,apWa:true,apMsg:true};
+const SETTINGS=['home','typing','ai','style','privacy','look','pw','about'];
+const T=o=>({k:'top',...o}),H=(t,s,o)=>({k:'h',t,s,...o}),LB=t=>({k:'lbl',t}),G=rows=>({k:'grp',rows}),R=(t,s,tr,o)=>({t,s,tr,...o}),SP=h=>({k:'sp',h}),FL={k:'fl'},B=items=>({k:'btns',items}),NOTE=(ic,t)=>({k:'note',ic,t}),DOTS=i=>({k:'dots',on:i});
+
+class Component extends DCLogic {
+  state=this.init();
+  msgRef=React.createRef();
+  init(){
+    const st=(this.props&&this.props.startScreen)||'Message';
+    const scr={Message:'chat',Onboarding:'onb1',Settings:'home'}[st]||'chat';
+    return {screen:scr,hist:[],fields:{chat:'',practice:'',email:'',pw:'',code:''},msgs:MSGS0.slice(),shift:'on',sym:false,pressed:null,pop:null,undo:null,autoSpace:false,ai:null,
+      mode:'light',dyn:false,acc:'hav',rot:false,tg:{...TGD},q:'',mem:MEM.slice(),sw:null,snack:null,dlg:null,sheet:false,expiry:60,tone:0,picked:false,
+      focus:'email',notif:false,code:null,codeOk:false,dl:scr==='onb1'?540:870,dlPause:false,now:Date.now(),animT:0,zoom:1};
+  }
+  componentDidMount(){
+    this.fit=()=>this.setState({zoom:Math.min(1,Math.max(.5,(window.innerHeight-48)/939))});this.fit();
+    window.addEventListener('resize',this.fit);
+    this.kd=e=>this.onKey(e);window.addEventListener('keydown',this.kd);
+    this.iv=setInterval(()=>this.tick(),500);
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.fit);window.removeEventListener('keydown',this.kd);clearInterval(this.iv);this.clearTimers()}
+  componentDidUpdate(pp,ps){if(ps.msgs!==this.state.msgs||ps.screen!==this.state.screen){const el=this.msgRef.current;if(el)el.scrollTop=el.scrollHeight}}
+  clearTimers(){[this.lp,this.aiT,this.autoT,this.nt,this.st,this.fl,this.ct].forEach(clearTimeout);clearInterval(this.rep)}
+  reset(){this.clearTimers();const z=this.state.zoom;this.setState({...this.init(),zoom:z})}
+  tick(){const s=this.state,now=Date.now(),o={now};
+    if(s.dl<870&&!s.dlPause)o.dl=Math.min(870,s.dl+5);
+    if(s.code&&!s.code.gone&&now>=s.code.exp)o.code={...s.code,gone:now};
+    if(s.code&&s.code.gone&&now-s.code.gone>2000)o.code=null;
+    this.setState(o)}
+  // ---------- navigation
+  go(x,extra,fresh){const s=this.state;this.stopAuto();clearTimeout(this.nt);
+    const o={screen:x,hist:fresh?[]:[...s.hist,s.screen],ai:null,pop:null,sym:false,sheet:false,dlg:null,pressed:null,undo:null,...extra};
+    if(x==='login'){o.focus='email'}
+    if(x==='code'){o.fields={...s.fields,code:''};o.codeOk=false;o.code=null;o.notif=false;this.nt=setTimeout(()=>this.setState({notif:true}),1200)}
+    if(x==='chat'||x==='onb5'){const f=x==='chat'?'chat':'practice';const t=(o.fields||s.fields)[f];o.shift=!t?'on':'off'}
+    this.setState(o)}
+  back(){const s=this.state;if(s.hist.length){const h=s.hist;this.go(h[h.length-1],{hist:h.slice(0,-1)});return}
+    const m=s.screen.match(/^onb(\d)/);if(m&&m[1]>1){this.go('onb'+(m[1]-1),{},true);return}
+    if(s.screen==='code'){this.go('login',{},true);return}
+    if(s.screen!=='home')this.go('home',{},true)}
+  setLook(o){this.setState({...o,animT:Date.now()})}
+  getT(k){const s=this.state;return k==='dyn'?s.dyn:k==='rot'?s.rot:!!s.tg[k]}
+  flip(k){if(k==='dyn')return this.setLook({dyn:!this.state.dyn,rot:false});if(k==='rot')return this.setLook({rot:!this.state.rot,dyn:false});this.setState(s=>({tg:{...s.tg,[k]:!s.tg[k]}}))}
+  pal(){const s=this.state;if(s.rot){const h=new Date().getHours();const w=WIN.find(([x,y])=>(h>=x&&h<y)||(h+24>=x&&h+24<y));return pal(w[2])}return s.dyn?WALL:pal(s.acc)}
+  toast(t,undo){clearTimeout(this.st);this.setState({snack:{t,undo}});this.st=setTimeout(()=>this.setState({snack:null}),5000)}
+  // ---------- text engine
+  target(){const s=this.state;return s.screen==='chat'?'chat':s.screen==='onb5'?'practice':s.screen==='login'?s.focus:(s.screen==='code'&&!s.codeOk)?'code':null}
+  autocap(t,tg,cur){if(cur==='caps')return 'caps';return (tg==='chat'||tg==='practice')&&/(^|[.!?]\s)$/.test(t)?'on':'off'}
+  type(ch){const s=this.state,tg=this.target();if(!tg)return;let t=s.fields[tg]||'';
+    if(tg==='code'){if(!/\d/.test(ch)||t.length>=6)return;t+=ch;this.setState({fields:{...s.fields,code:t}});if(t.length===6)this.codeDone();return}
+    const smart=tg==='chat'||tg==='practice',punct=/[.,!?]/.test(ch);let undo=null;
+    if(smart&&/[\s.,!?]/.test(ch)){const m=t.match(/(\S+)$/);
+      if(m){const w=m[1],lw=w.toLowerCase();let fix=AC[lw];
+        if(lw==='wont'){const prev=t.slice(0,-w.length).trim().split(/\s+/).pop()||'';if(prev.toLowerCase()!=='i')fix=null}
+        if(fix){if(w[0]!==w[0].toLowerCase())fix=cap1(fix);const start=t.length-w.length;t=t.slice(0,start)+fix;undo={start,orig:w,fix}}}}
+    if(punct&&s.autoSpace&&t.endsWith(' '))t=t.slice(0,-1);
+    t+=ch;if(punct&&s.autoSpace)t+=' ';
+    this.setState({fields:{...s.fields,[tg]:t},undo,autoSpace:false,shift:this.autocap(t,tg,s.shift),pop:null})}
+  bksp(){const s=this.state,tg=this.target();if(!tg)return;let t=s.fields[tg]||'';if(!t)return;
+    const u=s.undo;
+    if(u&&t.length===u.start+u.fix.length+1){t=t.slice(0,u.start)+u.orig;this.setState({fields:{...s.fields,[tg]:t},undo:null,shift:'off'});return}
+    t=[...t].slice(0,-1).join('');
+    this.setState({fields:{...s.fields,[tg]:t},undo:null,autoSpace:false,shift:this.autocap(t,tg,s.shift)})}
+  enter(){const s=this.state,tg=this.target();
+    if(tg==='chat'){this.send();return}
+    if(tg==='email'){this.setState({focus:'pw'});return}
+    if(tg==='pw'){this.signIn();return}}
+  send(){const s=this.state,t=(s.fields.chat||'').trim();if(!t)return;this.setState({msgs:[...s.msgs,['out',t]],fields:{...s.fields,chat:''},undo:null,ai:null,shift:'on',autoSpace:false})}
+  pick(w){if(!w)return;const s=this.state,tg=this.target();let t=s.fields[tg]||'';
+    if(/^[,.!?]$/.test(w))t=t.replace(/\s+$/,'')+w+' ';
+    else{if(t&&!/\s$/.test(t))t=t.replace(/(\S+)$/,'');t+=w+' '}
+    this.setState({fields:{...s.fields,[tg]:t},undo:null,autoSpace:true,shift:this.autocap(t,tg,s.shift)})}
+  pickMem(v){const s=this.state,tg=this.target();let t=s.fields[tg]||'';if(t&&!/\s$/.test(t))t+=' ';t+=v;this.setState({fields:{...s.fields,[tg]:t},undo:null,autoSpace:false,shift:'off'})}
+  undoFix(){const s=this.state,u=s.undo,tg=this.target();if(!u)return;const t=s.fields[tg];this.setState({fields:{...s.fields,[tg]:t.slice(0,u.start)+u.orig+t.slice(u.start+u.fix.length)},undo:null})}
+  predict(t){const s=this.state,sv=s.tg.sv,rs=sv&&s.tg.restore;
+    if(!t||/\s$/.test(t)){const ft=fold(t).trim();
+      if(s.tg.memory)for(const x of TRIG){if(ft.endsWith(x.trig)&&s.mem.some(m=>m.id===x.id))return {mem:x}}
+      if(ft)for(const [ty,sg] of SCN){if(ft.endsWith(fold(ty)))return {sugs:sg}}
+      return {sugs:(!ft||/[.!?]$/.test(ft))?['I','Thanks','Hi']:['the','and','to']}}
+    const w=t.match(/(\S+)$/)[1],lw=w.toLowerCase(),fw=fold(w),up=w[0]!==w[0].toLowerCase();
+    const match=x=>rs?fold(x).startsWith(fw):x.toLowerCase().startsWith(lw);
+    const eq=x=>rs?fold(x)===fw:x.toLowerCase()===lw;
+    const lex=sv?LEX.concat(SV):LEX;
+    const c=[...new Set([...(AC[lw]?[AC[lw]]:[]),...lex.filter(eq),...LEX.filter(match),...(sv?SV.filter(match):[])])].map(x=>up&&/^[a-zåäö]/.test(x)?cap1(x):x);
+    const prim=c[0]||w;const others=c.filter(x=>x!==prim);
+    return {sugs:[prim,prim===w?(others[0]||''):w,prim===w?(others[1]||''):(others[0]||'')],typedLeft:prim!==w}}
+  preSel(base){if(base==='o')return 'ö';const t=this.state.fields[this.target()]||'';const m=t.match(/(\S+)$/);const p=m?fold(m[1]):'';
+    if(p){for(const x of SV){if(fold(x).startsWith(p+'a')&&x.length>p.length){const ch=x[p.length].toLowerCase();if(ch==='å'||ch==='ä')return ch}}}
+    return 'å'}
+  // ---------- keys
+  down(d,e){if(e){e.preventDefault();try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}}
+    this.stopAuto();clearTimeout(this.lp);clearInterval(this.rep);this.setState({pressed:d.id});
+    if(d.alts)this.lp=setTimeout(()=>this.setState({pop:{id:d.id,alts:d.alts,sel:this.preSel(d.base)}}),300);
+    if(d.act==='bksp'){this.bksp();this.lp=setTimeout(()=>{this.rep=setInterval(()=>this.bksp(),70)},450)}}
+  up(d){clearTimeout(this.lp);clearInterval(this.rep);const s=this.state;if(s.pressed!==d.id)return;
+    if(s.pop&&s.pop.id===d.id){const c=s.shift!=='off'?s.pop.sel.toUpperCase():s.pop.sel;this.setState({pressed:null});this.type(c);return}
+    this.setState({pressed:null});if(d.act!=='bksp')this.act(d)}
+  move(e){const p=this.state.pop;if(!p)return;const el=document.elementFromPoint(e.clientX,e.clientY);const c=el&&el.closest&&el.closest('[data-alt]');
+    if(c){const v=c.getAttribute('data-alt').toLowerCase();if(v!==p.sel)this.setState({pop:{...p,sel:v}})}}
+  cancel(){clearTimeout(this.lp);clearInterval(this.rep);this.setState({pressed:null,pop:null})}
+  act(d){const s=this.state;
+    switch(d.act){
+      case 'shift':{const now=Date.now();if(s.shift==='caps')this.setState({shift:'off'});else if(now-(this.lastShift||0)<300)this.setState({shift:'caps'});else this.setState({shift:s.shift==='on'?'off':'on'});this.lastShift=now;break}
+      case 'sym':this.setState({sym:!s.sym});break;
+      case 'enter':this.enter();break;
+      case 'space':this.type(' ');break;
+      default:this.type(d.ch)}}
+  onKey(e){const tn=e.target&&e.target.tagName;if(tn==='INPUT'||tn==='TEXTAREA')return;if(e.metaKey||e.ctrlKey||e.altKey)return;if(!this.target()||this.state.ai)return;
+    let id;if(e.key==='Backspace'){this.bksp();id='bksp'}else if(e.key==='Enter'){this.enter();id='enter'}else if(e.key.length===1){this.type(e.key);id=e.key===' '?'space':(this.target()==='code'?'n'+e.key:'k_'+fold(e.key))}else return;
+    e.preventDefault();this.flash(id)}
+  flash(id){this.setState({pressed:id});clearTimeout(this.fl);this.fl=setTimeout(()=>this.setState(st=>st.pressed===id?{pressed:null}:null),90)}
+  stopAuto(){clearTimeout(this.autoT)}
+  auto(str){this.stopAuto();const s=this.state;if(s.screen!=='chat')this.go('chat',{fields:{...s.fields,chat:''}},true);else this.setState({fields:{...s.fields,chat:''},ai:null,undo:null,shift:'on',hist:[]});
+    const chars=[...str];let i=0;
+    const step=()=>{if(i>=chars.length){this.setState({pressed:null});return}const c=chars[i++];const f=fold(c);const id=c===' '?'space':/[a-z]/.test(f)?'k_'+f:null;this.setState({pressed:id});this.type(c);
+      this.autoT=setTimeout(()=>{this.setState({pressed:null});this.autoT=setTimeout(step,35)},55)};
+    this.autoT=setTimeout(step,300)}
+  // ---------- login + code
+  fillLogin(){const s=this.state;this.setState({fields:{...s.fields,email:'elin.berg@hey.com',pw:'fika-demo-2026'},focus:'pw'})}
+  signIn(){const s=this.state;if(s.fields.email&&s.fields.pw)this.go('code')}
+  copyCode(){const s=this.state;this.setState({notif:false,code:s.tg.codes?{exp:Date.now()+s.expiry*1000,total:s.expiry,gone:0}:null})}
+  fillCode(){const s=this.state;this.setState({code:null,fields:{...s.fields,code:''}});[...'482913'].forEach((d,i)=>{setTimeout(()=>this.setState(st=>st.fields.code.length===i?{fields:{...st.fields,code:st.fields.code+d}}:null),80*(i+1))});this.ct=setTimeout(()=>this.codeDone(),80*7)}
+  codeDone(){clearTimeout(this.ct);this.ct=setTimeout(()=>this.setState({codeOk:true}),250)}
+  // ---------- AI
+  openAI(){const s=this.state;if(s.ai){this.setState({ai:null});return}
+    const t=norm(s.fields[this.target()]);
+    if(s.dl<870){this.setState({ai:{tool:null,phase:'dl'}});return}
+    if(!t){this.setState({ai:{tool:null,phase:'empty'}});return}
+    this.run(t===norm(PROOF_SRC)?'proof':'rewrite',0)}
+  run(tool,idx){const s=this.state,t=norm(s.fields[this.target()]),prev=s.ai&&s.ai.prev!=null?s.ai.prev:null;
+    if(s.dl<870){this.setState({ai:{tool,phase:'dl'}});return}
+    const src=norm(tool==='proof'?PROOF_SRC:NEUTRAL);
+    const ok=tool==='reply'||t===src||(prev!=null&&norm(prev)===src);
+    if(!ok){this.setState({ai:{tool,phase:t?'demo':'empty'}});return}
+    this.setState({ai:{tool,phase:'loading',idx:idx||0,prev,done:false}});
+    clearTimeout(this.aiT);this.aiT=setTimeout(()=>this.setState(st=>st.ai&&st.ai.phase==='loading'?{ai:{...st.ai,phase:'result'}}:null),900)}
+  useDemo(){const s=this.state,tool=(s.ai&&s.ai.tool)||'rewrite',tg=this.target();this.setState({fields:{...s.fields,[tg]:tool==='proof'?PROOF_SRC:NEUTRAL},ai:{tool,phase:'loading',idx:0,prev:null},undo:null});setTimeout(()=>this.run(tool==='reply'?'rewrite':tool,0),20)}
+  aiOut(){const ai=this.state.ai;return ai.tool==='rewrite'?STYLES[ai.idx].t:ai.tool==='translate'?TRANSLATE:ai.tool==='proof'?NEUTRAL:REPLIES[ai.idx]}
+  replace(){const s=this.state,tg=this.target(),out=this.aiOut();this.setState({fields:{...s.fields,[tg]:out},ai:{...s.ai,prev:s.ai.prev!=null?s.ai.prev:(s.fields[tg]||''),done:true},undo:null,shift:'off'})}
+  undoAI(){const s=this.state,tg=this.target();this.setState({fields:{...s.fields,[tg]:s.ai.prev},ai:{...s.ai,prev:null,done:false}})}
+  step(d){const ai=this.state.ai;this.run(ai.tool,((ai.idx||0)+d+3)%3)}
+  demoAI(tool){this.stopAuto();const s=this.state;this.setState({screen:'chat',hist:[],fields:{...s.fields,chat:tool==='reply'?'':tool==='proof'?PROOF_SRC:NEUTRAL},undo:null,pop:null,sym:false,ai:null,sheet:false,dlg:null});setTimeout(()=>this.run(tool,0),40)}
+  // ---------- settings helpers
+  delMem(id){const prev=this.state.mem,it=prev.find(x=>x.id===id);this.setState({mem:prev.filter(x=>x.id!==id),sw:null});this.toast('Deleted “'+it.t+'”',()=>this.setState({mem:prev,snack:null}))}
+  delAll(){const prev=this.state.mem;this.setState({mem:[],dlg:null,sw:null});this.toast('All learned data deleted',()=>this.setState({mem:prev,snack:null}))}
+  // ---------- builders
+  key(d){const s=this.state,n=this.n,a=this.a,pr=s.pressed===d.id,kind=d.kind;
+    if(kind==='sp')return {label:'',icon:'',icd:'none',fill:0,flex:.5,h:this.kh,r:0,sc:1,bg:'transparent',fg:'transparent',shadow:'none',trans:'none',fs:0,cur:'default',prev:false,pop:false,popCells:[],down:null,up:null,move:null,cancel:null};
+    let bg=kind==='letter'||kind==='space'?n.key:n.special,fg=n.t1,shadow=n.shadow,icon=d.icon||'',fill=0,trans=pr?PRESS:this.anim?THM:REL;
+    if(kind==='enter'){bg=a.accent;fg=a.on;shadow='none';trans=ACT}
+    if(kind==='shift'&&s.shift==='on'){bg=a.cont;fg=a.onCont;fill=1;shadow='none';trans=pr?PRESS:ACT}
+    if(kind==='shift'&&s.shift==='caps'){bg=a.accent;fg=a.on;icon='keyboard_capslock';shadow='none';trans=pr?PRESS:ACT}
+    if(pr&&kind!=='enter'){bg=n.pressed;shadow='none'}
+    const pop=!!(s.pop&&s.pop.id===d.id),upc=s.shift!=='off';
+    return {label:d.label||'',icon,icd:icon?'inline':'none',fill,flex:d.flex||1,h:this.kh,r:pr?16:12,sc:pr?.96:1,bg,fg,shadow,trans,fs:d.fs||22,cur:'pointer',gc:d.gc,gr:d.gr,
+      prev:pr&&kind==='letter'&&!pop&&!d.noPrev,pop,
+      popCells:pop?s.pop.alts.map(c=>({t:upc?c.toUpperCase():c,bg:c===s.pop.sel?a.accent:'transparent',fg:c===s.pop.sel?a.on:n.t1})):[],
+      popL:d.base==='a'?'-6px':'50%',popTf:d.base==='a'?'none':'translateX(-50%)',
+      down:e=>this.down(d,e),up:()=>this.up(d),move:e=>this.move(e),cancel:()=>this.cancel()}}
+  liveRows(enterIcon){const s=this.state,upc=s.shift!=='off';
+    const L=str=>[...str].map(ch=>{const c=upc?ch.toUpperCase():ch;return this.key({id:'k_'+ch,label:c,ch:c,kind:'letter',alts:ch==='a'?['å','ä']:ch==='o'?['ö']:null,base:ch})});
+    const Sy=str=>[...str].map(ch=>this.key({id:'y_'+ch,label:ch,ch,kind:'letter'}));
+    const sp=this.key({kind:'sp'});
+    const bk=this.key({id:'bksp',icon:'backspace',kind:'special',act:'bksp',flex:1.5});
+    const last=[this.key({id:'sym',label:s.sym?'ABC':'?123',kind:'special',act:'sym',flex:1.5,fs:14}),this.key({id:'comma',label:',',ch:',',kind:'special'}),this.key({id:'space',kind:'space',act:'space',flex:5}),this.key({id:'dot',label:'.',ch:'.',kind:'special'}),this.key({id:'enter',icon:enterIcon,kind:'enter',act:'enter',flex:1.5})];
+    if(s.sym)return [{keys:Sy('1234567890')},{keys:Sy('@#€_&-+()/')},{keys:[this.key({id:'y_~',label:'~',ch:'~',kind:'special',flex:1.5}),...Sy('*"\':;!?'),bk]},{keys:last}];
+    return [{keys:L('qwertyuiop')},{keys:[sp,...L('asdfghjkl'),sp]},{keys:[this.key({id:'shift',icon:'shift',kind:'shift',act:'shift',flex:1.5}),...L('zxcvbnm'),bk]},{keys:last}]}
+  numKeys(){const K=(d,gc,gr,x)=>this.key({id:'n'+d,label:d,ch:d,kind:'letter',fs:24,gc,gr,noPrev:1,...(x||{})});
+    return [K('1',1,1),K('2',2,1),K('3',3,1),this.key({id:'bksp',icon:'backspace',kind:'special',act:'bksp',gc:4,gr:1}),K('4',1,2),K('5',2,2),K('6',3,2),this.key({id:'space',icon:'space_bar',kind:'special',act:'space',gc:4,gr:2}),K('7',1,3),K('8',2,3),K('9',3,3),this.key({id:'enter',icon:'keyboard_return',kind:'enter',act:'enter',gc:4,gr:'3 / span 2'}),K(',',1,4,{kind:'special',fs:20}),K('0',2,4),K('.',3,4,{kind:'special',fs:20})]}
+  staticRows(n,a){const kh=44,fs=19,tr=this.anim?THM:REL;
+    const K=(label,x)=>Object.assign({label,icon:'',icd:'none',flex:1,bg:n.key,fg:n.t1,fs,shadow:n.shadow,h:kh,trans:tr},x||{});
+    const S=(icon,x)=>K('',Object.assign({icon,icd:'inline',bg:n.special},x||{}));
+    const sp={label:'',icon:'',icd:'none',flex:.5,bg:'transparent',fg:'transparent',shadow:'none',h:kh,fs:0,trans:'none'};
+    const L=t=>[...t].map(c=>K(c));
+    return [{keys:L('qwertyuiop')},{keys:[sp,...L('asdfghjkl'),sp]},{keys:[S('shift',{flex:1.5}),...L('zxcvbnm'),S('backspace',{flex:1.5})]},
+      {keys:[K('?123',{flex:1.5,bg:n.special,fs:13}),K(',',{bg:n.special}),K('',{flex:5,bg:n.space}),K('.',{bg:n.special}),S('keyboard_return',{flex:1.5,bg:a.accent,fg:a.on,shadow:'none',trans:ACT})]}]}
+  screenBlocks(){const s=this.state,learn=s.tg.learn,w=WIN.find(([x,y])=>{const h=new Date().getHours();return (h>=x&&h<y)||(h+24>=x&&h+24<y)});
+    const apName=s.rot?'time of day':s.dyn?'Wallpaper':pal(s.acc).name,modeName={light:'Light',dark:'Dark',system:'System'}[s.mode];
+    const go=x=>()=>this.go(x);
+    switch(s.screen){
+    case 'onb1':return [SP(64),{k:'logo'},SP(28),H('Tyst','A keyboard that learns how you write and never goes online.',{center:1}),FL,LB('What Tyst can access'),G([R('Internet','Not requested','none',{ic:'wifi_off',icC:'success'}),R('Microphone','Asks the first time you use voice typing','none',{ic:'mic'})]),SP(8),B([{t:'Get started',kind:'fill',flex:1,act:go('onb2')}]),DOTS(0)];
+    case 'onb2':return [T({step:'2 of 5'}),H('Turn on Tyst','Two quick steps in Android settings. Each one ticks off when you come back.'),G([R('Enable Tyst','Done','none',{ic:'check_circle',icC:'success'}),R('Choose Tyst as your keyboard',s.picked?'Done':'Opens the keyboard picker',s.picked?'none':'chev',{ic:s.picked?'check_circle':'radio_button_unchecked',icC:s.picked?'success':'',act:()=>this.setState({picked:true})})]),SP(16),NOTE('info','Android warns that keyboards can collect what you type. Every keyboard gets this warning. Tyst keeps everything on this phone.'),FL,B([s.picked?{t:'Continue',kind:'fill',flex:1,act:go('onb3')}:{t:'Open keyboard picker',kind:'fill',flex:1,act:()=>this.setState({picked:true})}]),DOTS(1)];
+    case 'onb3':return [T({step:'3 of 5'}),H('Everything you type stays on this phone.','Tyst has no internet permission, so there is no way for it to send what you write anywhere.'),LB('You choose what it learns'),G([R('Learn my writing style','From messages you send. Turn off any time.','tog',{key:'learn',ic:'signature'}),R('Private memory','Remembers addresses and booking codes you type. Off until you turn it on.','tog',{key:'memory',ic:'lock'})]),SP(16),NOTE('verified_user','Check it yourself: Android Settings › Apps › Tyst › Permissions.'),FL,B([{t:'Continue',kind:'fill',flex:1,act:go('onb4')}]),DOTS(2)];
+    case 'onb4':return [T({step:'4 of 5'}),H('Pick a look','Change it any time in Settings.'),{k:'kbp'},SP(16),{k:'seg',key:'mode'},SP(8),G([R('Match wallpaper','Takes the accent from your wallpaper','tog',{key:'dyn',ic:'wallpaper'})]),SP(12),{k:'sw'},FL,B([{t:'Continue',kind:'fill',flex:1,act:go('onb5')}]),DOTS(3)];
+    case 'onb5':return [T({step:'5 of 5'}),H('You’re set','Try it below. Writing tools switch on when the model finishes downloading.'),{k:'field',t:'Practice'},SP(16),{k:'prog',t:'Writing model',s:s.dl+' of 870 MB · keeps going in the background',v:Math.round(s.dl/870*100)},SP(4),B([{t:'Done',kind:'fill',flex:1,act:()=>this.go('home',{},true)}])];
+    case 'home':return [T({back:false,act:'search'}),H('Tyst'),{k:'status',ic:'keyboard',t:'Tyst is your keyboard',s:'Writing model ready · learning '+(learn?'on':'paused'),badge:'On device'},
+      G([R('Typing & dictionaries','English · Swedish words '+(s.tg.sv?'on':'off'),'chev',{ic:'keyboard_keys',go:'typing'}),R('AI features','Rewrite, Proofread, Voice','chev',{ic:'auto_awesome',go:'ai'}),R('My style',learn?'Learning · 4 habits':'Paused','chev',{ic:'signature',go:'style'}),R('Privacy & memory',s.mem.length+' remembered items','chev',{ic:'shield_lock',go:'privacy'}),R('Passwords & codes','NordPass · copied codes','chev',{ic:'key',go:'pw'}),R('Appearance',modeName+' · '+apName,'chev',{ic:'palette',go:'look'}),R('About','Version 0.1.0','chev',{ic:'info',go:'about'})])];
+    case 'typing':return [T({}),H('Typing & dictionaries'),LB('Languages'),G([R('English','Main language for autocorrect and predictions','check',{ic:'language'}),R('Swedish words','Recognise Swedish names and words in English','tog',{key:'sv',ic:'translate'}),R('Restore å ä ö',s.tg.sv?'Suggest Västerås when you type Vasteras':'Turn on Swedish words to use this.','tog',{key:'restore',ic:'spellcheck',dep:'sv'})]),LB('Typing'),G([R('Autocorrect','','val',{v:'Medium',ic:'auto_fix_high'}),R('Show å ä ö row','A small row above the letters','tog',{key:'aaRow',ic:'keyboard'}),R('Personal dictionary','142 words, 24 of them Swedish','chev',{ic:'menu_book'}),R('Never correct','fika, Järntorget and 12 more','chev',{ic:'block'})]),SP(16)];
+    case 'ai':return [T({}),H('AI features','Everything runs on this phone, so it works offline.'),{k:'meter'},LB('Tools'),G([R('Rewrite in my style','Rewrites selected text the way you usually write','tog',{key:'rewrite',ic:'signature'}),R('Proofread','Finds spelling and grammar slips, one at a time','tog',{key:'proof',ic:'spellcheck'}),R('Voice typing','Speech to text without a network','tog',{key:'voice',ic:'mic'}),R('Translate','English ↔ Swedish','badge',{bd:'Later',ic:'translate',dis:1}),R('Reply','Draft a reply to copied text','badge',{bd:'Later',ic:'reply',dis:1})]),SP(16)];
+    case 'style':return [T({act:'more_vert'}),H('My style','What Tyst has learned from how you write.'),
+      G([R('Learn my style',learn?'From 1,240 messages you sent since August':'Paused. What it learned so far is kept.','tog',{key:'learn',ic:'signature'})]),
+      LB('How you write'),G([R('Short sentences','Slack, Messages','edit',{ic:'short_text'}),R('Casual with friends','WhatsApp, Messages','edit',{ic:'mood',act:()=>this.setState({sheet:true})}),R('More formal in email','Gmail','edit',{ic:'mail'}),R('Digits for times','“at 6” rather than “at six”','edit',{ic:'schedule'})]),
+      LB('Phrases you use often'),{k:'chips',items:['Hej hej','Sounds good','Talk soon','No worries','Thanks for flagging']},FL,
+      B([{t:learn?'Pause learning':'Resume learning',kind:'out',flex:1,act:()=>this.flip('learn')},{t:'Reset my style',kind:'dangerText',flex:1,act:()=>this.setState({dlg:'reset'})}])];
+    case 'privacy':return [T({}),H('Privacy & memory'),G([R('Internet access','Not requested. Nothing leaves this phone.','none',{ic:'wifi_off',icC:'success'}),R('Private memory',s.tg.memory?'Remembers things you type, like addresses':'Paused. Saved items are kept.','tog',{key:'memory',ic:'lock'})]),
+      LB('Remembered · '+s.mem.length),{k:'search'},{k:'mem'},FL,B([{t:'Delete all learned data',kind:'dangerOut',flex:1,act:()=>this.setState({dlg:'delAll'})}])];
+    case 'look':return [T({}),H('Appearance'),{k:'kbp'},SP(16),{k:'seg',key:'mode'},LB('Accent'),G([R('Match wallpaper','Uses colours from your wallpaper','tog',{key:'dyn',ic:'wallpaper'})]),SP(12),{k:'sw'},SP(4),G([R('Change with the time of day',s.rot?'Now: '+w[3].toLowerCase()+' · '+pal(w[2]).name:'Six palettes through the day','tog',{key:'rot',ic:'schedule'})]),SP(16)];
+    case 'pw':return [T({}),H('Passwords & codes'),LB('Passwords'),G([R('Show password suggestions','From your password manager, above the keys','tog',{key:'autofill',ic:'key'}),R('Password manager','NordPass · change in Android settings','ext',{ic:'passkey',dep:'autofill'})]),LB('Verification codes'),G([R('Show copied codes','A code you copy appears above the keys','tog',{key:'codes',ic:'sms'})]),SP(16),{k:'seg',key:'expiry',label:'Hide a copied code after',dep:'codes'},SP(20),NOTE('lock','Tyst doesn’t save passwords. They come from NordPass through Android. A code only appears after you copy it.'),SP(16)];
+    case 'about':return [T({}),H('About'),{k:'status',ic:'keyboard',t:'Tyst 0.1.0',s:'Android 17 · Pixel 10 Pro',badge:'No network permission',wifi:1},LB('Models on this phone'),G([R('Writing model','870 MB','val',{v:'v1.2',ic:'neurology'}),R('Voice model','120 MB','val',{v:'v1.0',ic:'mic'}),R('Prediction model','24 MB','val',{v:'v1.4',ic:'keyboard'}),R('Swedish word list','6 MB','val',{v:'v1',ic:'translate'})]),LB('More'),G([R('Privacy policy','','chev',{ic:'policy'}),R('Open-source licences','','chev',{ic:'description'}),R('Share usage stats file','You choose where it goes','chev',{ic:'ios_share'})]),SP(16)];
+    }
+    return []}
+  renderVals(){
+    const s=this.state,m=s.mode==='dark'?'dark':'light',n=N[m],P=this.pal(),a=P[m],app=APP[m];
+    this.n=n;this.a=a;this.kh=Number(this.props.keyHeight??52);this.anim=Date.now()-s.animT<700;
+    const scr=s.screen,isChat=scr==='chat',isLogin=scr==='login',isCode=scr==='code',isApp=!isChat&&!isLogin&&!isCode;
+    const tg=this.target(),smart=tg==='chat'||tg==='practice',kbVisible=!!tg;
+    const C=k=>k==='success'?n.success:k==='accent'?a.accent:k==='error'?n.error:n.t2;
+    const KB={fill:{bg:a.accent,fg:a.on,ring:'none'},out:{bg:'transparent',fg:n.t1,ring:'inset 0 0 0 1px '+n.divider},text:{bg:'transparent',fg:a.accent,ring:'none'},dangerText:{bg:'transparent',fg:n.error,ring:'none'},dangerOut:{bg:'transparent',fg:n.error,ring:'inset 0 0 0 1px '+n.error},dangerFill:{bg:n.error,fg:n.onErr,ring:'none'}};
+    const btn=x=>({t:x.t,...KB[x.kind||'fill'],flex:x.flex?'1':'none',click:x.act||null,ml:x.ml||'0'});
+    const tog=on=>on?{track:a.accent,outline:'none',top:4,left:24,size:24,handle:a.on,icon:'check'}:{track:n.special,outline:'inset 0 0 0 2px '+n.t2,top:8,left:8,size:16,handle:n.t2,icon:''};
+    const segItems=(opts,val,set,dis)=>opts.map(([t,v])=>{const on=v===val;return {t,bg:on?a.cont:'transparent',fg:on?a.onCont:n.t1,ckD:on?'inline':'none',click:dis?null:()=>set(v)}});
+    // field segments
+    const segsFor=key=>{const t=s.fields[key]||'',u=s.undo;
+      if(key==='chat'&&s.ai&&t)return [{t,bg:a.cont,deco:'none'}];
+      if(u&&tg===key&&t.length>=u.start+u.fix.length)return [{t:t.slice(0,u.start),bg:'transparent',deco:'none'},{t:u.fix,bg:'transparent',deco:'underline'},{t:t.slice(u.start+u.fix.length),bg:'transparent',deco:'none'}];
+      return [{t,bg:'transparent',deco:'none'}]};
+    // strip
+    const st={panel:!!s.ai&&smart,ai:false,preds:false,mem:false,fill:false,code:false,gone:false};
+    let sugs=[],mem={t:'',click:null},code={sub:'',off:0,op:1,c:a.accent,click:null};
+    if(!st.panel&&smart){st.ai=true;const p=this.predict(s.fields[tg]||'');
+      if(p.mem){st.mem=true;mem={t:p.mem.v,click:()=>this.pickMem(p.mem.v)}}
+      else{st.preds=true;let L=p.sugs;const capNext=s.shift==='on'&&(!s.fields[tg]||/\s$/.test(s.fields[tg]));if(capNext)L=L.map(x=>/^[a-z]/.test(x)?cap1(x):x);
+        const disp=[{t:L[1],fw:400},{t:L[0],fw:600},{t:L[2],fw:400}].map((x,i)=>({...x,deco:'none',bl:i?n.divider:'transparent',click:()=>this.pick(x.t)}));
+        if(s.undo){disp[0]={t:'Undo “'+s.undo.orig+'”',fw:400,deco:'underline',bl:'transparent',click:()=>this.undoFix()}}
+        sugs=disp}}
+    else if(isLogin&&s.tg.autofill)st.fill=true;
+    else if(isCode){if(s.code&&!s.code.gone){st.code=true;const left=Math.max(0,Math.ceil((s.code.exp-s.now)/1000)),fr=left/s.code.total;code={sub:'Copied code · hides in '+left+' s',off:(56.55*(1-fr)).toFixed(2),op:(.35+.65*fr).toFixed(2),c:left<30&&s.code.total>30?n.error:a.accent,click:()=>this.fillCode()}}else if(s.code&&s.code.gone)st.gone=true}
+    const bodyH=4*this.kh+30;
+    // AI panel
+    let ai={dotC:n.success,head:'On device',isLoad:false,isMsg:false,isRes:false,btns:[],segs:[],badge:'',bIc:'',tile:'',t:'',s:'',pD:'none',pct:'0%',stepD:'none',stepLbl:'',bBg:'transparent',bFg:n.t2,bRing:'none',prevS:null,nextS:null};
+    let aiChips=[];
+    if(st.panel){const A=s.ai,dl=s.dl<870,pct=Math.round(s.dl/870*100)+'%';
+      if(dl){ai.dotC=n.t2;ai.head='Downloading · '+pct}
+      aiChips=[['rewrite','Rewrite','signature'],['proof','Proofread','spellcheck'],['translate','Translate','translate'],['reply','Reply','reply']].map(([id,t,icon])=>{const on=A.tool===id;return {t,icon,bg:on?a.cont:n.key,fg:on?a.onCont:n.t1,ic:on?a.onCont:a.accent,ring:on?'none':'inset 0 0 0 1px '+n.divider,click:()=>this.run(id,0)}});
+      const msg=(tile,t,sub,btns)=>Object.assign(ai,{isMsg:true,tile,t,s:sub,btns:btns.map(btn)});
+      if(A.phase==='dl'){msg('downloading','Writing model is downloading',s.dl+' of 870 MB. Typing and suggestions work as usual.',[{t:s.dlPause?'Resume download':'Pause download',kind:'out',act:()=>this.setState({dlPause:!s.dlPause})}]);ai.pD='flex';ai.pct=pct}
+      else if(A.phase==='empty')msg('edit_note','Nothing to work with yet','Type a message or select some text, then pick a tool.',[{t:'Use demo text',kind:'out',act:()=>this.useDemo()}]);
+      else if(A.phase==='demo')msg('science','Demo text only','This prototype has pre-written results for one message.',[{t:'Use demo text',kind:'out',act:()=>this.useDemo()}]);
+      else{const tl=A.tool,cont={bBg:a.cont,bFg:a.onCont,bRing:'none'},neut={bBg:'transparent',bFg:n.t2,bRing:'inset 0 0 0 1px '+n.divider};
+        const meta=tl==='rewrite'?{badge:'In my style · '+STYLES[A.idx||0].habit,bIc:'signature',...cont}:tl==='reply'?{badge:'In my style · Messages',bIc:'reply',...cont}:tl==='translate'?{badge:'English → Swedish',bIc:'translate',...neut}:{badge:'5 fixes',bIc:'spellcheck',...neut};
+        Object.assign(ai,meta);
+        if(A.phase==='loading')ai.isLoad=true;
+        else{ai.isRes=true;const plain=(t,ul)=>[{t,c:n.t1,bg:'transparent',deco:ul?'underline':'none',dc:a.accent,pad:'0'}];
+          ai.segs=tl==='proof'?PROOF.flatMap(x=>typeof x==='string'?[{t:x,c:n.t1,bg:'transparent',deco:'none',dc:'transparent',pad:'0'}]:[{t:x[0],c:n.error,bg:'transparent',deco:'line-through',dc:n.error,pad:'0'},{t:x[1],c:a.onCont,bg:a.cont,deco:'none',dc:'transparent',pad:'0 2px'}]):plain(this.aiOut(),tl==='rewrite'&&!A.done);
+          if(tl==='rewrite'||tl==='reply'){ai.stepD='flex';ai.stepLbl=((A.idx||0)+1)+' of 3';ai.prevS=()=>this.step(-1);ai.nextS=()=>this.step(1)}
+          const b=[];if(tl==='rewrite'||tl==='reply')b.push({t:'Try again',kind:'out',act:()=>this.step(1)});
+          b.push(A.done?{t:'Undo',kind:'out',act:()=>this.undoAI(),ml:'auto'}:{t:tl==='reply'&&!(s.fields[tg]||'').trim()?'Insert':'Replace',kind:'fill',act:()=>this.replace(),ml:'auto'});
+          ai.btns=b.map(btn)}}}
+    // app blocks
+    let blocks=[];
+    if(isApp){
+      const TR={chev:'chevron_right',ext:'open_in_new',edit:'edit',check:'check'};
+      const row=(r,i)=>{const on=r.key?this.getT(r.key):false,dis=!!r.dis||(r.dep&&!this.getT(r.dep));
+        const click=dis?null:r.tr==='tog'?()=>this.flip(r.key):r.go?()=>this.go(r.go):r.act||null;
+        return {t:r.t,s:r.s||'',sD:r.s?'block':'none',ic:r.ic||'',icD:r.ic?'block':'none',icC:C(r.icC),mh:r.s?72:56,bt:i?'1px solid '+n.divider:'none',op:dis?.38:1,
+          vD:r.tr==='val'?'block':'none',v:r.v||'',bdD:r.tr==='badge'?'flex':'none',bd:r.bd||'',
+          trD:TR[r.tr]?'block':'none',trIc:TR[r.tr]||'',trC:r.tr==='check'?a.accent:n.t2,tgD:r.tr==='tog'?'block':'none',tg:tog(on),click,cur:click?'pointer':'default'}};
+      blocks=this.screenBlocks().map(b=>{const o={...b,['is_'+b.k]:true};
+        switch(b.k){
+          case 'top':o.backD=b.back===false?'none':'flex';o.actD=b.act?'flex':'none';o.act=b.act||'';o.step=b.step||'';break;
+          case 'h':o.ta=b.center?'center':'left';o.sD=b.s?'block':'none';o.s=b.s||'';break;
+          case 'grp':o.rows=b.rows.map(row);break;
+          case 'status':o.dotD=b.wifi?'none':'block';o.wD=b.wifi?'block':'none';break;
+          case 'meter':o.segs=[['Writing model',870,a.accent],['Voice model',120,n.t2],['Prediction and word lists',30,n.pressed]].map(([t,v,c])=>({t,c,flex:v,v:v+' MB'}));break;
+          case 'prog':o.pct=b.v+'%';break;
+          case 'btns':o.items=b.items.map(btn);break;
+          case 'seg':{const md=b.key==='mode',dis=b.dep&&!this.getT(b.dep);o.op=dis?.38:1;o.lD=b.label?'block':'none';o.label=b.label||'';
+            o.items=segItems(md?[['Light','light'],['Dark','dark'],['System','system']]:[['30 sec',30],['1 min',60],['5 min',300]],md?s.mode:s.expiry,v=>md?this.setLook({mode:v}):this.setState({expiry:v}),dis);break}
+          case 'sw':o.items=PAL.map(p=>{const sel=!s.dyn&&!s.rot&&p.id===s.acc;return {name:p.name,fw:sel?600:400,bg:'linear-gradient(135deg, '+p[m].accent+' 50%, '+p[m].cont+' 50%)',ring:sel?'0 0 0 3px '+n.surface+', 0 0 0 5px '+p[m].accent:'inset 0 0 0 1px '+n.divider,click:()=>this.setLook({acc:p.id,dyn:false,rot:false})}});break;
+          case 'kbp':o.rows=this.staticRows(n,a);o.sugs=[['at',0],['tonight',1],['around',0]].map(([t,p],i)=>({t,fw:p?600:400,bl:i?n.divider:'transparent'}));break;
+          case 'mem':{const q=s.q.trim().toLowerCase(),list=s.mem.filter(x=>!q||(x.t+' '+x.s).toLowerCase().includes(q));
+            o.items=list.map((x,i)=>{const sw=s.sw===x.id;return {...x,bt:i?'1px solid '+n.divider:'none',x:sw?-96:0,behind:sw?n.error:'transparent',click:()=>this.setState(st2=>({sw:st2.sw===x.id?null:x.id})),del:()=>this.delMem(x.id)}});
+            o.emptyD=list.length?'none':'block';o.emptyT=q?'Nothing matches “'+s.q+'”.':'Nothing remembered yet. Addresses and codes you type will show up here once private memory is on.';break}
+          case 'chips':o.items=b.items.map(t=>({t}));break;
+          case 'dots':o.items=[0,1,2,3,4].map(i=>i===b.on?{w:24,c:a.accent}:{w:8,c:n.divider});break;
+          case 'field':o.segs=segsFor('practice').map(x=>({t:x.t,deco:x.deco}));break;
+        }
+        return o})}
+    // login / code
+    const fe=s.focus==='email'&&isLogin,fp=s.focus==='pw'&&isLogin;
+    const lg={email:s.fields.email,pw:'•'.repeat(s.fields.pw.length),
+      emailRing:fe?'inset 0 0 0 2px '+n.t1:'inset 0 0 0 1px '+n.divider,pwRing:fp?'inset 0 0 0 2px '+n.t1:'inset 0 0 0 1px '+n.divider,
+      emailLbl:fe?n.t1:n.t2,pwLbl:fp?n.t1:n.t2,emailCur:fe?'inline-block':'none',pwCur:fp?'inline-block':'none',
+      emailPh:!fe&&!s.fields.email?'inline':'none',pwPh:!fp&&!s.fields.pw?'inline':'none',
+      btnBg:s.fields.email&&s.fields.pw?n.t1:n.special,btnFg:s.fields.email&&s.fields.pw?n.surface:n.t2,
+      focusEmail:()=>this.setState({focus:'email',sym:false}),focusPw:()=>this.setState({focus:'pw',sym:false}),signIn:()=>this.signIn()};
+    const cv=s.fields.code||'';
+    const boxes=[0,1,2,3,4,5].map(i=>({t:cv[i]||'',ring:(!s.codeOk&&i===cv.length)?'inset 0 0 0 2px '+n.t1:'inset 0 0 0 1px '+(s.codeOk?n.success:n.divider),cur:!s.codeOk&&i===cv.length?'inline-block':'none'}));
+    // overlays
+    const sheet={on:s.sheet,close:()=>this.setState({sheet:false}),seg:segItems([['Casual',0],['Neutral',1],['Formal',2]],s.tone,v=>this.setState({tone:v})),
+      rows:[['WhatsApp','apWa'],['Messages','apMsg']].map(([t,k],i)=>({t,bt:i?'1px solid '+n.divider:'none',tg:tog(s.tg[k]),click:()=>this.flip(k)})),
+      btns:[{t:'Forget this',kind:'dangerText',act:()=>this.setState({sheet:false})},{t:'Done',kind:'fill',act:()=>this.setState({sheet:false})}].map(btn)};
+    const D={delAll:{ic:'delete_forever',t:'Delete everything Tyst has learned?',s:'This removes your style, personal dictionary and remembered items from this phone. It can’t be undone.',ok:'Delete all',act:()=>this.delAll()},
+      reset:{ic:'restart_alt',t:'Reset your style?',s:'Tyst forgets how you write and starts again. Your personal dictionary and private memory stay.',ok:'Reset',act:()=>this.setState({dlg:null})}}[s.dlg];
+    const dlg=D?{on:true,ic:D.ic,t:D.t,s:D.s,btns:[btn({t:'Cancel',kind:'text',act:()=>this.setState({dlg:null})}),btn({t:D.ok,kind:'dangerFill',act:D.act})]}:{on:false,ic:'',t:'',s:'',btns:[]};
+    const snack={on:!!s.snack,t:s.snack?s.snack.t:'',undo:s.snack?s.snack.undo:null,ac:P[m==='light'?'dark':'light'].accent};
+    // rail
+    const L=P.light,grp=x=>x==='onb'?/^onb/.test(scr):x==='home'?SETTINGS.includes(scr):x==='login'?(isLogin||isCode):scr===x;
+    const railScreens=[['Onboarding','onb1','onb'],['Settings','home','home'],['Message','chat','chat'],['Sign in','login','login']].map(([t,x,g])=>{const on=grp(g);return {t,bg:on?L.cont:'transparent',fg:on?L.onCont:'#161D1B',ring:on?'none':'inset 0 0 0 1px #C9D2CF',click:()=>this.go(x,{},true)}});
+    const ty=(t,str)=>({t,ic:'keyboard',click:()=>this.auto(str)});
+    const railTry=[{t:'Type a scenario',items:[ty('Can you send me the …','Can you send me the '),ty('Running 10 minutes …','Running 10 minutes '),ty('Let’s go to Liseberg on …','Let’s go to Liseberg on '),ty('Hi Åsa, the train to Västerås …','Hi Åsa, the train to Västerås leaves '),ty('Meet Johan at …','Meet Johan at '),ty('Vasteras → Västerås','Vasteras'),ty('teh → the, with Undo','I sent teh '),{...ty('my address is …','Sure, my address is '),ic:'lock'}]},
+      {t:'Writing tools',items:[['Rewrite in my style','rewrite','signature'],['Proofread with diff','proof','spellcheck'],['Translate','translate','translate'],['Reply','reply','reply']].map(([t,id,ic])=>({t,ic,click:()=>this.demoAI(id)}))}];
+    const railModes=[['Light','light','light_mode'],['Dark','dark','dark_mode']].map(([t,v,ic])=>{const on=m===v;return {t,ic,bg:on?L.cont:'transparent',fg:on?L.onCont:'#161D1B',click:()=>this.setLook({mode:v})}});
+    const railSw=PAL.map(p=>{const sel=!s.dyn&&!s.rot&&p.id===s.acc;return {name:p.name,fw:sel?600:400,bg:'linear-gradient(135deg, '+p.light.accent+' 50%, '+p.light.cont+' 50%)',ring:sel?'0 0 0 2px #E8ECEA, 0 0 0 4px '+p.light.accent:'inset 0 0 0 1px #C9D2CF',click:()=>this.setLook({acc:p.id,dyn:false,rot:false})}});
+    const dlActive=s.dl<870;
+    return {
+      n,a,app,zoom:s.zoom,showRail:this.props.showRail??true,kh:this.kh,bodyH,
+      isChat,isLogin,isCode,isApp,kbVisible,navBar:!kbVisible,
+      msgRef:this.msgRef,msgs:s.msgs.map(([w,t])=>({t,al:w==='out'?'flex-end':'flex-start',bg:w==='out'?app.out:app.in,rad:w==='out'?'20px 20px 6px 20px':'20px 20px 20px 6px'})),
+      chatSegs:segsFor('chat'),chatCur:s.ai&&s.fields.chat?'none':'inline-block',chatPh:s.fields.chat?'none':'inline',
+      focusChat:()=>{if(s.ai)this.setState({ai:null})},send:()=>this.send(),
+      lg,boxes,codeDone:s.codeOk,codeWait:!s.codeOk,back:()=>this.back(),
+      blocks,q:s.q,onQ:e=>this.setState({q:e.target.value}),
+      st,sugs,mem,code,fillLogin:()=>this.fillLogin(),openAI:()=>this.openAI(),closeAI:()=>{clearTimeout(this.aiT);this.setState({ai:null})},
+      ring:{d:dlActive?'block':'none',off:(113.1*(1-s.dl/870)).toFixed(2)},
+      kbAlpha:kbVisible&&!isCode&&!st.panel,kbNum:kbVisible&&isCode,
+      aaRow:s.tg.aaRow&&!s.sym,aaKeys:['å','ä','ö'].map(c=>{const k=this.key({id:'aa_'+c,label:s.shift!=='off'?c.toUpperCase():c,ch:s.shift!=='off'?c.toUpperCase():c,kind:'letter',noPrev:1});return k}),
+      rows:kbVisible&&!isCode?this.liveRows(isChat?'send':'keyboard_return'):[],numKeys:isCode?this.numKeys():[],
+      ai,aiChips,
+      notifY:s.notif&&isCode?'0':'-130%',copyCode:()=>this.copyCode(),
+      sheet,dlg,snack,stop:e=>e.stopPropagation(),
+      railScreens,railTry,railModes,railSw,
+      hints:['Hold a or o for å, ä and ö. Slide to choose, release to insert.','The sparkle at the left of the strip opens writing tools.','Your computer keyboard types too.','Sign-in uses a fictional demo account.'],
+      reset:()=>this.reset()
+    };
+  }
+}
+</script>
+</body>
+</html>

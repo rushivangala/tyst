@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<script src="./doc-page.js"></script>
+<style>doc-page:not(:defined){visibility:hidden}body{margin:0;font-family:'Hanken Grotesk',sans-serif;font-size:14px;line-height:1.6;color:#17211f}a{color:#0d5c58}a:hover{color:#083b38}</style>
+</helmet>
+<doc-page margin="0.75in">
+<p style="margin:0 0 6px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#0d5c58">Product spec · v0.1 · 20 Oct 2026</p>
+<h1 style="margin:0 0 8px;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.01em">Tyst: an on-device keyboard that writes like you</h1>
+<p style="margin:0 0 24px;color:#4a5856;max-width:640px">Spec for design handoff. Android 17, optimised for Pixel 10 Pro. "Tyst" (Swedish for quiet) is a working name.</p>
+
+<h2 style="font-size:15px;margin:0 0 8px;font-weight:600">Assumptions</h2>
+<ul style="margin:0 0 8px;padding-left:20px">
+<li>MVP ships on the Pixel 10 series only (Tensor G5, 12–16 GB RAM). Other devices come later behind a capability check.</li>
+<li>Distribution through Google Play. Model files ship as Play Asset Delivery packs, which Play downloads, so the app itself never needs network access.</li>
+<li>The UI is in English. Swedish is a recognition layer inside English typing. It is not a second keyboard language.</li>
+<li>Gemini Nano is not reliably callable from a keyboard (see §7). The plan does not depend on it.</li>
+<li>The user sets NordPass, or another password manager, as their Android autofill service.</li>
+<li>Free MVP. Monetisation is out of scope.</li>
+<li>Competitor notes describe public behaviour as of October 2026 and should be checked before external use.</li>
+</ul>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">01</span>Positioning and USP</h2>
+<p style="margin:0 0 6px"><strong>Positioning:</strong> For Pixel owners who write a lot and care about privacy, Tyst is an AI keyboard that learns their own voice and runs entirely on the phone, with no internet permission.</p>
+<p style="margin:0"><strong>USP:</strong> The keyboard that writes like you and never goes online.</p>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">02</span>Personas</h2>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+<div style="border:1px solid #d6dedc;border-radius:10px;padding:14px;break-inside:avoid">
+<p style="margin:0;font-weight:700">P1 · Elin, 34</p>
+<p style="margin:0 0 8px;font-size:12.5px;color:#4a5856">Swedish UX lead at a London company. Writes in English all day, about people and places at home.</p>
+<ol style="margin:0;padding-left:18px;font-size:13px">
+<li>Autocorrect breaks Swedish words: "Västerås" becomes "Vasteras", "fika" becomes "fiancé".</li>
+<li>Switching languages mid-sentence is slow and upsets English predictions.</li>
+<li>Getting to å/ä/ö takes a long-press or a layout switch.</li>
+</ol></div>
+<div style="border:1px solid #d6dedc;border-radius:10px;padding:14px;break-inside:avoid">
+<p style="margin:0;font-weight:700">P2 · Marcus, 41</p>
+<p style="margin:0 0 8px;font-size:12.5px;color:#4a5856">Security engineer. His employer's policy bans cloud keyboards and AI writing tools.</p>
+<ol style="margin:0;padding-left:18px;font-size:13px">
+<li>He can't use AI writing help because every option sends text to a server.</li>
+<li>He can't confirm what a keyboard stores or uploads.</li>
+<li>He keeps retyping booking references, addresses and account numbers.</li>
+</ol></div>
+<div style="border:1px solid #d6dedc;border-radius:10px;padding:14px;break-inside:avoid">
+<p style="margin:0;font-weight:700">P3 · Priya, 29</p>
+<p style="margin:0 0 8px;font-size:12.5px;color:#4a5856">Operations manager. Moves between Slack, Gmail and WhatsApp all day.</p>
+<ol style="margin:0;padding-left:18px;font-size:13px">
+<li>AI rewrites sound generic and not like her, so she rewrites them again.</li>
+<li>She has to switch tone by hand between her boss, clients and family.</li>
+<li>Logins and 2FA codes mean leaving the app, copying and coming back.</li>
+</ol></div>
+</div>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">03</span>Gap analysis</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.45">
+<thead><tr>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:16%">Keyboard</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Strength</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Gap for our personas</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Gboard</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Best general prediction and swipe. Multilingual typing. Proofread on Pixel. Default on the device.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Has internet access (search, GIFs, some voice and translate). Users can't see what it has learned. Swedish means adding a full second language, so suggestions mix across both and corrections drift (P1, P2).</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">SwiftKey</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Strong multilingual mixing and personalisation.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">AI rewrite and chat run in the cloud. Personalisation is tied to an account and synced. No style-matched rewrites (P2, P3).</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Samsung Keyboard</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Galaxy AI writing tools, with an on-device-only option.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Galaxy devices only, so not available on Pixel. Rewrites use generic tone presets.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Grammarly</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Best rewrite and tone controls.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Needs the cloud and an account. Basic typing and prediction are weak. Flags Swedish words as errors (P1, P2).</td></tr>
+</tbody></table>
+<p style="margin:12px 0 4px;font-weight:600">Why switch</p>
+<ul style="margin:0;padding-left:20px">
+<li><strong>Proof:</strong> the app holds no internet permission, which anyone can check in system Settings. The other four can only make policy promises.</li>
+<li><strong>Voice:</strong> rewrites learn from the user's own accepted text, per app. The others offer generic tone presets.</li>
+<li><strong>Swedish inside English:</strong> Swedish is recognised word by word with a guard against "correcting" it. No language switching.</li>
+<li><strong>Recall:</strong> private memory brings back booking numbers and addresses with no cloud account.</li>
+</ul>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">04</span>MVP vs. later</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.45">
+<thead><tr>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:4%">#</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:30%">MVP feature</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Scope</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:12%">Pain</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">1</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Personal prediction and autocorrect</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Three-slot strip, swipe typing, and a personal model learned on the device. Backspace undoes an autocorrect.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P3·1, P1·2</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">2</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Swedish-in-English layer</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Swedish lexicon plus lists of places and names, a no-correct guard, diacritic restoration (Vasteras → Västerås, suggested only), and optional å ä ö keys.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P1·1–3</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">3</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Rewrite in my style</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Options: My style, Warmer, Formal, Shorter, Longer. Default tone per app. Swedish tokens are locked.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P3·1–2, P2·1</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">4</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Proofread</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">One tap fixes grammar and spelling, with inline underlines and accept/skip for each fix.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P2·1, P3·1</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">5</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Private memory</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Opt-in. Stores addresses, booking references, names and emails, encrypted on the device, and offers them as chips when relevant.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P2·3</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">6</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Password manager suggestions</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Android inline autofill pills from NordPass or any autofill service.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P3·3</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">7</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Verification code chip</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Shows a code from a fresh clipboard item or an autofill suggestion. Never stored.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P3·3</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">8</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">What I learned and privacy proof</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Review and delete words, style notes and memory. Live list of permissions. Pause learning.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P2·2</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">9</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">On-device voice typing</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Android on-device speech recogniser, with a Swedish lexicon pass on the output.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">P2·1, P1·1</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">10</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Material 3 Expressive theming</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Light, dark or system. Dynamic colour or 8 curated accents, with optional daily or weekly rotation.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Retention</td></tr>
+</tbody></table>
+<p style="margin:12px 0 4px;font-weight:600">Later</p>
+<ul style="margin:0;padding-left:20px">
+<li><strong>Inline translate</strong> (EN↔SV first). This needs a second model pack (P1).</li>
+<li><strong>Summarise pasted text</strong>, with chunking for long input (P3).</li>
+<li><strong>Smart replies</strong>, limited to text the user copies or selects, because a keyboard can't see incoming messages (P3·2).</li>
+<li><strong>Per-contact tone.</strong> A keyboard only knows the app, so this needs the user to label conversations (P3·2).</li>
+<li><strong>Encrypted backup and restore</strong> through a file the user exports (P2).</li>
+<li><strong>Support for other devices</strong> with a capability check, plus tablet and foldable layouts.</li>
+</ul>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">05</span>Screens</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.45">
+<thead><tr>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:14%">Area</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:28%">Screen</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Purpose</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;color:#0d5c58;font-weight:600">Setup</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Welcome</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">States the promise and shows a live card proving there is no internet permission.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Enable keyboard</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Opens system input settings and detects when the user returns.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Set as default</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Opens the system keyboard picker and confirms the result.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Swedish words</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Turns the Swedish layer on and shows before/after examples.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Passwords &amp; codes</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Shows the current autofill service, links to change it, and explains what the keyboard never sees.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Learning consent</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Separate opt-ins for style learning and private memory.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Look &amp; feel</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Pick the mode and accent, with a live preview.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Try it</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Practice field with a guided English + Swedish sentence. Shows model download progress.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;color:#0d5c58;font-weight:600">Keyboard</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Main keyboard</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Typing surface: QWERTY, optional number row and å ä ö keys.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Suggestion strip (5 states)</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">States: predictions, memory chip, autofill pill, code chip, incognito. Priority order: code &gt; autofill &gt; memory &gt; predictions.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">AI toolbar</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Opens Rewrite, Proofread, Voice, Memory and Clipboard.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Rewrite sheet</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Pick a tone or length, stream variants, then Replace, Insert or Copy.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Proofread review</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Step through fixes and accept or skip each one.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Memory panel</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Searchable saved items. Biometric lock is optional.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Voice overlay</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Listening state, live transcript and an on-device badge.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Clipboard panel</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Recent clips, excluding anything sensitive. Pin or clear.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Emoji &amp; symbols</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Emoji ordered by the user's own habits. Offline search.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Model-not-ready / limit states</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Inline messages for: model still downloading, text too long, device too hot, phone locked before first unlock.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;color:#0d5c58;font-weight:600">Settings</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Home</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Status (default keyboard, model ready, learning on) and section list.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Typing &amp; autocorrect</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Autocorrect strength, swipe, key height, sound and haptics.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Swedish words</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Layer on/off, diacritic restoration, å ä ö keys, and a never-correct list.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Writing style</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Default tone for each app. Style learning on/off.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">What I learned</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Words, Style and Memory tabs. Review, edit and delete.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Memory settings</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Item types to save, expiry, biometric lock, excluded apps.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Passwords &amp; codes</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Autofill service status, code chip on/off, clear clipboard after pasting.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Privacy proof</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Live permission list read from the system, storage used, and how to check it yourself.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Appearance</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Mode, accent, rotation, key borders, with a live preview.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Voice</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Microphone permission, language pack status, auto-punctuation.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Data</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Pause learning, encrypted export, delete everything (destroys the key).</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1"></td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">About &amp; models</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Model versions, sizes and licences. Local stats the user can share.</td></tr>
+</tbody></table>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">06</span>Core flows</h2>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.1 First-time setup</h3>
+<ol style="margin:0;padding-left:22px">
+<li>The user installs from Play. The base prediction model installs with the app. Play queues the writing-model pack (about 1 GB) as an on-demand download.</li>
+<li>Welcome screen: the promise, plus the permission card (Microphone: ask · Internet: not requested).</li>
+<li>Enable: a deep link opens system input settings. The app sees the keyboard is enabled and moves on by itself.</li>
+<li>Default: the system keyboard picker opens and the selection is confirmed.</li>
+<li>Swedish words: on by default if the device region or a second locale is Swedish. Shows "fika in Västerås" left uncorrected.</li>
+<li>Passwords &amp; codes: shows the current autofill service ("NordPass ✓"), or links to autofill settings.</li>
+<li>Learning: style learning is pre-selected on. Private memory is off until the user turns it on.</li>
+<li>Look &amp; feel: system mode and dynamic colour are pre-selected.</li>
+<li>Try it: a guided sentence shows prediction, the Swedish guard, and Rewrite once the model is ready.</li>
+<li>Done. Until the pack lands, AI keys show "Preparing writing model · 62%".</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.2 Typing with predictions</h3>
+<ol style="margin:0;padding-left:22px">
+<li>A field gets focus. The keyboard reads the field's metadata: app, input type, hints, and any no-learning flag. Password and no-learning fields switch to incognito: no learning, a visible indicator, and memory hidden.</li>
+<li>The strip shows three predictions, with the most likely one in the centre, ranked by the personal model.</li>
+<li>Typing "Väst" offers "Västerås". Typing "Vasteras" offers "Västerås" as a suggestion but doesn't swap it in automatically.</li>
+<li>Space commits the word. Autocorrect only fires when confidence is high and the word is not in the English, Swedish or personal lexicon.</li>
+<li>Backspace straight after an autocorrect restores the original word. After two restores, the word is learned.</li>
+<li>Long-press a/o for å ä / ö, or turn on the å ä ö keys in Settings.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.3 Rewriting "in my style"</h3>
+<ol style="margin:0;padding-left:22px">
+<li>Type a draft of 3 or more words, or select text. Tap Rewrite in the strip.</li>
+<li>The Rewrite sheet opens above the keys, preset to that app's default (e.g. Slack: My style · Shorter).</li>
+<li>Tone chips: My style, Warmer, Formal, Shorter, Longer. The first words appear in under 0.7 s and the rest streams in.</li>
+<li>Swipe between up to 3 variants. Changed words can be highlighted.</li>
+<li>Replace, Insert below or Copy. An Undo snackbar stays for 5 s.</li>
+<li>Swedish words and proper nouns stay exactly as typed. Accepted and rejected variants tune the style model on the device.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.4 Using private memory</h3>
+<ol style="margin:0;padding-left:22px">
+<li>The user opts in (during setup or in Settings › Memory).</li>
+<li>While typing in normal fields, the keyboard picks out addresses, booking references, names and emails. They go into a "New" queue in What I learned. Nothing is captured in incognito or excluded apps.</li>
+<li>When a field hint matches (e.g. a postal address field) or the text does ("my booking ref is"), the strip shows a memory chip with a lock icon: "ABX4KT · SAS".</li>
+<li>Tap inserts it. Long-press shows the source app and date, with Forget and Pin.</li>
+<li>The Memory key opens a searchable panel. A biometric prompt appears if the lock is on.</li>
+<li>Items expire after 90 days by default unless pinned.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.5 Logging in with a NordPass suggestion</h3>
+<ol style="margin:0;padding-left:22px">
+<li>The user taps the username field in an app's login screen.</li>
+<li>The keyboard asks Android for inline autofill suggestions. NordPass replies with account pills.</li>
+<li>The strip shows the system-drawn pill(s) on the left, and predictions shrink. The keyboard can't read what the pills contain.</li>
+<li>Tap a pill. NordPass may ask for a biometric check, then fills the username and password.</li>
+<li>Focus moves to the password field, which is incognito.</li>
+<li>No pill? The strip shows an "Open NordPass" key as a fallback.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.6 Entering a verification code</h3>
+<ol style="margin:0;padding-left:22px">
+<li>The code arrives by SMS or email. The user copies it, or the autofill service offers it.</li>
+<li>The user focuses the code field. It is recognised by a one-time-code hint or a numeric field with a short max length.</li>
+<li>The strip shows a chip, "Code 482 913 · Clipboard · 40 s ago", but only for clips under 3 minutes old that look like a 4–8 digit code. Autofill-provided codes show as a pill in the same spot.</li>
+<li>Tap fills the field. Split single-digit boxes are filled by sending one key event per digit.</li>
+<li>The chip disappears after use or after 3 minutes. The code is never kept in clipboard history or memory. Optionally, the clipboard is cleared after pasting.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.7 Changing theme and accent</h3>
+<ol style="margin:0;padding-left:22px">
+<li>Open Settings › Appearance, or long-press the comma key › Theme.</li>
+<li>Mode: Light / Dark / System segmented button.</li>
+<li>Accent: Dynamic (from the wallpaper) or one of 8 curated accents. Multi-select is on when rotation is on.</li>
+<li>Auto-rotate: Off / Daily / Weekly, cycling through the selected accents.</li>
+<li>A live keyboard preview is pinned at the bottom. Options: key borders, height, number row.</li>
+<li>Changes apply at once. No save step.</li>
+</ol>
+
+<h3 style="font-size:15px;margin:16px 0 4px;font-weight:700">6.8 Reviewing what the keyboard learned</h3>
+<ol style="margin:0;padding-left:22px">
+<li>Open Settings › What I learned. An optional weekly local notification also links here: "12 new words, 3 memory items".</li>
+<li>Words tab: newly learned words with the apps they came from. Swedish words carry an SV badge. Remove or block each one.</li>
+<li>Style tab: notes in plain language with examples ("Short sentences in Slack", "You sign off 'Hej hej' with family"). Each can be toggled per app.</li>
+<li>Memory tab: each item shows type, source app and date. Edit, pin or delete.</li>
+<li>Bulk actions: Pause learning; Delete everything (confirmation, then the encryption key is destroyed).</li>
+<li>Export: an encrypted file through the system file picker or share sheet.</li>
+</ol>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">07</span>Platform constraints</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.45">
+<thead><tr>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:22%">Constraint</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:36%">Reality</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Design response</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">What an IME can see</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Only the text around the cursor in the focused field, plus field metadata (app package, input type, hints, flags such as no-personalised-learning). It can't see the rest of the screen, incoming messages, or who the contact is.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Tone is set per app, not per contact (contact-level comes later, by user labels). Smart replies wait until they can work from copied text. Incognito is automatic on password and no-learning fields.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">No internet permission</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">No cloud fallback, remote config, crash reporting or downloads by the app itself.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Models arrive as Play asset packs and are updated through Play. Analytics are local counters only (§8). The Privacy proof screen reads permissions live from the system.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Gemini Nano for third parties</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">ML Kit GenAI (AICore) only runs inference when the calling app is the top foreground app, and there are quotas per app. A keyboard runs as a service over another app, so expect a BACKGROUND_USE_BLOCKED error. It is also unsupported on unlocked bootloaders.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Ship our own small LLM (Gemma-class, about 1B parameters, int4, under 1 GB) on LiteRT with the GPU/NPU. Use Nano only as an optional extra inside our own foreground screens, such as the Settings practice field. No feature depends on it.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">On-device model limits</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Limits on RAM, heat, battery, and context length (about 2k tokens).</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Prediction uses a separate small model kept in memory (p95 under 30 ms). The LLM loads only when the user taps an AI feature and unloads after 60 s idle. Output streams. Input caps: about 1,500 characters for rewrite, about 4,000 for summarise (in chunks). Clear "too long" and "device warm" states.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Inline autofill</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">The keyboard requests suggestions from the system. The autofill service supplies views the system draws, so the keyboard can't read them. Only works if the user has chosen an autofill service and the app's fields support autofill. Some WebViews and custom fields never trigger it.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">A fixed pill slot in the strip, styled by the system. Setup checks which autofill service is active. Fallback is the "Open NordPass" key.</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">OTP sources</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">By design, no SMS, notification-listener or email access. The default keyboard can read the clipboard. Clips can be marked as sensitive.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Codes come only from the clipboard (fresh clips, held in memory only) or from autofill pills. Clips marked sensitive never go into history. Copy explains "Copy the code, we'll offer it."</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Encryption &amp; Direct Boot</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Before the first unlock after a reboot, encrypted user storage can't be read.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">The keyboard falls back to the base model, with no memory or personal words, and shows a quiet "Unlock to personalise" hint. Data is AES-GCM encrypted with a key held in Android Keystore (StrongBox).</td></tr>
+<tr><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top;font-weight:600">Voice</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">Android's on-device speech recogniser needs microphone permission and a system language pack. It handles Swedish words in English speech poorly.</td><td style="padding:7px 8px;border-bottom:1px solid #dde3e1;vertical-align:top">The microphone permission is requested the first time the user taps Voice. The transcript is corrected against the Swedish lexicon and personal names. An "on-device" badge is always visible.</td></tr>
+</tbody></table>
+
+<h2 style="font-size:22px;margin:32px 0 10px;font-weight:700"><span style="font:500 13px 'JetBrains Mono',monospace;color:#0d5c58;margin-right:8px">08</span>Success metrics</h2>
+<p style="margin:0 0 8px">The app has no telemetry, so metrics come from three sources: Play Console (installs, Android vitals, ratings), local counters that users can choose to share as a file, and moderated studies with 12 or more users per persona.</p>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.45">
+<thead><tr>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f">Metric</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:22%">Target</th>
+<th style="text-align:left;padding:6px 8px;font:500 10.5px 'JetBrains Mono',monospace;text-transform:uppercase;color:#4a5856;border-bottom:1.5px solid #17211f;width:22%">Source</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Setup completed and set as default within 24 h</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 65%</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Study, local counter</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Still default keyboard at day 30</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 45%</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Play retained installers, shared stats</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Swedish words wrongly corrected</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">&lt; 0.5% of Swedish words typed</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Test corpus, P1 study</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Autocorrections undone</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">&lt; 3%</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Local counter</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Keystrokes saved by predictions</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 30%</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Local counter</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Rewrites accepted (Replace/Insert)</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 40%; "sounds like me" ≥ 4/5</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Local counter, P3 study</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Memory chips tapped when shown</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 50%</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Local counter</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Time from field focus to code filled</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≤ 2 s median</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Study</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Latency: prediction p95 · rewrite first words · full rewrite</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">&lt; 30 ms · &lt; 0.7 s · &lt; 2.5 s</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Benchmark on Pixel 10 Pro</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Battery use caused by the keyboard</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">&lt; 2% per day (typical use)</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Benchmark, Android vitals</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Network permission requested</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">0, enforced as a CI release gate</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Manifest check</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Crash-free sessions · Play rating</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">≥ 99.8% · ≥ 4.5</td><td style="padding:6px 8px;border-bottom:1px solid #dde3e1">Play Console</td></tr>
+</tbody></table>
+</doc-page>
+</x-dc>
+</body>
+</html>
