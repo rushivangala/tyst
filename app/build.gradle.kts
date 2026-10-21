@@ -16,8 +16,8 @@ android {
         // CI run numbers only grow, so every build installs over the previous one.
         val run = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0
         versionCode = 100 + run
-        versionName = if (System.getenv("GITHUB_REF_TYPE") == "tag") System.getenv("GITHUB_REF_NAME").removePrefix("v")
-        else "1.0.0-dev.$run"
+        versionName = System.getenv("TYST_VERSION_NAME")?.takeIf { it.isNotBlank() }
+            ?: if (System.getenv("GITHUB_REF_TYPE") == "tag") System.getenv("GITHUB_REF_NAME").removePrefix("v") else "1.0.0-dev.$run"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

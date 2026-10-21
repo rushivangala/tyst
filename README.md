@@ -73,7 +73,7 @@ Release APKs are signed with Tyst's permanent key, which lives in two repository
 
 ### Releases
 
-Push a tag such as `v1.0.0`. After the tests and emulator checks pass, CI builds the signed APK and checks its certificate (SHA-256 `E0:25:42:96:…:91:9A`). It then publishes a GitHub Release with `tyst-v1.0.0.apk` and its checksum, using `docs/releases/<tag>.md` as the notes. The release job refuses to publish without the permanent key.
+Put the version in `release.txt` (for example `v1.0.0`) and push to `main`. After the tests and emulator checks pass, CI builds the signed APK and checks its certificate (SHA-256 `E0:25:42:96:…:91:9A`). It then publishes a GitHub Release with `tyst-v1.0.0.apk` and its checksum, using `docs/releases/<tag>.md` as the notes. Each version is published once, and the release job refuses to publish without the permanent key. Pushing a `v*` tag works too.
 
 ### Install on a Pixel
 
