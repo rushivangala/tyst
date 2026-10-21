@@ -6,8 +6,9 @@ log="$(mktemp)"
 ./gradlew "$@" --stacktrace 2>&1 | tee "$log"
 status=${PIPESTATUS[0]}
 if [ "$status" -ne 0 ]; then
-  summary=$(grep -E '^e: |What went wrong|^> |FAILED|Exception|error:|Error:|Lint found' "$log" | grep -v 'at org.gradle' | head -60)
-  for xml in $(find . -path '*/test-results/*' -name '*.xml' 2>/dev/null); do
+  summary=$(grep -E '^e: |What went wrong|^> |FAILED|Exception|error:|Error:|Lint found|INSTALL_|Tests on |No connected' "$log" \
+    | grep -vE '^> Task |at org.gradle|Run with --|Get more help|Problems report' | head -60)
+  for xml in $(find . \( -path '*/test-results/*' -o -path '*/androidTest-results/*' \) -name '*.xml' 2>/dev/null); do
     python3 - "$xml" <<'PY' >> "$log.tests"
 import sys, xml.etree.ElementTree as ET
 for case in ET.parse(sys.argv[1]).getroot().iter('testcase'):

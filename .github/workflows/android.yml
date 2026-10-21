@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       # The runner image ships the Android SDK; add the Android 17 platform to it.
       - name: Install Android 17 SDK platform
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - uses: gradle/actions/setup-gradle@v4
 
