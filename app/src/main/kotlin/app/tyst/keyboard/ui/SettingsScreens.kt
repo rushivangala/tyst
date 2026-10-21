@@ -13,7 +13,10 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +28,7 @@ import app.tyst.core.settings.OneHanded
 import app.tyst.core.theme.AccentSource
 import app.tyst.core.theme.ThemeMode
 import app.tyst.core.theme.Tokens
+import app.tyst.keyboard.ime.AutofillLog
 import app.tyst.keyboard.ime.VoiceInput
 
 /** A scrolling screen with the standard top bar. */
@@ -241,6 +245,7 @@ fun PasswordsScreen() {
                 "The last thing you copy appears above the keys for 3 minutes. Kept in memory only; passwords show as dots.",
                 s.showCopiedText,
             ) { v -> env.update { it.copy(showCopiedText = v) } }
+            AutofillCheck()
             InfoCard {
                 Text(
                     "Passwords you type aren’t learned or saved. Saved passwords come from ${manager ?: "your password manager"} through Android, " +
@@ -307,4 +312,20 @@ fun AboutScreen() {
             Spacer(Modifier.height(24.dp))
         }
     }
+}
+
+/** What the keyboard last heard from Android's autofill, to tell a quiet password manager from a Tyst problem. */
+@Composable
+private fun AutofillCheck() {
+    var refresh by remember { mutableIntStateOf(0) }
+    val events = remember(refresh, LocalEnv.current.tick) { AutofillLog.all() }
+    SectionLabel("Autofill check")
+    Body(
+        if (events.isEmpty()) "Nothing yet. Open a login screen in any app with Tyst as your keyboard, then come back here."
+        else "What happened the last few times a field opened, newest first:",
+    )
+    events.take(10).forEach { e ->
+        Text(e, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp))
+    }
+    Row(Modifier.padding(horizontal = 12.dp)) { LinkButton("Refresh") { refresh++ } }
 }

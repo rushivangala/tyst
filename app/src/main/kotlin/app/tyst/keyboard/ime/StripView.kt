@@ -60,6 +60,7 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
     // new pills arrive, never on each keystroke.
     private val inlineScroll = HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false; isFillViewport = false }
     private val inlineRow = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+    private val inlineClip = InlineClipFrame(context)
     private var lastState = StripState()
     private val slotData = arrayOfNulls<Suggestion>(3)
     private var undoSlot = -1
@@ -88,7 +89,8 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
         center.addView(chipScroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
         center.addView(incognitoLabel, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
         inlineScroll.addView(inlineRow, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, h))
-        center.addView(inlineScroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
+        inlineClip.addView(inlineScroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
+        center.addView(inlineClip, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h))
         inlineScroll.visibility = GONE
     }
 

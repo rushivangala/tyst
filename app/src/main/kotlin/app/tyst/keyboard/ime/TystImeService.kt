@@ -409,15 +409,28 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     }
 
     override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
-        if (!settings.showPasswordSuggestions) return null
-        return try { InlineAutofill.request(this) } catch (_: RuntimeException) { null }
+        if (!settings.showPasswordSuggestions) {
+            AutofillLog.add("Not asking for password suggestions: turned off in Tyst")
+            return null
+        }
+        return try {
+            InlineAutofill.request(this, colors ?: KeyboardTheme.resolve(this, settings)).also {
+                AutofillLog.add("Asked Android for password suggestions")
+            }
+        } catch (e: RuntimeException) {
+            AutofillLog.add("Couldn’t ask for suggestions: ${e.javaClass.simpleName}: ${e.message}")
+            null
+        }
     }
 
     override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
         if (!settings.showPasswordSuggestions) return false
+        val count = response.inlineSuggestions.size
+        AutofillLog.add(if (count == 0) "Password manager had no suggestions for this field" else "Password manager sent $count suggestion${if (count == 1) "" else "s"}")
         InlineAutofill.inflate(this, response) { views ->
             pendingInline = views
             strip?.setInlineSuggestions(views)
+            if (views.isNotEmpty()) AutofillLog.add("Showing ${views.size} in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
         }
         return true
     }
