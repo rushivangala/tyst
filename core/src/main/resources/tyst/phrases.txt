@@ -1,0 +1,174 @@
+# Base next-word model. Written for Tyst; one message per line. The personal model adds to this.
+Can you send me the report when you have a moment?
+Can you send me the link to the doc?
+Can you send me the file before the meeting?
+Can we meet at 6 for lunch?
+Can we meet tomorrow around noon?
+Can we meet at the office around 3?
+Can we meet around lunch on Thursday?
+Can we talk later today?
+Running 10 minutes late, sorry!
+Running late, be there in 5.
+Running a bit behind, start without me.
+Thanks for flagging this, I will take a look.
+Thanks for flagging that.
+Thanks for the update.
+Thanks for your help today.
+Thanks so much for dinner last night.
+Thank you for the quick reply.
+Let's move the meeting to Thursday.
+Let's move the meeting to tomorrow.
+Let's move it to 3 pm.
+Let's catch up next week.
+Let's grab lunch tomorrow.
+Let me know if that works for you.
+Let me know when you are free.
+Let me know what you think.
+Let me check and get back to you.
+Don't forget to pick up milk on the way home.
+Don't forget to pick up the kids at 4.
+Don't forget to call grandma.
+Dinner is at 6 tonight.
+Dinner is at home tonight, see you soon.
+See you soon!
+See you later!
+See you at 6.
+See you tomorrow morning.
+See you at the station.
+Hi, I hope you are well.
+Hi, I hope you had a great weekend.
+Hi, I hope you are doing well.
+I hope you are having a good week.
+I hope that helps.
+Best regards,
+Best wishes,
+Kind regards,
+Buy milk, bread and batteries.
+Buy milk and eggs.
+Call the dentist about Tuesday.
+Call the dentist about my appointment.
+Are you joining us for lunch today?
+Are you joining us for the call?
+Are you coming to the party on Saturday?
+Are you free on Friday evening?
+Are you around this afternoon?
+Do you want to grab a coffee?
+Do you have time for a quick call?
+Do you know where the keys are?
+I will be there in 10 minutes.
+I will send it over this afternoon.
+I will call you later.
+I will be home late tonight.
+I am on my way.
+I am running late.
+I am at the office.
+I am not sure yet.
+I'm on my way!
+I'm running late.
+I'm at home.
+I'm not sure, let me check.
+I'm free after 5.
+I'll be there at 6.
+I'll call you later.
+I'll send it tomorrow.
+I'll let you know.
+I think that works.
+I think we should go.
+I think so too.
+I don't know yet.
+I don't think so.
+I can do Thursday afternoon.
+I can't make it tomorrow.
+I can't make it to the meeting.
+Could you please review the document?
+Could you please send me the details?
+Could we move it to Thursday afternoon?
+Would you like to join us?
+Would it be possible to reschedule?
+Please let me know if you have any questions.
+Please find the report attached.
+Please call me when you can.
+Happy birthday! Have a great day!
+Have a great weekend!
+Have a good one!
+Good morning! How are you?
+Good night, sleep well.
+How are you doing?
+How was your day?
+How about tomorrow?
+What time works for you?
+What time is the meeting?
+What do you think about the new design?
+Where are you right now?
+Where should we meet?
+When are you coming home?
+When is the deadline?
+Sounds good to me.
+Sounds great, thanks!
+That sounds good.
+That works for me.
+No problem at all.
+No worries, take your time.
+Of course, happy to help.
+Just checking in on the project.
+Just wanted to say thank you.
+Just a quick reminder about the meeting tomorrow.
+Quick question about the budget.
+The meeting is at 3 pm in the big room.
+The train leaves at 8 from the central station.
+The report is almost done.
+The weather is great today.
+We should catch up soon.
+We are almost there.
+We need to talk about the plan.
+We can do it next week.
+Is it okay if we start a bit later?
+Is everything okay?
+It was great to see you.
+It was nice to meet you.
+It is on the table.
+Love you, see you soon.
+Miss you!
+On my way home now.
+Almost done, just a few more minutes.
+Going to the gym, back in an hour.
+Got it, thanks!
+Good luck today!
+Congrats on the new job!
+Looking forward to seeing you.
+Looking forward to it.
+Sorry for the late reply.
+Sorry I missed your call.
+Sorry, I can't make it today.
+Welcome to the team!
+Who is coming to dinner?
+Why don't we meet at the park?
+Want to get pizza tonight?
+Need anything from the store?
+Call me when you land.
+Text me when you get home.
+Send me the address please.
+My address is on the invite.
+My number is in the email.
+My flight lands at 9.
+The booking ref is in the confirmation email.
+Here is the link to the meeting.
+Here is my new number.
+Meet me at the station at 6.
+Meet you at the entrance.
+Meet Johan at the cafe.
+Let's go to the park on Sunday.
+Let's go to the beach on Saturday.
+Let's go for a walk after dinner.
+The kids are asleep.
+The package arrived today.
+Pick you up at 7?
+Back in 5 minutes.
+Be right back.
+Yes, that works.
+No, not today.
+Maybe next week?
+Okay, see you then.
+Great, thanks for letting me know.
+Perfect, see you there.
+Agreed, let's do that.

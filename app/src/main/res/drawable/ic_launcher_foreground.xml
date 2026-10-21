@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tyst glyph: a keycap whose spacebar is a flat, silent line. 108dp adaptive-icon grid. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M44,34H64A13,13 0,0 1,77,47V61A13,13 0,0 1,64,74H44A13,13 0,0 1,31,61V47A13,13 0,0 1,44,34ZM45,58H63A3,3 0,0 1,63,64H45A3,3 0,0 1,45,58Z" />
+</vector>
