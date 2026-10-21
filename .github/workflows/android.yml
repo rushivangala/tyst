@@ -5,6 +5,8 @@ on:
     branches: ["**"]
     tags: ["v*"]
   pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
 
 concurrency:
@@ -186,6 +188,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          notes="docs/releases/${GITHUB_REF_NAME}.md"
-          [ -f "$notes" ] || notes=/dev/null
-          gh release create "$GITHUB_REF_NAME" dist/* --title "Tyst ${GITHUB_REF_NAME}" --notes-file "$notes" --latest
+          # The release may already exist (created on GitHub), in which case the APK is attached to it.
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/* --clobber
+          else
+            notes="docs/releases/${GITHUB_REF_NAME}.md"
+            [ -f "$notes" ] || notes=/dev/null
+            gh release create "$GITHUB_REF_NAME" dist/* --title "Tyst ${GITHUB_REF_NAME}" --notes-file "$notes" --latest
+          fi
