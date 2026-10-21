@@ -249,4 +249,64 @@ class TypingControllerTest {
         controller.finish()
         assertThat(engine.style.messageCount).isEqualTo(1)
     }
+
+    @Test fun copiedTextIsOfferedAndPastes() {
+        val t = start("Meet at ")
+        controller.onClipboard("Kungsgatan 4, 411 19 Göteborg")
+        val clip = controller.strip().clip!!
+        assertThat(clip.preview()).isEqualTo("Kungsgatan 4, 411 19 Gö…")
+        controller.insertClip()
+        assertThat(t.value).isEqualTo("Meet at Kungsgatan 4, 411 19 Göteborg")
+        assertThat(controller.strip().clip).isNull()
+    }
+
+    @Test fun copiedTextStepsAsideWhileTypingAWord() {
+        start()
+        controller.onClipboard("https://example.com/doc")
+        type("Here")
+        assertThat(controller.strip().clip).isNull()
+        controller.onSpace()
+        assertThat(controller.strip().clip?.text).isEqualTo("https://example.com/doc")
+    }
+
+    @Test fun copiedTextExpiresAfterThreeMinutesAndCanBeDismissed() {
+        start()
+        controller.onClipboard("hello")
+        now += 2 * 60_000
+        assertThat(controller.hasLiveClip()).isTrue()
+        now += 61_000
+        assertThat(controller.strip().clip).isNull()
+        assertThat(controller.hasLiveClip()).isFalse()
+        controller.onClipboard("again")
+        controller.dismissClip()
+        assertThat(controller.strip().clip).isNull()
+    }
+
+    @Test fun oldClipsFromBeforeAreNotOffered() {
+        start()
+        controller.onClipboard("stale", copiedAt = now - 10 * 60_000)
+        assertThat(controller.strip().clip).isNull()
+    }
+
+    @Test fun sensitiveClipsAreMaskedButPaste() {
+        val t = start()
+        controller.onClipboard("hunter2-Secret", sensitive = true)
+        assertThat(controller.strip().clip!!.preview()).isEqualTo("••••••")
+        controller.insertClip()
+        assertThat(t.value).isEqualTo("hunter2-Secret")
+    }
+
+    @Test fun codesStillBecomeTheCodeChipNotText() {
+        start()
+        controller.onClipboard("Your code is 482913")
+        val strip = controller.strip()
+        assertThat(strip.code?.code).isEqualTo("482913")
+        assertThat(strip.clip).isNull()
+    }
+
+    @Test fun copiedTextCanBeTurnedOff() {
+        start(settings = KeyboardSettings(showCopiedText = false))
+        controller.onClipboard("hello")
+        assertThat(controller.strip().clip).isNull()
+    }
 }

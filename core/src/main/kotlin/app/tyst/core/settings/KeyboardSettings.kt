@@ -28,6 +28,8 @@ data class KeyboardSettings(
     val showCopiedCodes: Boolean = true,
     val codeExpirySeconds: Int = 60,
     val clearClipboardAfterCode: Boolean = false,
+    /** Offer the last copied text as a paste chip for 3 minutes. */
+    val showCopiedText: Boolean = true,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val accentSource: AccentSource = AccentSource.WALLPAPER,
     val paletteId: String = "hav",

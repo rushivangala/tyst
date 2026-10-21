@@ -17,6 +17,7 @@ The design work (spec, design system, screens, copy and the design review) is in
 | Private memory | ✅ Opt-in. Saves addresses, booking references, phone numbers and emails, but only ones introduced as the user's own ("my address is…"). Offered as a truncated chip with a lock. Forgotten after 30 or 90 days unless pinned. Browsers are excluded, and card numbers and codes are never saved. |
 | Password manager suggestions | ✅ Android inline autofill pills (NordPass or any autofill service), drawn by the system. Tyst can't read them. |
 | Verification code chip | ✅ Shows a code from a fresh clipboard item with a "hides in N s" countdown. The code is held in memory only. The clipboard can optionally be cleared after filling. |
+| Copied text | ✅ The last thing you copied appears as a chip for 3 minutes. One tap pastes it. It steps aside while you type a word, and anything marked sensitive shows as dots. Held in memory only, and can be turned off in Passwords & codes. |
 | What I learned and privacy proof | ✅ My style (habits you can toggle, phrases, pause, reset), Words (dictionary, never-correct, never-learn), Privacy & memory (search, delete with Undo, delete all, which destroys the key), and a live permission list read from Android. |
 | On-device voice typing | ✅ Uses Android's *on-device* speech recogniser only (no network fallback), followed by a Swedish pass ("vasteras" → "Västerås"). |
 | Material 3 Expressive theming | ✅ Light, dark or system. Wallpaper colour with a contrast guard, the six curated palettes (Hav, Fjäll, Mossa, Lingon, Bärnsten, Skymning) or time-of-day rotation. Key height S–XL, key borders, number row, one-handed mode (left/right), and a live preview. |
@@ -26,7 +27,7 @@ The keyboard also has symbols (two pages), number and phone pads, offline emoji 
 ### Different from the spec, on purpose
 
 - **The writing tools use a built-in rules engine, not an LLM.** The spec plans a ~1 GB on-device model delivered by Play Asset Delivery. That model isn't part of this build. Rewrite and Proofread use deterministic phrase rules plus your learned habits. They work offline from the first minute and never invent facts. The engine sits behind `Rewriter` and `Proofreader` in `:core`, so a model can replace it later.
-- **Not built yet:** swipe typing, the clipboard history panel, per-app default tones, encrypted export, a biometric lock for memory, Translate and Reply (shown as "Later" in Settings), and Direct Boot support. Before the first unlock after a reboot, Android uses another keyboard.
+- **Not built yet:** swipe typing, a clipboard history panel (only the latest copy is offered), per-app default tones, encrypted export, a biometric lock for memory, Translate and Reply (shown as "Later" in Settings), and Direct Boot support. Before the first unlock after a reboot, Android uses another keyboard.
 
 ## Project layout
 
@@ -77,7 +78,7 @@ The release APK is signed with your key when these repository secrets exist: `TY
 
 ## Tests
 
-- **`:core`: 93 JVM tests.**
+- **`:core`: 101 JVM tests.**
   - All ten autocorrect cases from the UX copy, and the Swedish guard.
   - A corpus check of fewer than 0.5% Swedish words wrongly corrected (spec metric), and that none of the 10,000 most common English words is changed.
   - Prediction p95 latency under 30 ms (spec metric).

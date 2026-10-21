@@ -235,6 +235,12 @@ fun PasswordsScreen() {
             Text("Hide a copied code after", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
             Segmented(listOf(30 to "30 sec", 60 to "1 min", 180 to "3 min"), s.codeExpirySeconds) { v -> env.update { it.copy(codeExpirySeconds = v) } }
             ToggleRow("Clear the clipboard after filling a code", null, s.clearClipboardAfterCode) { v -> env.update { it.copy(clearClipboardAfterCode = v) } }
+            SectionLabel("Clipboard")
+            ToggleRow(
+                "Show copied text",
+                "The last thing you copy appears above the keys for 3 minutes. Kept in memory only; passwords show as dots.",
+                s.showCopiedText,
+            ) { v -> env.update { it.copy(showCopiedText = v) } }
             InfoCard {
                 Text(
                     "Passwords you type aren’t learned or saved. Saved passwords come from ${manager ?: "your password manager"} through Android, " +

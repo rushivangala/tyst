@@ -2,6 +2,7 @@ package app.tyst.core.typing
 
 import app.tyst.core.TystEngine
 import app.tyst.core.codes.CopiedCode
+import app.tyst.core.codes.CopiedText
 import app.tyst.core.codes.OtpDetector
 import app.tyst.core.correct.AutocorrectStrength
 import app.tyst.core.correct.CorrectionOptions
@@ -34,7 +35,10 @@ enum class ShiftState { OFF, ON, LOCKED }
 
 data class LastCorrection(val original: String, val replacement: String, val suffix: String)
 
-/** What the suggestion strip shows. Priority: code > memory > predictions (autofill pills are added by the app). */
+/**
+ * What the suggestion strip shows. Priority: code > memory > copied text > predictions
+ * (autofill pills are added by the app, after the code).
+ */
 data class StripState(
     val suggestions: List<Suggestion> = emptyList(),
     /** Word space will put in, drawn bold; null when space just adds a space. */
@@ -44,6 +48,8 @@ data class StripState(
     val memory: List<MemoryItem> = emptyList(),
     val code: CopiedCode? = null,
     val codeSecondsLeft: Int = 0,
+    /** The last copied text, offered to paste while no word is being typed. */
+    val clip: CopiedText? = null,
     val incognito: Boolean = false,
     val writingTools: Boolean = true,
 )
@@ -74,6 +80,7 @@ class TypingController(
     private var autoSpace = false
     private var lastWasSpace = false
     private var copiedCode: CopiedCode? = null
+    private var copiedText: CopiedText? = null
     private var lastLearnedText: String? = null
 
     /** Called when [StripState] or the shift state may have changed. */
@@ -335,15 +342,46 @@ class TypingController(
         changed()
     }
 
-    /** New clipboard text. Only a code is kept, in memory, never on disk. */
-    fun onClipboard(text: String?, copiedAt: Long = clock()) {
-        val code = OtpDetector.extract(text) ?: return
-        copiedCode = CopiedCode(code, copiedAt)
+    /**
+     * New clipboard text. A verification code becomes the code chip; anything else becomes the
+     * copied-text chip. Both live in memory only and are never written to disk.
+     */
+    fun onClipboard(text: String?, copiedAt: Long = clock(), sensitive: Boolean = false) {
+        if (text.isNullOrBlank()) return
+        val code = OtpDetector.extract(text)
+        if (code != null) {
+            copiedCode = CopiedCode(code, copiedAt)
+            copiedText = null
+        } else if (text.length <= CopiedText.MAX_CHARS) {
+            copiedText = CopiedText(text, copiedAt, sensitive)
+        }
         changed()
     }
 
     /** True while a copied code is on show, so the app can tick its countdown. */
     fun hasLiveCode(): Boolean = copiedCode?.let { settings.showCopiedCodes && it.isFresh(clock(), settings.codeExpirySeconds) } == true
+
+    /** True while copied text may still be offered, so the app can hide the chip when it expires. */
+    fun hasLiveClip(): Boolean = copiedText?.let { settings.showCopiedText && it.isFresh(clock()) } == true
+
+    /** Pastes the copied text at the cursor (replacing any selection) and stops offering it. */
+    fun insertClip() {
+        val t = target ?: return
+        val clip = copiedText ?: return
+        t.commit(clip.text)
+        copiedText = null
+        lastCorrection = null
+        autoSpace = false
+        lastWasSpace = false
+        updateAutoShift()
+        changed()
+    }
+
+    /** The user dismissed the copied-text chip. */
+    fun dismissClip() {
+        copiedText = null
+        changed()
+    }
 
     fun clearCode() {
         copiedCode = null
@@ -397,6 +435,7 @@ class TypingController(
         val now = clock()
         val code = copiedCode?.takeIf { settings.showCopiedCodes && it.isFresh(now, settings.codeExpirySeconds) }
         if (copiedCode != null && code == null) copiedCode = null
+        if (copiedText?.isFresh(now) == false) copiedText = null
         val before = t.before(64)
         val memory = if (settings.memoryEnabled && !field.incognito) MemoryMatcher.match(before, field, engine.memory) else emptyList()
         val predictions = if (field.predictions && t.selected().isEmpty()) engine.predictor.predict(before, options()) else null
@@ -410,6 +449,8 @@ class TypingController(
             memory = memory,
             code = code,
             codeSecondsLeft = code?.remainingSeconds(now, settings.codeExpirySeconds) ?: 0,
+            // Out of the way while a word is being typed; back after a space.
+            clip = copiedText?.takeIf { settings.showCopiedText && code == null && word.isEmpty() },
             incognito = field.incognito,
             writingTools = settings.writingTools && field.writingTools,
         )

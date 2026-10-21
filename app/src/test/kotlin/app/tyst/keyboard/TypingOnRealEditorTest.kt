@@ -96,7 +96,16 @@ class TypingOnRealEditorTest {
         assertThat(text).isEqualTo("482913")
     }
 
-    @Test fun backspaceOnEmptyFieldSendsAKeyEvent() {
+    @Test fun copiedTextPastesIntoTheEditor() {
+        focus(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES, EditorInfo.IME_ACTION_SEND)
+        type("link: ")
+        controller.onClipboard("https://example.com/doc")
+        assertThat(controller.strip().clip?.preview()).isEqualTo("https://example.com/doc")
+        controller.insertClip()
+        assertThat(text).isEqualTo("Link: https://example.com/doc")
+    }
+
+        @Test fun backspaceOnEmptyFieldSendsAKeyEvent() {
         focus(InputType.TYPE_CLASS_TEXT, EditorInfo.IME_ACTION_DONE)
         controller.onBackspace()
         assertThat(keys).containsExactly(KeyEvent.KEYCODE_DEL)

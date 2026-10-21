@@ -49,6 +49,7 @@ class SettingsRepository(context: Context) {
                 showCopiedCodes = p.getBoolean("copied_codes", d.showCopiedCodes),
                 codeExpirySeconds = p.getInt("code_expiry", d.codeExpirySeconds).takeIf { it in KeyboardSettings.CODE_EXPIRY_OPTIONS } ?: d.codeExpirySeconds,
                 clearClipboardAfterCode = p.getBoolean("clear_clipboard", d.clearClipboardAfterCode),
+                showCopiedText = p.getBoolean("copied_text", d.showCopiedText),
                 themeMode = p.enum("theme_mode", d.themeMode),
                 accentSource = p.enum("accent_source", d.accentSource),
                 paletteId = p.getString("palette", d.paletteId) ?: d.paletteId,
@@ -79,6 +80,7 @@ class SettingsRepository(context: Context) {
                 .putBoolean("copied_codes", s.showCopiedCodes)
                 .putInt("code_expiry", s.codeExpirySeconds)
                 .putBoolean("clear_clipboard", s.clearClipboardAfterCode)
+                .putBoolean("copied_text", s.showCopiedText)
                 .putString("theme_mode", s.themeMode.name)
                 .putString("accent_source", s.accentSource.name)
                 .putString("palette", s.paletteId)

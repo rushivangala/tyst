@@ -31,6 +31,8 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
         fun onUndoCorrection()
         fun onMemory(item: MemoryItem)
         fun onCode()
+        fun onClip()
+        fun onDismissClip()
         fun onWritingTools()
         fun onVoice()
     }
@@ -145,6 +147,21 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
                     }
                     addChip(chip)
                 }
+                showChips()
+            }
+            state.clip != null -> {
+                val clip = state.clip!!
+                val chip = RichChip(context, Icons.COPY, clip.preview(), "Copied · tap to paste", c.n.key, c.n.textPrimary, c.n.textSecondary, c.n.special).apply {
+                    contentDescription = if (clip.sensitive) "Paste copied text, hidden" else "Paste copied text: ${clip.preview(60)}"
+                    setOnClickListener { listener.onClip() }
+                }
+                addChip(chip)
+                val close = IconButton(context, Icons.CLOSE, "Don’t offer copied text").apply {
+                    tint = c.n.textSecondary
+                    iconSizeDp = 18f
+                    setOnClickListener { listener.onDismissClip() }
+                }
+                chipRow.addView(close, LayoutParams(context.dp(40f).toInt(), context.dp(40f).toInt()))
                 showChips()
             }
             state.suggestions.isEmpty() && state.undoWord == null -> {

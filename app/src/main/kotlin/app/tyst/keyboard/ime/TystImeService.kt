@@ -79,7 +79,8 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     private val ticker = object : Runnable {
         override fun run() {
             renderStrip()
-            if (controller?.hasLiveCode() == true) handler.postDelayed(this, 1_000)
+            val c = controller
+            if (c?.hasLiveCode() == true || c?.hasLiveClip() == true) handler.postDelayed(this, 1_000)
         }
     }
 
@@ -217,7 +218,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         val state = controller?.strip() ?: StripState(incognito = focused.incognito, writingTools = false)
         val voiceOk = settings.voiceTyping && focused.writingTools && voiceAvailable()
         st.render(state, voiceOk, toolsPanel != null)
-        if (state.code != null) {
+        if (state.code != null || state.clip != null) {
             handler.removeCallbacks(ticker)
             handler.postDelayed(ticker, 1_000)
         }
@@ -298,6 +299,9 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             runCatching { clipboard?.clearPrimaryClip() }
         }
     }
+
+    override fun onClip() { controller?.insertClip() }
+    override fun onDismissClip() { controller?.dismissClip() }
 
     override fun onWritingTools() {
         if (toolsPanel != null) { closePanels(); return }
@@ -388,9 +392,13 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         val cm = clipboard ?: return
         val clip = try { cm.primaryClip } catch (_: SecurityException) { null } ?: return
         val text = clip.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString() ?: return
-        val copiedAt = clip.description?.timestamp?.takeIf { it > 0 } ?: System.currentTimeMillis()
-        if (onlyFresh && System.currentTimeMillis() - copiedAt > settings.codeExpirySeconds * 1000L) return
-        c.onClipboard(text, copiedAt)
+        val description = clip.description
+        val copiedAt = description?.timestamp?.takeIf { it > 0 } ?: System.currentTimeMillis()
+        val window = maxOf(settings.codeExpirySeconds * 1000L, app.tyst.core.codes.CopiedText.WINDOW_MS)
+        if (onlyFresh && System.currentTimeMillis() - copiedAt > window) return
+        // ClipDescription.EXTRA_IS_SENSITIVE (API 33); password managers set it on copied passwords.
+        val sensitive = description?.extras?.getBoolean("android.content.extra.IS_SENSITIVE", false) == true
+        c.onClipboard(text, copiedAt, sensitive)
     }
 
     override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {

@@ -38,3 +38,25 @@ data class CopiedCode(val code: String, val copiedAtMillis: Long) {
     fun isFresh(nowMillis: Long, expirySeconds: Int): Boolean =
         nowMillis >= copiedAtMillis && remainingSeconds(nowMillis, expirySeconds) > 0
 }
+
+/**
+ * The last text the user copied, offered once as a paste chip. Held in memory only.
+ * [sensitive] clips (Android's IS_SENSITIVE flag, e.g. from a password manager) are shown masked.
+ */
+data class CopiedText(val text: String, val copiedAtMillis: Long, val sensitive: Boolean = false) {
+    fun isFresh(nowMillis: Long): Boolean = nowMillis >= copiedAtMillis && nowMillis - copiedAtMillis < WINDOW_MS
+
+    /** One line for the strip: whitespace folded, cut to [max] characters, or dots when sensitive. */
+    fun preview(max: Int = 24): String {
+        if (sensitive) return "••••••"
+        val flat = text.trim().replace(Regex("\\s+"), " ")
+        return if (flat.length <= max) flat else flat.take(max - 1).trimEnd() + "…"
+    }
+
+    companion object {
+        /** How long a copied item is offered: 3 minutes, like copied codes at most. */
+        const val WINDOW_MS = 3 * 60 * 1000L
+        /** Longer clips can still be pasted with Android's own paste; the chip skips them. */
+        const val MAX_CHARS = 5_000
+    }
+}
