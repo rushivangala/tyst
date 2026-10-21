@@ -185,7 +185,8 @@ jobs:
         if: steps.tag.outputs.skip != 'true'
         env:
           TYST_KEYSTORE_PASSWORD: ${{ secrets.TYST_KEYSTORE_PASSWORD }}
-        run: .github/scripts/gradle.sh :app:assembleRelease
+        # One retry: a dependency download occasionally fails on a runner.
+        run: .github/scripts/gradle.sh :app:assembleRelease || (sleep 30 && .github/scripts/gradle.sh :app:assembleRelease)
 
       - name: Check the signature and package the release
         if: steps.tag.outputs.skip != 'true'
