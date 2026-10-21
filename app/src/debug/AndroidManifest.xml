@@ -3,7 +3,7 @@
     <application>
         <activity
             android:name="app.tyst.keyboard.TestEditorActivity"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
     </application>
 </manifest>

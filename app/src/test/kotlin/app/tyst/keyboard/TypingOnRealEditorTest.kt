@@ -103,7 +103,7 @@ class TypingOnRealEditorTest {
     }
 
     @Test fun writingToolsReplaceTheSelection() {
-        focus(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE, 0)
+        focus(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES, 0)
         type("hello there friend")
         edit.setSelection(6, 11)
         assertThat(controller.textForTools()).isEqualTo("there")

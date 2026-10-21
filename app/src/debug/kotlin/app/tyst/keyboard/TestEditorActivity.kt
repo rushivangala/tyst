@@ -7,7 +7,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
 
-/** A plain message field for end-to-end keyboard tests. */
+/** A plain message field for end-to-end keyboard tests. Debug builds only. */
 class TestEditorActivity : Activity() {
     lateinit var field: EditText
 
