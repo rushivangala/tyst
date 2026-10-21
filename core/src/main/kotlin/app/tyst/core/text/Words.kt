@@ -1,6 +1,5 @@
 package app.tyst.core.text
 
-import java.text.BreakIterator
 import java.text.Normalizer
 
 /** Small text helpers shared by prediction, correction and the typing controller. */
@@ -99,26 +98,41 @@ object Words {
 
     fun hasSwedishLetters(s: String): Boolean = s.any { it in "åäöÅÄÖ" }
 
-    /** Length in chars of the last user-perceived character (emoji sequences, combining marks). */
+    /**
+     * Length in chars of the last user-perceived character: emoji with skin tones, variation
+     * selectors and ZWJ sequences, flags, keycaps and combining marks count as one. Done by hand
+     * because java.text.BreakIterator handles emoji differently across JDK versions.
+     */
     fun lastGraphemeLength(before: String): Int {
         if (before.isEmpty()) return 0
-        val tail = before.takeLast(32)
-        val it = BreakIterator.getCharacterInstance()
-        it.setText(tail)
-        val end = it.last()
-        val start = it.previous()
-        var len = if (start == BreakIterator.DONE) tail.length else end - start
-        // BreakIterator on older JDKs splits ZWJ emoji sequences; keep joining over U+200D.
-        var s = tail.length - len
-        while (s >= 2 && tail[s - 1] == '‍') {
-            val prev = tail.substring(0, s - 1)
-            val p = BreakIterator.getCharacterInstance().apply { setText(prev) }
-            val pe = p.last()
-            val ps = p.previous()
-            val add = if (ps == BreakIterator.DONE) prev.length else pe - ps
-            len += 1 + add
-            s = tail.length - len
+        var start = before.length
+        fun prevCodePoint(at: Int): Int = Character.codePointBefore(before, at)
+        fun isExtender(cp: Int) = cp == 0xFE0F || cp == 0xFE0E || cp == 0x20E3 || cp in 0x1F3FB..0x1F3FF ||
+            cp in 0xE0020..0xE007F || Character.getType(cp).let { it == Character.NON_SPACING_MARK.toInt() || it == Character.ENCLOSING_MARK.toInt() || it == Character.COMBINING_SPACING_MARK.toInt() }
+        fun isRegional(cp: Int) = cp in 0x1F1E6..0x1F1FF
+        // The last code point, then any extenders before it belong to the same base.
+        var cp = prevCodePoint(start)
+        start -= Character.charCount(cp)
+        while (true) {
+            while (isExtender(cp) && start > 0) {
+                cp = prevCodePoint(start)
+                start -= Character.charCount(cp)
+            }
+            if (isRegional(cp) && start > 0 && isRegional(prevCodePoint(start))) {
+                // A flag is a pair of regional indicators; count pairs back from the end.
+                var n = 1
+                var s = start
+                while (s > 0 && isRegional(prevCodePoint(s))) { n++; s -= Character.charCount(prevCodePoint(s)) }
+                if (n % 2 == 0) start -= Character.charCount(prevCodePoint(start))
+            }
+            if (start > 0 && prevCodePoint(start) == 0x200D && start - 1 > 0) {
+                start -= 1
+                cp = prevCodePoint(start)
+                start -= Character.charCount(cp)
+                continue
+            }
+            break
         }
-        return len
+        return before.length - start
     }
 }
