@@ -115,7 +115,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: .github/scripts/gradle.sh :app:connectedDebugAndroidTest
+          script: .github/scripts/gradle.sh :app:connectedDebugAndroidTest || (.github/scripts/device-log.sh; exit 1)
 
       - name: Upload instrumented test reports
         if: always()
