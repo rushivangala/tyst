@@ -93,6 +93,8 @@ class KeyboardView(context: Context) : View(context) {
         var popup: PopupState? = null
         var repeat = 0
         var slide = Slide.NONE
+        /** Backspace: the first delete has been sent. */
+        var deleted = false
         /** Characters (cursor) or words (delete) reported so far in the current slide. */
         var slideSteps = 0
     }
@@ -261,7 +263,9 @@ class KeyboardView(context: Context) : View(context) {
                 releasedAt.remove(pk)
                 listener?.onKeyDown(pk.key)
                 if (pk.key.type == KeyType.BACKSPACE) {
-                    listener?.onBackspace(0)
+                    // The first delete waits a moment (or for release) so a swipe-delete can begin
+                    // without first eating a character.
+                    postDelayed({ firstBackspace(p) }, BACKSPACE_DECIDE_MS)
                     postDelayed({ repeatBackspace(p) }, REPEAT_START_MS)
                 } else if (pk.key.popup.isNotEmpty() || pk.key.type == KeyType.SPACE) {
                     postDelayed({ longPress(p) }, LONG_PRESS_MS)
@@ -343,6 +347,10 @@ class KeyboardView(context: Context) : View(context) {
             Slide.DELETE -> { listener?.onDeleteSlideEnd(commit); invalidate(); return }
             Slide.NONE -> Unit
         }
+        if (p.key.key.type == KeyType.BACKSPACE && commit && !p.deleted) {
+            p.deleted = true
+            listener?.onBackspace(0)
+        }
         val popup = p.popup
         if (popup != null) {
             dismissPopup()
@@ -365,8 +373,15 @@ class KeyboardView(context: Context) : View(context) {
 
     private fun caseFor(s: String) = if (shift != ShiftState.OFF && s.length == 1 && s[0].isLetter()) s.uppercase() else s
 
+    private fun firstBackspace(p: Pointer) {
+        if (pointers[p.id] !== p || p.slide != Slide.NONE || p.deleted) return
+        p.deleted = true
+        listener?.onBackspace(0)
+    }
+
     private fun repeatBackspace(p: Pointer) {
         if (pointers[p.id] !== p || p.slide != Slide.NONE) return
+        firstBackspace(p)
         p.repeat++
         listener?.onBackspace(p.repeat)
         postDelayed({ repeatBackspace(p) }, REPEAT_EVERY_MS)
@@ -514,6 +529,8 @@ class KeyboardView(context: Context) : View(context) {
     companion object {
         const val LONG_PRESS_MS = 300L
         const val REPEAT_START_MS = 400L
+        /** Backspace held this long deletes its first character; a slide starting sooner deletes nothing. */
+        const val BACKSPACE_DECIDE_MS = 150L
         const val REPEAT_EVERY_MS = 55L
         const val RELEASE_MS = 150L
         /** Sideways travel before space or backspace becomes a slide. */

@@ -94,7 +94,28 @@ class KeyboardGesturesTest {
     @Test fun backspaceSlideSelectsWordsAndDeletesOnRelease() {
         val bs = key(KeyType.BACKSPACE).visual
         drag(bs.centerX, bs.centerY, bs.centerX - activity.dp(14f + 28f + 4f))
-        assertThat(events.first()).isEqualTo("bs:0")
+        // No character is deleted before the slide takes over.
+        assertThat(events.none { it.startsWith("bs:") }).isTrue()
         assertThat(events).containsAtLeast("delete-start", "delete:1", "delete:2", "delete-end:true").inOrder()
+    }
+
+    @Test fun backspaceTapDeletesOnRelease() {
+        val bs = key(KeyType.BACKSPACE).visual
+        view.dispatchTouchEvent(motion(MotionEvent.ACTION_DOWN, bs.centerX, bs.centerY))
+        assertThat(events).isEmpty()
+        view.dispatchTouchEvent(motion(MotionEvent.ACTION_UP, bs.centerX, bs.centerY))
+        assertThat(events).containsExactly("bs:0")
+    }
+
+    @Test fun backspaceHeldDeletesOnceThenRepeats() {
+        val bs = key(KeyType.BACKSPACE).visual
+        view.dispatchTouchEvent(motion(MotionEvent.ACTION_DOWN, bs.centerX, bs.centerY))
+        org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(java.time.Duration.ofMillis(KeyboardView.BACKSPACE_DECIDE_MS + 10))
+        assertThat(events).containsExactly("bs:0")
+        org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(java.time.Duration.ofMillis(KeyboardView.REPEAT_START_MS))
+        view.dispatchTouchEvent(motion(MotionEvent.ACTION_UP, bs.centerX, bs.centerY))
+        // No extra delete on release after a hold.
+        assertThat(events.count { it == "bs:0" }).isEqualTo(1)
+        assertThat(events).contains("bs:1")
     }
 }

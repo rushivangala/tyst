@@ -419,9 +419,13 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         val clip = try { cm.primaryClip } catch (_: SecurityException) { null } ?: return
         val text = clip.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString() ?: return
         val description = clip.description
-        val copiedAt = description?.timestamp?.takeIf { it > 0 } ?: System.currentTimeMillis()
+        val now = System.currentTimeMillis()
+        val stamped = description?.timestamp?.takeIf { it > 0 }
         val window = maxOf(settings.codeExpirySeconds * 1000L, app.tyst.core.codes.CopiedText.WINDOW_MS)
-        if (onlyFresh && System.currentTimeMillis() - copiedAt > window) return
+        // A clip of unknown age is only offered when the copy itself was just reported (onlyFresh false);
+        // otherwise an old clip would show up as fresh whenever a field opens.
+        if (onlyFresh && (stamped == null || now - stamped > window)) return
+        val copiedAt = stamped ?: now
         // ClipDescription.EXTRA_IS_SENSITIVE (API 33); password managers set it on copied passwords.
         val sensitive = description?.extras?.getBoolean("android.content.extra.IS_SENSITIVE", false) == true
         c.onClipboard(text, copiedAt, sensitive)
