@@ -59,6 +59,49 @@ class GraphTest {
         assertThat(later.engine.value!!.memory.size).isEqualTo(0)
     }
 
+    @Test fun keystoreHiccupNeverOverwritesLearnedData() {
+        val keys = FlakyKeys(SoftwareKeys())
+        val g = loadedGraph(keys)
+        g.engine.value!!.personal.addWord("Järntorget", "test", 0)
+        g.changed()
+        g.saveNow()
+
+        keys.failing = true
+        val blind = loadedGraph(keys)
+        assertThat(blind.canSave).isFalse()
+        assertThat(blind.engine.value!!.personal.inDictionary("järntorget")).isFalse()
+        // Typing while the key is unavailable must not replace the file with an empty dictionary.
+        blind.engine.value!!.personal.addWord("Haga", "test", 0)
+        blind.changed()
+        blind.saveNow()
+
+        keys.failing = false
+        val back = loadedGraph(keys).engine.value!!
+        assertThat(back.personal.inDictionary("järntorget")).isTrue()
+    }
+
+    @Test fun damagedFileIsSetAsideNotOverwritten() {
+        val keys = SoftwareKeys()
+        val g = loadedGraph(keys)
+        g.engine.value!!.personal.addWord("Järntorget", "test", 0)
+        g.changed()
+        g.saveNow()
+        val dir = File(context().filesDir, "learned")
+        val f = File(dir, "personal.bin")
+        val bytes = f.readBytes().also { it[it.size - 1] = (it[it.size - 1].toInt() xor 1).toByte() }
+        f.writeBytes(bytes)
+
+        val fresh = loadedGraph(keys)
+        assertThat(fresh.canSave).isTrue()
+        assertThat(fresh.store.quarantinedNames()).containsExactly("personal")
+        assertThat(File(dir, "personal.damaged").readBytes()).isEqualTo(bytes)
+        fresh.engine.value!!.personal.addWord("Haga", "test", 0)
+        fresh.changed()
+        fresh.saveNow()
+        assertThat(File(dir, "personal.damaged").readBytes()).isEqualTo(bytes)
+        assertThat(loadedGraph(keys).engine.value!!.personal.inDictionary("haga")).isTrue()
+    }
+
     @Test fun withEngineRunsOnceLoaded() {
         val g = Graph(context(), SoftwareKeys(), Inline)
         var ran = 0

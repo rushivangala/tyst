@@ -67,12 +67,15 @@ class KeyboardEndToEndTest {
 
     @Test fun suggestionStripOffersWords() {
         ActivityScenario.launch(TestEditorActivity::class.java).use { scenario ->
+            // Anything copied earlier on the device would take the strip's place after a space.
+            scenario.onActivity { it.getSystemService(android.content.ClipboardManager::class.java)?.clearPrimaryClip() }
             assertThat(device.wait(Until.hasObject(By.desc("Delete")), 10_000)).isTrue()
             waitForEngine()
             for (k in listOf("S", "e", "e", "Space", "y", "o", "u", "Space")) tapKey(k)
             val suggestion = listOf("soon", "later", "at", "tomorrow").firstNotNullOfOrNull { w ->
                 device.wait(Until.findObject(By.desc(w)), 2_000)?.let { w to it }
-            } ?: error("No next-word suggestion shown")
+            } ?: error("No next-word suggestion shown. Keyboard shows: " +
+                device.findObjects(By.pkg("app.tyst.keyboard")).mapNotNull { it.contentDescription }.filter { it.length > 1 }.distinct())
             suggestion.second.click()
             device.waitForIdle()
             assertThat(fieldText(scenario)).isEqualTo("See you ${suggestion.first} ")

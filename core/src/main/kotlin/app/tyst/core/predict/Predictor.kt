@@ -3,6 +3,7 @@ package app.tyst.core.predict
 import app.tyst.core.correct.Autocorrector
 import app.tyst.core.correct.CorrectionOptions
 import app.tyst.core.correct.CorrectionReason
+import app.tyst.core.correct.TapOffset
 import app.tyst.core.lexicon.Lexicon
 import app.tyst.core.text.Words
 import kotlin.math.ln
@@ -27,11 +28,12 @@ class Predictor(
     private val personal: PersonalModel,
     private val autocorrector: Autocorrector,
 ) {
-    fun predict(before: String, options: CorrectionOptions, limit: Int = 3): Predictions {
+    /** [taps]: where the finger landed for each letter of the current word, if known (see Autocorrector.check). */
+    fun predict(before: String, options: CorrectionOptions, limit: Int = 3, taps: List<TapOffset?>? = null): Predictions {
         val current = Words.currentWord(before)
         val previous = Words.previousWords(before, 2)
         return if (current.isEmpty()) Predictions(nextWords(previous, limit), null)
-        else completions(current, previous, options, limit)
+        else completions(current, previous, options, limit, taps)
     }
 
     private fun nextWords(previous: List<String>, limit: Int): List<Suggestion> {
@@ -50,7 +52,7 @@ class Predictor(
         }
     }
 
-    private fun completions(current: String, previous: List<String>, options: CorrectionOptions, limit: Int): Predictions {
+    private fun completions(current: String, previous: List<String>, options: CorrectionOptions, limit: Int, taps: List<TapOffset?>?): Predictions {
         val key = Words.normalize(current)
         val context = HashMap(base.next(previous))
         for ((w, p) in personal.ngrams.next(previous)) context.merge(w, 2.5 * p, Double::plus)
@@ -69,7 +71,7 @@ class Predictor(
         for ((w, c) in personal.ngrams.unigrams) if (c >= 2 && w.startsWith(key) && w != Words.SENTENCE_START) add(w, 300 + 20 * minOf(c, 10))
         personal.blockedWords.forEach { scored.remove(it) }
 
-        val check = autocorrector.check(current, previous, options)
+        val check = autocorrector.check(current, previous, options, taps)
         val out = ArrayList<Suggestion>()
         when (check.reason) {
             CorrectionReason.RESTORE -> check.suggestions.forEach { out += Suggestion(it, SuggestionKind.RESTORE, 99.0) }

@@ -35,4 +35,21 @@ class FakeTarget(initial: String = "") : TextTarget {
     }
 
     fun select(start: Int, end: Int) { selStart = start; cursor = end }
+
+    /** Set to false to act like an editor that doesn't report offsets (arrow keys only). */
+    var reportsOffsets = true
+    var arrowKeyPresses = 0
+
+    override fun selection(): Pair<Int, Int>? = if (reportsOffsets) selStart to cursor else null
+    override fun setSelection(start: Int, end: Int): Boolean {
+        if (!reportsOffsets) return false
+        selStart = start.coerceIn(0, text.length)
+        cursor = end.coerceIn(selStart, text.length)
+        return true
+    }
+    override fun arrowKeys(chars: Int) {
+        arrowKeyPresses += kotlin.math.abs(chars)
+        val to = (cursor + chars).coerceIn(0, text.length)
+        selStart = to; cursor = to
+    }
 }

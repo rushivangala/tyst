@@ -17,6 +17,7 @@ import android.widget.PopupWindow
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.customview.widget.ExploreByTouchHelper
+import app.tyst.core.correct.TapOffset
 import app.tyst.core.field.EnterAction
 import app.tyst.core.icons.Icon
 import app.tyst.core.icons.Icons
@@ -27,6 +28,7 @@ import app.tyst.core.layout.KeyboardLayout
 import app.tyst.core.layout.Layouts
 import app.tyst.core.layout.PlacedKey
 import app.tyst.core.layout.PopupAction
+import app.tyst.core.layout.of
 import app.tyst.core.theme.KeyboardColors
 import app.tyst.core.theme.Tokens
 import app.tyst.core.typing.ShiftState
@@ -39,11 +41,20 @@ class KeyboardView(context: Context) : View(context) {
     interface Listener {
         fun onKeyDown(key: Key) {}
         fun onKey(key: Key)
+        /** A key was tapped; for letter keys [tap] says where on the key the finger landed. */
+        fun onKeyTap(key: Key, tap: TapOffset?) = onKey(key)
         fun onPopupText(text: String)
         fun onPopupAction(action: String)
         /** Backspace held: [step] 0 is the first press, then one per repeat. */
         fun onBackspace(step: Int)
         fun onSpaceLongPress() {}
+        /** Finger sliding along the space bar: move the cursor [steps] characters (negative = left). */
+        fun onCursorSlide(steps: Int) {}
+        /** Finger slid left off backspace: select the last [words] words, from where the slide began. */
+        fun onDeleteSlideStart() {}
+        fun onDeleteSlide(words: Int) {}
+        /** The slide ended: delete the selection ([commit]), or put the cursor back. */
+        fun onDeleteSlideEnd(commit: Boolean) {}
     }
 
     var listener: Listener? = null
@@ -75,10 +86,17 @@ class KeyboardView(context: Context) : View(context) {
     private val edge = context.dp(1f)
 
     // ---- touch state ----
-    private class Pointer(val id: Int, val key: PlacedKey) {
+    private enum class Slide { NONE, CURSOR, DELETE }
+
+    private class Pointer(val id: Int, val key: PlacedKey, val downX: Float, val downY: Float) {
         var longPressed = false
         var popup: PopupState? = null
         var repeat = 0
+        var slide = Slide.NONE
+        /** Backspace: the first delete has been sent. */
+        var deleted = false
+        /** Characters (cursor) or words (delete) reported so far in the current slide. */
+        var slideSteps = 0
     }
 
     private class PopupState(val options: List<String>, val left: Float, val cell: Float, var selected: Int)
@@ -237,15 +255,17 @@ class KeyboardView(context: Context) : View(context) {
                 val pk = g.keyAt(event.getX(idx), event.getY(idx)) ?: return true
                 // Rollover: a new finger lands while another is down, so the earlier key is typed now.
                 for (p in pointers.values.toList()) {
-                    if (p.popup == null && !p.longPressed && p.key.key.type != KeyType.BACKSPACE && p.key.key.type != KeyType.SHIFT) release(p, commit = true)
+                    if (p.popup == null && !p.longPressed && p.slide == Slide.NONE && p.key.key.type != KeyType.BACKSPACE && p.key.key.type != KeyType.SHIFT) release(p, commit = true)
                 }
-                val p = Pointer(event.getPointerId(idx), pk)
+                val p = Pointer(event.getPointerId(idx), pk, event.getX(idx), event.getY(idx))
                 pointers[p.id] = p
                 pressedAt[pk] = SystemClock.uptimeMillis()
                 releasedAt.remove(pk)
                 listener?.onKeyDown(pk.key)
                 if (pk.key.type == KeyType.BACKSPACE) {
-                    listener?.onBackspace(0)
+                    // The first delete waits a moment (or for release) so a swipe-delete can begin
+                    // without first eating a character.
+                    postDelayed({ firstBackspace(p) }, BACKSPACE_DECIDE_MS)
                     postDelayed({ repeatBackspace(p) }, REPEAT_START_MS)
                 } else if (pk.key.popup.isNotEmpty() || pk.key.type == KeyType.SPACE) {
                     postDelayed({ longPress(p) }, LONG_PRESS_MS)
@@ -255,6 +275,10 @@ class KeyboardView(context: Context) : View(context) {
             MotionEvent.ACTION_MOVE -> {
                 for (i in 0 until event.pointerCount) {
                     val p = pointers[event.getPointerId(i)] ?: continue
+                    if (p.popup == null) {
+                        slide(p, event.getX(i))
+                        continue
+                    }
                     val popup = p.popup ?: continue
                     val sel = ((event.getX(i) - popup.left) / popup.cell).toInt().coerceIn(0, popup.options.size - 1)
                     if (sel != popup.selected) {
@@ -274,10 +298,59 @@ class KeyboardView(context: Context) : View(context) {
         return true
     }
 
+    /**
+     * Space and backspace turn into slides once the finger moves sideways past [slideSlop]: along space
+     * it moves the cursor, left from backspace it selects whole words to delete.
+     */
+    private fun slide(p: Pointer, x: Float) {
+        val type = p.key.key.type
+        if (p.longPressed && p.slide == Slide.NONE) return
+        val dx = x - p.downX
+        val slop = context.dp(SLIDE_SLOP_DP)
+        if (p.slide == Slide.NONE) {
+            when {
+                type == KeyType.SPACE && kotlin.math.abs(dx) > slop -> p.slide = Slide.CURSOR
+                type == KeyType.BACKSPACE && dx < -slop -> {
+                    p.slide = Slide.DELETE
+                    listener?.onDeleteSlideStart()
+                }
+                else -> return
+            }
+        }
+        when (p.slide) {
+            Slide.CURSOR -> {
+                // Start counting from the slop edge so the cursor doesn't jump when the slide begins.
+                val travel = if (dx > 0) dx - slop else dx + slop
+                val steps = (travel / context.dp(CURSOR_STEP_DP)).toInt()
+                if (steps != p.slideSteps) {
+                    listener?.onCursorSlide(steps - p.slideSteps)
+                    p.slideSteps = steps
+                }
+            }
+            Slide.DELETE -> {
+                val words = if (dx >= -slop) 0 else 1 + ((-dx - slop) / context.dp(DELETE_STEP_DP)).toInt()
+                if (words != p.slideSteps) {
+                    listener?.onDeleteSlide(words)
+                    p.slideSteps = words
+                }
+            }
+            Slide.NONE -> Unit
+        }
+    }
+
     private fun release(p: Pointer, commit: Boolean) {
         if (pointers.remove(p.id) == null) return
         pressedAt.remove(p.key)
         releasedAt[p.key] = SystemClock.uptimeMillis()
+        when (p.slide) {
+            Slide.CURSOR -> { invalidate(); return }
+            Slide.DELETE -> { listener?.onDeleteSlideEnd(commit); invalidate(); return }
+            Slide.NONE -> Unit
+        }
+        if (p.key.key.type == KeyType.BACKSPACE && commit && !p.deleted) {
+            p.deleted = true
+            listener?.onBackspace(0)
+        }
         val popup = p.popup
         if (popup != null) {
             dismissPopup()
@@ -286,22 +359,36 @@ class KeyboardView(context: Context) : View(context) {
                 if (PopupAction.isAction(choice)) listener?.onPopupAction(choice) else listener?.onPopupText(caseFor(choice))
             }
         } else if (commit && !p.longPressed && p.key.key.type != KeyType.BACKSPACE) {
-            listener?.onKey(p.key.key)
+            listener?.onKeyTap(p.key.key, tapFor(p))
         }
         invalidate()
     }
 
+    /** Where the finger first landed on a letter key; that is where it was aiming. */
+    private fun tapFor(p: Pointer): TapOffset? {
+        val key = p.key.key
+        if (key.type != KeyType.CHAR || key.text.length != 1 || !key.text[0].isLetter()) return null
+        return TapOffset.of(p.key, p.downX, p.downY)
+    }
+
     private fun caseFor(s: String) = if (shift != ShiftState.OFF && s.length == 1 && s[0].isLetter()) s.uppercase() else s
 
+    private fun firstBackspace(p: Pointer) {
+        if (pointers[p.id] !== p || p.slide != Slide.NONE || p.deleted) return
+        p.deleted = true
+        listener?.onBackspace(0)
+    }
+
     private fun repeatBackspace(p: Pointer) {
-        if (pointers[p.id] !== p) return
+        if (pointers[p.id] !== p || p.slide != Slide.NONE) return
+        firstBackspace(p)
         p.repeat++
         listener?.onBackspace(p.repeat)
         postDelayed({ repeatBackspace(p) }, REPEAT_EVERY_MS)
     }
 
     private fun longPress(p: Pointer) {
-        if (pointers[p.id] !== p || p.popup != null) return
+        if (pointers[p.id] !== p || p.popup != null || p.slide != Slide.NONE) return
         p.longPressed = true
         if (p.key.key.type == KeyType.SPACE) {
             listener?.onSpaceLongPress()
@@ -442,8 +529,16 @@ class KeyboardView(context: Context) : View(context) {
     companion object {
         const val LONG_PRESS_MS = 300L
         const val REPEAT_START_MS = 400L
+        /** Backspace held this long deletes its first character; a slide starting sooner deletes nothing. */
+        const val BACKSPACE_DECIDE_MS = 150L
         const val REPEAT_EVERY_MS = 55L
         const val RELEASE_MS = 150L
+        /** Sideways travel before space or backspace becomes a slide. */
+        const val SLIDE_SLOP_DP = 14f
+        /** Space-bar travel per character of cursor movement. */
+        const val CURSOR_STEP_DP = 12f
+        /** Backspace-slide travel per word. */
+        const val DELETE_STEP_DP = 28f
     }
 }
 

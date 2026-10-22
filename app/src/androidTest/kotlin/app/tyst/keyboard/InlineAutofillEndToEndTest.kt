@@ -54,6 +54,11 @@ class InlineAutofillEndToEndTest {
             // Some emulator boots never route a fill request at all; that says nothing about Tyst.
             org.junit.Assume.assumeTrue("Emulator sent no autofill request. $report", TestAutofillService.requests > 0)
             if (AutofillLog.shown == 0) fail("Pills never shown. $report")
+            // Counting pills isn't enough: they must be laid out with a real size on screen.
+            val until1 = System.currentTimeMillis() + 5_000
+            while (System.currentTimeMillis() < until1 && AutofillLog.all().none { e -> e.contains("Pills on screen") }) Thread.sleep(200)
+            val onScreen = AutofillLog.all().firstOrNull { e -> e.contains("Pills on screen") } ?: error("No on-screen check logged. $report")
+            if (!onScreen.contains("row shown=true") || onScreen.contains("NOT visible") || onScreen.contains(": 0×")) fail("Pills not visible: $onScreen")
 
             // NordPass on a Pixel follows its answer with an empty one; the pills must survive it.
             TestAutofillService.answerEmpty = true

@@ -45,3 +45,25 @@ class WordsTest {
         assertThat(Words.stripDiacritics("Västerås")).isEqualTo("Vasteras")
     }
 }
+
+class TypoSearchTest {
+    /** The trie walk must find exactly what scoring every word with typoDistance finds. */
+    @org.junit.jupiter.api.Test fun trieSearchMatchesBruteForce() {
+        val lex = Fixtures.lexicon
+        val typed = listOf("teh", "recieve", "xar", "geating", "anow", "deven", "ay", "pn", "goteborg", "vasteras",
+            "tomorow", "definately", "meetinf", "thsnks", "kanelbulle", "qz", "a", "seperate", "lunchh", "wjat")
+        for (t in typed) {
+            val max = if (t.length >= 6) 2.0 else 1.5
+            val first = (app.tyst.core.correct.KeyProximity.neighbours(t[0]) + t[0] + (t.getOrNull(1) ?: t[0])).toSet()
+            val brute = HashMap<String, Double>()
+            lex.forEachCandidate(first, t.length - 2, t.length + 2, true) { w, _ ->
+                val d = app.tyst.core.correct.typoDistance(w, t, max)
+                if (d <= max) brute[w] = d
+            }
+            val fast = HashMap<String, Double>()
+            lex.forEachWithin(t, max, first, t.length - 2, t.length + 2, true) { w, _, d -> fast[w] = d }
+            com.google.common.truth.Truth.assertWithMessage(t).that(fast.keys).isEqualTo(brute.keys)
+            for ((w, d) in brute) com.google.common.truth.Truth.assertWithMessage("$t/$w").that(fast[w]!!).isWithin(1e-9).of(d)
+        }
+    }
+}

@@ -62,3 +62,13 @@ class KeyGeometry(
         }
     }
 }
+
+/**
+ * Where a touch at ([x], [y]) landed on [key], relative to its centre, in key widths and row heights:
+ * the offset autocorrect uses to weigh the neighbouring keys.
+ */
+fun app.tyst.core.correct.TapOffset.Companion.of(key: PlacedKey, x: Float, y: Float): app.tyst.core.correct.TapOffset =
+    app.tyst.core.correct.TapOffset(
+        dx = ((x - key.visual.centerX) / (key.slot.width / key.key.width)).coerceIn(-1f, 1f),
+        dy = ((y - key.visual.centerY) / key.slot.height).coerceIn(-1f, 1f),
+    )

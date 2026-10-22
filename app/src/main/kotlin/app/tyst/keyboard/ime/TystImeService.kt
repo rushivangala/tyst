@@ -15,6 +15,7 @@ import android.view.inputmethod.InlineSuggestionsRequest
 import android.view.inputmethod.InlineSuggestionsResponse
 import android.view.inputmethod.InputMethodManager
 import app.tyst.core.TystEngine
+import app.tyst.core.correct.TapOffset
 import app.tyst.core.field.FieldClassifier
 import app.tyst.core.field.FieldInfo
 import app.tyst.core.field.KeyLayoutKind
@@ -93,6 +94,8 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             // A field may already be focused while the engine was loading.
             val t = target
             if (t != null && isInputViewShown) controller?.start(focused, t, settings)
+            // Anything copied while the word lists were loading would otherwise be missed.
+            readClipboard(onlyFresh = true)
         }
         scope.launch {
             g.settings.flow.drop(1).collect { s ->
@@ -141,6 +144,8 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             KeyLayoutKind.LETTERS -> Mode.LETTERS
         }
         closePanels()
+        // The on-device recogniser can be installed or removed while the keyboard service lives on.
+        voiceAvailableCache = null
         val t = InputConnectionTarget({ currentInputConnection }, keySender, info, focused)
         target = t
         controller?.start(focused, t, settings)
@@ -184,12 +189,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         val t = target ?: return
-        if (t.pendingUpdates > 0 && newSelStart == newSelEnd) {
-            t.pendingUpdates--
-        } else {
-            t.pendingUpdates = 0
-            controller?.onCursorMoved()
-        }
+        if (t.selection.onUpdate(newSelStart, newSelEnd)) controller?.onCursorMoved()
     }
 
     // ---- look ----
@@ -273,6 +273,16 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             KeyType.BACKSPACE, KeyType.SPACER -> Unit
         }
     }
+
+    override fun onKeyTap(key: Key, tap: TapOffset?) {
+        val c = controller
+        if (key.type == KeyType.CHAR && c != null) c.onText(key.text, tap) else onKey(key)
+    }
+
+    override fun onCursorSlide(steps: Int) { controller?.moveCursor(steps) }
+    override fun onDeleteSlideStart() { controller?.startDeleteSlide() }
+    override fun onDeleteSlide(words: Int) { controller?.deleteSlide(words) }
+    override fun onDeleteSlideEnd(commit: Boolean) { controller?.endDeleteSlide(commit) }
 
     override fun onPopupText(text: String) {
         controller?.onText(text) ?: basicCommit(text)
@@ -409,9 +419,13 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         val clip = try { cm.primaryClip } catch (_: SecurityException) { null } ?: return
         val text = clip.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString() ?: return
         val description = clip.description
-        val copiedAt = description?.timestamp?.takeIf { it > 0 } ?: System.currentTimeMillis()
+        val now = System.currentTimeMillis()
+        val stamped = description?.timestamp?.takeIf { it > 0 }
         val window = maxOf(settings.codeExpirySeconds * 1000L, app.tyst.core.codes.CopiedText.WINDOW_MS)
-        if (onlyFresh && System.currentTimeMillis() - copiedAt > window) return
+        // A clip of unknown age is only offered when the copy itself was just reported (onlyFresh false);
+        // otherwise an old clip would show up as fresh whenever a field opens.
+        if (onlyFresh && (stamped == null || now - stamped > window)) return
+        val copiedAt = stamped ?: now
         // ClipDescription.EXTRA_IS_SENSITIVE (API 33); password managers set it on copied passwords.
         val sensitive = description?.extras?.getBoolean("android.content.extra.IS_SENSITIVE", false) == true
         c.onClipboard(text, copiedAt, sensitive)
@@ -448,9 +462,25 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             pendingInline = views
             strip?.setInlineSuggestions(views)
             AutofillLog.shown = views.size
-            if (finished) AutofillLog.add("Showing ${views.size} of $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+            if (finished) {
+                AutofillLog.add("Showing ${views.size} of $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+                // After layout, say whether the pills really are on screen and how big, so a report from
+                // a phone tells "never answered" apart from "answered but invisible".
+                handler.postDelayed({ logPillsOnScreen() }, 600)
+            }
         }
         return true
+    }
+
+    private fun logPillsOnScreen() {
+        val st = strip
+        if (st == null) { AutofillLog.add("Pills waiting: keyboard not open"); return }
+        val r = android.graphics.Rect()
+        val sizes = st.inlineViews.mapIndexed { i, v ->
+            val seen = v.isAttachedToWindow && v.getGlobalVisibleRect(r)
+            "${i + 1}: ${v.width}×${v.height}${if (seen) " visible" else " NOT visible"}"
+        }
+        AutofillLog.add("Pills on screen (row shown=${st.showingInline}, keyboard shown=$isInputViewShown): ${sizes.joinToString(", ")}")
     }
 
     private object NoVoice : VoiceInput.Listener {

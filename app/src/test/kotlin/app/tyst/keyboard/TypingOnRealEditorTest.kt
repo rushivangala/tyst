@@ -27,6 +27,7 @@ class TypingOnRealEditorTest {
     private lateinit var edit: EditText
     private lateinit var controller: TypingController
     private lateinit var engine: TystEngine
+    private lateinit var target: InputConnectionTarget
     private val keys = ArrayList<Int>()
 
     private fun focus(inputType: Int, imeOptions: Int, settings: KeyboardSettings = KeyboardSettings(memoryEnabled = true)) {
@@ -41,7 +42,7 @@ class TypingOnRealEditorTest {
         val ic = edit.onCreateInputConnection(info)!!
         info.packageName = "com.whatsapp"
         val field = FieldClassifier.classify(info.inputType, info.imeOptions, info.packageName)
-        val target = InputConnectionTarget({ ic }, object : InputConnectionTarget.KeySender {
+        target = InputConnectionTarget({ ic }, object : InputConnectionTarget.KeySender {
             override fun sendDownUpKeyEvents(keyCode: Int) {
                 keys += keyCode
                 ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
@@ -105,7 +106,7 @@ class TypingOnRealEditorTest {
         assertThat(text).isEqualTo("Link: https://example.com/doc")
     }
 
-        @Test fun backspaceOnEmptyFieldSendsAKeyEvent() {
+    @Test fun backspaceOnEmptyFieldSendsAKeyEvent() {
         focus(InputType.TYPE_CLASS_TEXT, EditorInfo.IME_ACTION_DONE)
         controller.onBackspace()
         assertThat(keys).containsExactly(KeyEvent.KEYCODE_DEL)
@@ -129,5 +130,38 @@ class TypingOnRealEditorTest {
         assertThat(text).isEqualTo("zqxwvpass zqxwvpass ")
         assertThat(engine.personal.count("zqxwvpass")).isEqualTo(0)
         assertThat(controller.strip().incognito).isTrue()
+    }
+
+    @Test fun predictedCursorMatchesTheRealEditor() {
+        focus(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES, EditorInfo.IME_ACTION_SEND)
+        fun check() {
+            assertThat(target.selection.start).isEqualTo(edit.selectionStart)
+            assertThat(target.selection.end).isEqualTo(edit.selectionEnd)
+            // An update reporting where the editor really is counts as the keyboard's own edit.
+            assertThat(target.selection.onUpdate(edit.selectionStart, edit.selectionEnd)).isFalse()
+        }
+        type("can we meet around teh ")
+        check()
+        controller.onBackspace()
+        check()
+        type(" at noon ")
+        controller.onEmoji("😊")
+        check()
+        controller.onBackspace()
+        check()
+        type(" Vasteras")
+        controller.pick(controller.strip().suggestions.first())
+        check()
+        // The user taps elsewhere: that is a move.
+        edit.setSelection(3)
+        assertThat(target.selection.onUpdate(3, 3)).isTrue()
+    }
+
+    @Test fun tapAfterBackspaceOnEmptyFieldIsStillSeen() {
+        focus(InputType.TYPE_CLASS_TEXT, EditorInfo.IME_ACTION_DONE)
+        controller.onBackspace()
+        edit.setText("abc")
+        edit.setSelection(1)
+        assertThat(target.selection.onUpdate(1, 1)).isTrue()
     }
 }

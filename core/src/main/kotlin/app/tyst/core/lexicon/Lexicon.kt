@@ -18,7 +18,10 @@ class Lexicon(
     properEnglish: Collection<String>,
     properSwedish: Collection<String>,
     swedishLoanWords: Collection<String>,
+    /** Rare English entries no spell-checker dictionary lists ("thr", "pn"): probably slips or noise. */
+    unlistedEnglish: Collection<String> = emptyList(),
 ) {
+    private val unlisted: Set<String> = unlistedEnglish.toHashSet()
     private val en: Map<String, Int> = english
     private val sv: Map<String, Int>
     private val display = HashMap<String, String>()
@@ -26,6 +29,8 @@ class Lexicon(
     private val sorted: Array<String>
     private val sortedFreq: IntArray
     private val swedishOnly = HashSet<String>()
+    /** Hand-picked Swedish names, places and loan words: never corrected. */
+    private val curatedSwedish = HashSet<String>()
 
     init {
         for (p in properEnglish) display[Words.normalize(p)] = p
@@ -34,10 +39,12 @@ class Lexicon(
             val key = Words.normalize(p)
             display[key] = p
             svAll[key] = maxOf(svAll[key] ?: 0, PROPER_SWEDISH_FREQ)
+            curatedSwedish += key
         }
         for (w in swedishLoanWords) {
             val key = Words.normalize(w)
             svAll[key] = maxOf(svAll[key] ?: 0, PROPER_SWEDISH_FREQ)
+            curatedSwedish += key
         }
         misspellings.keys.forEach { svAll.remove(it) }
         sv = svAll
@@ -76,6 +83,18 @@ class Lexicon(
     /** True for words only the Swedish layer knows (fika, Liseberg, Västerås). */
     fun isSwedishOnly(word: String): Boolean = Words.normalize(word) in swedishOnly
 
+    /**
+     * Swedish that can't be an English typo: curated names, places and loan words, and anything
+     * spelled with å ä ö. These are never corrected.
+     */
+    fun isProtectedSwedish(word: String): Boolean {
+        val key = Words.normalize(word)
+        return key in curatedSwedish || (key in sv && Words.hasSwedishLetters(key))
+    }
+
+    /** True for a rare English entry that no spell-checker dictionary lists (see tools/gen_unlisted.py). */
+    fun isUnlisted(word: String): Boolean = Words.normalize(word) in unlisted
+
     fun misspelling(word: String): Misspelling? = misspellings[Words.normalize(word)]
 
     /** The written form of a word: "västerås" → "Västerås", "monday" → "Monday". */
@@ -111,6 +130,96 @@ class Lexicon(
         return found.take(limit)
     }
 
+    /**
+     * Every word starting with one of [first], [minLen]..[maxLen] long, within [maxDistance] of [typed] by
+     * [app.tyst.core.correct.typoDistance], with that distance. Same result as calling typoDistance on each
+     * word, but the sorted list is walked as a trie: words sharing a prefix share distance rows, and a whole
+     * branch is skipped as soon as every cell of a row exceeds [maxDistance].
+     */
+    fun forEachWithin(
+        typed: String, maxDistance: Double, first: Set<Char>, minLen: Int, maxLen: Int, includeSwedish: Boolean,
+        sub: app.tyst.core.correct.SubstitutionCost? = null,
+        block: (word: String, freq: Int, distance: Double) -> Unit,
+    ) {
+        val m = typed.length
+        val rows = Array(maxLen + 2) { DoubleArray(m + 1) }
+        for (j in 0..m) rows[0][j] = j.toDouble()
+        val rowMin = DoubleArray(maxLen + 2)
+        for (c in first) {
+            var i = lowerBound(c.toString())
+            var prev = ""
+            var valid = 0 // rows[1..valid] hold the DP for prev's first `valid` letters
+            while (i < sorted.size && sorted[i].isNotEmpty() && sorted[i][0] == c) {
+                val w = sorted[i]
+                var depth = minOf(commonPrefix(prev, w), valid)
+                var pruned = -1
+                while (depth < minOf(w.length, maxLen)) {
+                    depth++
+                    fillRow(rows, depth, w, typed, sub)
+                    rowMin[depth] = rows[depth].min()
+                    if (rowMin[depth] > maxDistance) { pruned = depth; break }
+                }
+                prev = w
+                valid = depth
+                if (pruned >= 0) {
+                    // No word with this prefix can come back under the limit: jump past all of them.
+                    valid = pruned - 1
+                    i = upperBoundOfPrefix(w.substring(0, pruned), i)
+                    continue
+                }
+                if (w.length in minLen..maxLen && kotlin.math.abs(w.length - m) <= maxDistance && (includeSwedish || w !in swedishOnly)) {
+                    val d = rows[w.length][m]
+                    if (d <= maxDistance) block(w, sortedFreq[i], d)
+                }
+                i++
+            }
+        }
+    }
+
+    private fun lowerBound(key: String): Int {
+        var lo = 0
+        var hi = sorted.size
+        while (lo < hi) {
+            val mid = (lo + hi) ushr 1
+            if (sorted[mid] < key) lo = mid + 1 else hi = mid
+        }
+        return lo
+    }
+
+    /** First index after [from] whose word does not start with [prefix]. */
+    private fun upperBoundOfPrefix(prefix: String, from: Int): Int {
+        var lo = from
+        var hi = sorted.size
+        while (lo < hi) {
+            val mid = (lo + hi) ushr 1
+            if (sorted[mid].startsWith(prefix) || sorted[mid] < prefix) lo = mid + 1 else hi = mid
+        }
+        return lo
+    }
+
+    private fun commonPrefix(a: String, b: String): Int {
+        val n = minOf(a.length, b.length)
+        var k = 0
+        while (k < n && a[k] == b[k]) k++
+        return k
+    }
+
+    /** Row [i] of the weighted Damerau–Levenshtein table, intended = [w], typed = [t]. Mirrors typoDistance. */
+    private fun fillRow(d: Array<DoubleArray>, i: Int, w: String, t: String, sub: app.tyst.core.correct.SubstitutionCost?) {
+        val a = w[i - 1]
+        val row = d[i]
+        val up = d[i - 1]
+        row[0] = i.toDouble()
+        val delCost = if (i >= 2 && w[i - 2] == a) 0.6 else 1.0
+        for (j in 1..t.length) {
+            val b = t[j - 1]
+            val insCost = if (j >= 2 && t[j - 2] == b) 0.6 else 1.0
+            var v = minOf(up[j] + delCost, row[j - 1] + insCost, up[j - 1] + (sub?.cost(a, j - 1) ?: app.tyst.core.correct.KeyProximity.substitutionCost(a, b)))
+            if (i > 1 && j > 1 && a == t[j - 2] && w[i - 2] == b) v = minOf(v, d[i - 2][j - 2] + 0.7)
+            row[j] = v
+        }
+    }
+
     /** Iterates all words with the given first letter and a length within [minLen]..[maxLen]. */
     fun forEachCandidate(first: Set<Char>, minLen: Int, maxLen: Int, includeSwedish: Boolean, block: (String, Int) -> Unit) {
         for (c in first) {
@@ -137,9 +246,9 @@ class Lexicon(
 
         /** Loads the lists bundled under /tyst on the classpath. */
         fun loadDefault(): Lexicon {
-            fun lines(name: String): Sequence<String> {
+            fun lines(name: String, optional: Boolean = false): Sequence<String> {
                 val stream = Lexicon::class.java.getResourceAsStream("/tyst/$name")
-                    ?: error("Missing resource /tyst/$name")
+                    ?: if (optional) return emptySequence() else error("Missing resource /tyst/$name")
                 return stream.bufferedReader(Charsets.UTF_8).readLines().asSequence()
                     .filter { it.isNotBlank() && !it.startsWith("#") }
             }
@@ -163,6 +272,7 @@ class Lexicon(
                 properEnglish = lines("proper_en.txt").toList(),
                 properSwedish = lines("proper_sv.txt").toList(),
                 swedishLoanWords = lines("swedish_words.txt").toList(),
+                unlistedEnglish = lines("en_unlisted.txt", optional = true).toList(),
             )
         }
     }

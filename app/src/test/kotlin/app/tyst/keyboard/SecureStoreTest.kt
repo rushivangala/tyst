@@ -2,6 +2,7 @@ package app.tyst.keyboard
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.tyst.keyboard.data.SecureStore
+import app.tyst.keyboard.data.Stored
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,6 +42,24 @@ class SecureStoreTest {
         store.write("y", "secret")
         assertThat(SecureStore(dir, SoftwareKeys()).read("y")).isNull()
         assertThat(store.read("missing")).isNull()
+    }
+
+    @Test fun loadTellsMissingDamagedAndKeyUnavailableApart() {
+        val keys = FlakyKeys(SoftwareKeys())
+        val store = SecureStore(dir, keys)
+        assertThat(store.load("x")).isEqualTo(Stored.Missing)
+        store.write("x", "secret")
+        assertThat(store.load("x")).isEqualTo(Stored.Ok("secret"))
+
+        keys.failing = true
+        assertThat(store.load("x")).isInstanceOf(Stored.KeyUnavailable::class.java)
+        keys.failing = false
+
+        File(dir, "x.bin").writeBytes("TYS1".toByteArray() + byteArrayOf(12, 1, 2))
+        assertThat(store.load("x")).isInstanceOf(Stored.Damaged::class.java)
+        assertThat(store.quarantine("x")).isTrue()
+        assertThat(File(dir, "x.bin").exists()).isFalse()
+        assertThat(store.quarantinedNames()).containsExactly("x")
     }
 
     @Test fun deleteAllRemovesFilesAndDestroysKey() {

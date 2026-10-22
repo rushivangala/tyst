@@ -53,9 +53,10 @@ object InlineAutofill {
             .setEndIconStyle(ImageViewStyle.Builder().setLayoutMargin(0, 0, 0, 0).build())
             .build()
         val styles = UiVersions.newStylesBuilder().addStyle(style).build()
+        // The same sizes HeliBoard asks for, which NordPass is known to answer on a Pixel.
         val height = context.dp(40f).toInt()
-        val min = Size(context.dp(40f).toInt(), height)
-        val max = Size(context.dp(320f).toInt(), height)
+        val min = Size(100, height)
+        val max = Size(740, height)
         val specs = List(SPECS) { InlinePresentationSpec.Builder(min, max).setStyle(styles).build() }
         return InlineSuggestionsRequest.Builder(specs).setMaxSuggestionCount(MAX_SUGGESTIONS).build()
     }
@@ -101,10 +102,12 @@ class InlineClipFrame(context: Context) : FrameLayout(context) {
     private val onDraw = ViewTreeObserver.OnDrawListener { clip(this) }
 
     init {
+        // A transparent on-top surface filling the frame, as in AOSP's InlineContentClipView. At 0×0 it
+        // never got a surface at all.
         addView(SurfaceView(context).apply {
             setZOrderOnTop(true)
             holder.setFormat(PixelFormat.TRANSPARENT)
-        }, LayoutParams(0, 0))
+        }, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }
 
     override fun onAttachedToWindow() {

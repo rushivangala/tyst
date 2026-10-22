@@ -6,6 +6,7 @@ import app.tyst.core.codes.CopiedText
 import app.tyst.core.codes.OtpDetector
 import app.tyst.core.correct.AutocorrectStrength
 import app.tyst.core.correct.CorrectionOptions
+import app.tyst.core.correct.TapOffset
 import app.tyst.core.field.EnterAction
 import app.tyst.core.field.FieldInfo
 import app.tyst.core.field.FieldKind
@@ -29,6 +30,12 @@ interface TextTarget {
     /** Runs the field's action (Send, Search…) or inserts a new line for [EnterAction.NEWLINE]. */
     fun enter(action: EnterAction)
     fun batch(block: () -> Unit) = block()
+    /** The selection as absolute offsets, or null when this editor can't tell. */
+    fun selection(): Pair<Int, Int>? = null
+    /** Selects [start]..[end] (absolute offsets); false when the editor can't. */
+    fun setSelection(start: Int, end: Int): Boolean = false
+    /** Moves the cursor [chars] left (negative) or right with arrow keys, for editors without offsets. */
+    fun arrowKeys(chars: Int) {}
 }
 
 enum class ShiftState { OFF, ON, LOCKED }
@@ -82,6 +89,8 @@ class TypingController(
     private var copiedCode: CopiedCode? = null
     private var copiedText: CopiedText? = null
     private var lastLearnedText: String? = null
+    /** Where the finger landed for each letter typed into the current word, oldest first. */
+    private val taps = ArrayList<TapOffset?>()
 
     /** Called when [StripState] or the shift state may have changed. */
     var onChanged: (() -> Unit)? = null
@@ -95,6 +104,7 @@ class TypingController(
         autoSpace = false
         lastWasSpace = false
         lastLearnedText = null
+        taps.clear()
         shift = ShiftState.OFF
         if (field.autoCapAll) shift = ShiftState.LOCKED else updateAutoShift()
         changed()
@@ -114,13 +124,22 @@ class TypingController(
 
     // ---- keys ----
 
-    fun onText(raw: String) {
+    /** A key or popup character. [tap] is where the finger landed on a letter key, if known. */
+    fun onText(raw: String, tap: TapOffset? = null) {
         val t = target ?: return
         val text = if (shift != ShiftState.OFF && raw.length == 1 && raw[0].isLetter()) raw.uppercase() else raw
         val c = text.singleOrNull()
+        // Keep taps aligned with the letters of the word being typed; anything else starts over
+        // (after punctuation has used them to correct the word it ends).
+        val wordChar = c != null && Words.isWordChar(c)
+        if (wordChar) {
+            if (Words.currentWord(t.before(64)).length != taps.size) taps.clear()
+            taps += tap
+        }
         t.batch {
             if (c != null && c in SENTENCE_PUNCT) punctuation(t, c) else t.commit(text)
         }
+        if (!wordChar) taps.clear()
         if (shift == ShiftState.ON && text.any { it.isLetter() }) { shift = ShiftState.OFF; shiftIsAuto = false }
         lastCorrection = null
         lastWasSpace = false
@@ -133,7 +152,7 @@ class TypingController(
         val before = t.before(64)
         val word = Words.currentWord(before)
         if (word.isNotEmpty()) {
-            val replaced = correctCurrentWord(t, word, c.toString())
+            val replaced = correctCurrentWord(t, word, c.toString(), tapsFor(word))
             learnWord(replaced ?: word, before)
             if (replaced != null) return
         }
@@ -150,25 +169,26 @@ class TypingController(
     fun onSpace() {
         val t = target ?: return
         val before = t.before(64)
+        val wordTaps = tapsFor(Words.currentWord(before))
+        taps.clear()
         t.batch {
             val word = Words.currentWord(before)
             when {
-                word.isEmpty() && settings.doubleSpacePeriod && (lastWasSpace || autoSpace) && endsWithWordThenSpace(before) -> {
+                word.isEmpty() && autoSpace && before.endsWith(" ") -> {
+                    // A suggestion already put in a space. This tap is the user's habitual space after a
+                    // word, so absorb it; a second tap then counts as a double space.
+                    autoSpace = false
+                    lastWasSpace = true
+                }
+                word.isEmpty() && settings.doubleSpacePeriod && lastWasSpace && endsWithWordThenSpace(before) -> {
                     t.deleteAround(1, 0)
                     t.commit(". ")
                     lastWasSpace = false
                     autoSpace = false
                     lastCorrection = null
                 }
-                word.isEmpty() && autoSpace -> {
-                    // The suggestion already added a space; a second one is just a space.
-                    t.commit(" ")
-                    autoSpace = false
-                    lastWasSpace = true
-                    lastCorrection = null
-                }
                 else -> {
-                    val replaced = if (word.isNotEmpty()) correctCurrentWord(t, word, " ") else null
+                    val replaced = if (word.isNotEmpty()) correctCurrentWord(t, word, " ", wordTaps) else null
                     if (replaced == null) t.commit(" ")
                     if (word.isNotEmpty()) learnWord(replaced ?: word, before)
                     if (replaced == null) lastCorrection = null
@@ -185,11 +205,11 @@ class TypingController(
         before.length >= 2 && before.last() == ' ' && Words.isWordChar(before[before.length - 2])
 
     /** Applies autocorrect to [word] if confident. Returns the replacement, or null. */
-    private fun correctCurrentWord(t: TextTarget, word: String, suffix: String): String? {
+    private fun correctCurrentWord(t: TextTarget, word: String, suffix: String, wordTaps: List<TapOffset?>?): String? {
         if (!field.autocorrect || settings.autocorrect == AutocorrectStrength.OFF) return null
         if (keptWord != null && Words.normalize(keptWord!!) == Words.normalize(word)) return null
         val prev = Words.previousWords(t.before(64), 2)
-        val fix = engine.autocorrector.check(word, prev, options()).autoApply ?: return null
+        val fix = engine.autocorrector.check(word, prev, options(), wordTaps).autoApply ?: return null
         t.deleteAround(word.length, 0)
         t.commit(fix + suffix)
         lastCorrection = LastCorrection(word, fix, suffix)
@@ -214,6 +234,8 @@ class TypingController(
                 else -> t.deleteAround(Words.lastGraphemeLength(before), 0)
             }
         }
+        if (taps.isNotEmpty()) taps.removeAt(taps.size - 1)
+        if (Words.currentWord(t.before(64)).length != taps.size) taps.clear()
         lastCorrection = null
         lastWasSpace = false
         autoSpace = false
@@ -230,6 +252,7 @@ class TypingController(
         while (n < before.length && before[before.length - 1 - n].isWhitespace()) n++
         while (n < before.length && !before[before.length - 1 - n].isWhitespace()) n++
         t.deleteAround(n, 0)
+        taps.clear()
         lastCorrection = null
         updateAutoShift()
         changed()
@@ -237,6 +260,7 @@ class TypingController(
 
     fun onEnter() {
         val t = target ?: return
+        taps.clear()
         val before = t.before(64)
         val word = Words.currentWord(before)
         if (word.isNotEmpty()) learnWord(word, before)
@@ -266,6 +290,7 @@ class TypingController(
 
     /** The cursor moved or the text changed outside the keyboard. */
     fun onCursorMoved() {
+        taps.clear()
         lastCorrection = null
         autoSpace = false
         lastWasSpace = false
@@ -275,8 +300,82 @@ class TypingController(
         changed()
     }
 
+    // ---- gestures ----
+
+    /** Space-bar slide: moves the cursor [steps] characters (negative = left), never splitting an emoji. */
+    fun moveCursor(steps: Int) {
+        val t = target ?: return
+        if (steps == 0) return
+        var chars = 0
+        if (steps < 0) {
+            var before = t.before(4 * -steps + 16)
+            repeat(-steps) {
+                val n = Words.lastGraphemeLength(before)
+                chars -= n
+                before = before.dropLast(n)
+            }
+        } else {
+            var after = t.after(4 * steps + 16)
+            repeat(steps) {
+                val n = Words.firstGraphemeLength(after)
+                chars += n
+                after = after.drop(n)
+            }
+        }
+        if (chars == 0) return
+        val sel = t.selection()
+        if (sel != null) {
+            // From a selection, the first step collapses to its edge in the direction of travel.
+            val from = if (chars < 0) sel.first else sel.second
+            val to = from + chars
+            if (!t.setSelection(to, to)) t.arrowKeys(chars)
+        } else t.arrowKeys(chars)
+        onCursorMoved()
+    }
+
+    private var deleteAnchor: Int? = null
+    private var deleteBefore = ""
+    private var deleteLength = 0
+
+    /** Backspace slide started: remembers where the cursor was. */
+    fun startDeleteSlide() {
+        val t = target ?: return
+        deleteAnchor = t.selection()?.takeIf { it.first == it.second }?.first
+        deleteBefore = t.before(DELETE_SLIDE_CHARS)
+        deleteLength = 0
+    }
+
+    /** Backspace slide moved: selects the last [words] words before where it started, to show what will go. */
+    fun deleteSlide(words: Int) {
+        val t = target ?: return
+        val anchor = deleteAnchor
+        deleteLength = Words.lastWordsLength(deleteBefore, words.coerceAtLeast(0))
+        if (anchor != null) t.setSelection(anchor - deleteLength, anchor)
+    }
+
+    /** Backspace slide released: deletes what was selected, or puts the cursor back when [commit] is false. */
+    fun endDeleteSlide(commit: Boolean) {
+        val t = target ?: return
+        val anchor = deleteAnchor
+        val n = deleteLength
+        deleteAnchor = null
+        deleteLength = 0
+        deleteBefore = ""
+        t.batch {
+            if (anchor != null) t.setSelection(anchor, anchor)
+            if (commit && n > 0) t.deleteAround(n, 0)
+        }
+        taps.clear()
+        lastCorrection = null
+        autoSpace = false
+        lastWasSpace = false
+        updateAutoShift()
+        changed()
+    }
+
     fun pick(s: Suggestion) {
         val t = target ?: return
+        taps.clear()
         val before = t.before(64)
         val word = Words.currentWord(before)
         t.batch {
@@ -405,8 +504,7 @@ class TypingController(
         t.batch {
             if (t.selected().isNotEmpty()) t.commit(newText)
             else {
-                val b = t.before(MAX_EDIT_CHARS)
-                val a = t.after(MAX_EDIT_CHARS)
+                val (b, a) = toolsWindow(t)
                 t.deleteAround(b.length, a.length)
                 t.commit(newText)
             }
@@ -425,7 +523,27 @@ class TypingController(
     fun textForTools(): String {
         val t = target ?: return ""
         val sel = t.selected()
-        return sel.ifEmpty { t.before(MAX_EDIT_CHARS) + t.after(MAX_EDIT_CHARS) }
+        return sel.ifEmpty { toolsWindow(t).let { (b, a) -> b + a } }
+    }
+
+    /**
+     * The text around the cursor the writing tools work on when nothing is selected. A field longer
+     * than the window is cut at sentence or paragraph ends, so a rewrite never splits a sentence.
+     */
+    private fun toolsWindow(t: TextTarget): Pair<String, String> {
+        var b = t.before(MAX_EDIT_CHARS + 1)
+        var a = t.after(MAX_EDIT_CHARS + 1)
+        if (b.length > MAX_EDIT_CHARS) {
+            b = b.substring(b.length - MAX_EDIT_CHARS)
+            val cut = SENTENCE_END.find(b)?.range?.last?.plus(1) ?: b.length
+            b = b.substring(cut)
+        }
+        if (a.length > MAX_EDIT_CHARS) {
+            a = a.substring(0, MAX_EDIT_CHARS)
+            val cut = SENTENCE_END.findAll(a).lastOrNull()?.range?.last?.plus(1) ?: 0
+            a = a.substring(0, cut)
+        }
+        return b to a
     }
 
     // ---- strip ----
@@ -438,7 +556,7 @@ class TypingController(
         if (copiedText?.isFresh(now) == false) copiedText = null
         val before = t.before(64)
         val memory = if (settings.memoryEnabled && !field.incognito) MemoryMatcher.match(before, field, engine.memory) else emptyList()
-        val predictions = if (field.predictions && t.selected().isEmpty()) engine.predictor.predict(before, options()) else null
+        val predictions = if (field.predictions && t.selected().isEmpty()) engine.predictor.predict(before, options(), taps = tapsFor(Words.currentWord(before))) else null
         val word = Words.currentWord(before)
         val kept = keptWord != null && Words.normalize(keptWord!!) == Words.normalize(word)
         val auto = predictions?.autoCorrection?.takeIf { field.autocorrect && settings.autocorrect != AutocorrectStrength.OFF && !kept }
@@ -455,6 +573,10 @@ class TypingController(
             writingTools = settings.writingTools && field.writingTools,
         )
     }
+
+    /** The taps for [word] if they line up with its letters, else null (typed elsewhere, pasted, edited). */
+    private fun tapsFor(word: String): List<TapOffset?>? =
+        if (word.isNotEmpty() && taps.size == word.length && taps.any { it != null }) ArrayList(taps) else null
 
     fun options() = CorrectionOptions(
         strength = if (field.autocorrect) settings.autocorrect else AutocorrectStrength.OFF,
@@ -508,8 +630,11 @@ class TypingController(
         const val DOUBLE_TAP_MS = 350L
         const val LEARN_CHARS = 2000
         const val MAX_EDIT_CHARS = 4000
+        private const val DELETE_SLIDE_CHARS = 1000
         private const val SENTENCE_PUNCT = ".,!?;:"
         private const val ATTACHING_PUNCT = ".,!?;:"
         private val LEARN_STYLE_KINDS = setOf(FieldKind.TEXT, FieldKind.MESSAGE)
+        /** A sentence end plus the whitespace after it, or a line break. */
+        private val SENTENCE_END = Regex("""[.!?]["”’)]*\s+|\n+""")
     }
 }

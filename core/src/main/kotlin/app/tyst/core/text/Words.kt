@@ -135,4 +135,47 @@ object Words {
         }
         return before.length - start
     }
+
+    /** Length in chars of the first user-perceived character of [after]; the forward twin of [lastGraphemeLength]. */
+    fun firstGraphemeLength(after: String): Int {
+        if (after.isEmpty()) return 0
+        fun isExtender(cp: Int) = cp == 0xFE0F || cp == 0xFE0E || cp == 0x20E3 || cp in 0x1F3FB..0x1F3FF ||
+            cp in 0xE0020..0xE007F || Character.getType(cp).let { it == Character.NON_SPACING_MARK.toInt() || it == Character.ENCLOSING_MARK.toInt() || it == Character.COMBINING_SPACING_MARK.toInt() }
+        fun isRegional(cp: Int) = cp in 0x1F1E6..0x1F1FF
+        var end = 0
+        val first = after.codePointAt(0)
+        end += Character.charCount(first)
+        if (isRegional(first) && end < after.length && isRegional(after.codePointAt(end))) {
+            end += Character.charCount(after.codePointAt(end))
+        }
+        while (end < after.length) {
+            val cp = after.codePointAt(end)
+            when {
+                isExtender(cp) -> end += Character.charCount(cp)
+                cp == 0x200D && end + 1 < after.length -> {
+                    end += 1
+                    end += Character.charCount(after.codePointAt(end))
+                }
+                else -> return end
+            }
+        }
+        return end
+    }
+
+    /**
+     * Length in chars of the last [n] words before the cursor and the spaces between them (a run of
+     * punctuation counts as a word). The space in front of the first of them is not included.
+     */
+    fun lastWordsLength(before: String, n: Int): Int {
+        var i = before.length
+        repeat(n) {
+            while (i > 0 && before[i - 1].isWhitespace()) i--
+            if (i > 0 && !isWordChar(before[i - 1])) {
+                while (i > 0 && !before[i - 1].isWhitespace() && !isWordChar(before[i - 1])) i--
+            } else {
+                while (i > 0 && isWordChar(before[i - 1])) i--
+            }
+        }
+        return before.length - i
+    }
 }
