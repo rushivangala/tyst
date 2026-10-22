@@ -32,6 +32,14 @@ class KeyboardEndToEndTest {
         if (previousIme.isNotEmpty() && previousIme != "null") device.executeShellCommand("ime set $previousIme")
     }
 
+    /** The word lists load in the background on first start; typing before that skips autocorrect. */
+    private fun waitForEngine() {
+        val graph = (InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TystApp).graph
+        val until = System.currentTimeMillis() + 20_000
+        while (graph.engine.value == null && System.currentTimeMillis() < until) Thread.sleep(100)
+        Thread.sleep(500)
+    }
+
     private fun tapKey(desc: String) {
         // Keys with long-press letters read "o. Hold for ö", so match the start.
         val pattern = java.util.regex.Pattern.compile(java.util.regex.Pattern.quote(desc) + "(\\..*)?")
@@ -49,8 +57,7 @@ class KeyboardEndToEndTest {
     @Test fun typesAutocorrectsAndUndoes() {
         ActivityScenario.launch(TestEditorActivity::class.java).use { scenario ->
             assertThat(device.wait(Until.hasObject(By.desc("Delete")), 10_000)).isTrue()
-            // Give the word lists a moment to load on first start.
-            Thread.sleep(2_000)
+            waitForEngine()
             for (k in listOf("H", "i", "Space", "t", "e", "h", "Space")) tapKey(k)
             assertThat(fieldText(scenario)).isEqualTo("Hi the ")
             tapKey("Delete")
@@ -61,7 +68,7 @@ class KeyboardEndToEndTest {
     @Test fun suggestionStripOffersWords() {
         ActivityScenario.launch(TestEditorActivity::class.java).use { scenario ->
             assertThat(device.wait(Until.hasObject(By.desc("Delete")), 10_000)).isTrue()
-            Thread.sleep(2_000)
+            waitForEngine()
             for (k in listOf("S", "e", "e", "Space", "y", "o", "u", "Space")) tapKey(k)
             val suggestion = listOf("soon", "later", "at", "tomorrow").firstNotNullOfOrNull { w ->
                 device.wait(Until.findObject(By.desc(w)), 2_000)?.let { w to it }
