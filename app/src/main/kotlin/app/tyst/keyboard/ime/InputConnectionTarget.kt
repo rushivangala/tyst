@@ -6,11 +6,13 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import app.tyst.core.field.EnterAction
 import app.tyst.core.field.FieldInfo
+import app.tyst.core.typing.SelectionTracker
 import app.tyst.core.typing.TextTarget
 
 /**
- * [TextTarget] over the focused field's InputConnection. Counts its own edits so that
- * selection updates caused by typing can be told apart from the user moving the cursor.
+ * [TextTarget] over the focused field's InputConnection. Predicts where each of its own edits leaves
+ * the cursor ([selection]) so selection updates caused by typing can be told apart from the user
+ * moving the cursor.
  */
 class InputConnectionTarget(
     private val connection: () -> InputConnection?,
@@ -24,10 +26,7 @@ class InputConnectionTarget(
         fun sendKeyChar(c: Char)
     }
 
-    /** Selection updates still expected from our own edits. */
-    var pendingUpdates = 0
-    private var depth = 0
-    private var editedInBatch = false
+    val selection = SelectionTracker().apply { reset(editor.initialSelStart, editor.initialSelEnd) }
 
     private val ic get() = connection()
     private val rawKeys = editor.inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL
@@ -36,26 +35,37 @@ class InputConnectionTarget(
     override fun after(n: Int): String = ic?.getTextAfterCursor(n, 0)?.toString() ?: ""
     override fun selected(): String = ic?.getSelectedText(0)?.toString() ?: ""
 
-    override fun commit(text: String) = edit {
+    override fun commit(text: String) {
         if (rawKeys) {
             // Terminals and custom views: plain key events.
             for (c in text) if (c == '\n') keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER) else keys.sendKeyChar(c)
-        } else {
-            ic?.commitText(text, 1)
+            selection.unpredictable()
+        } else if (ic?.commitText(text, 1) == true) {
+            selection.committed(text.length)
         }
     }
 
-    override fun deleteAround(before: Int, after: Int) = edit {
-        if (rawKeys) repeat(before) { keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL) }
-        else ic?.deleteSurroundingText(before, after)
+    override fun deleteAround(before: Int, after: Int) {
+        if (rawKeys) {
+            repeat(before) { keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL) }
+            selection.unpredictable()
+        } else if (ic?.deleteSurroundingText(before, after) == true) {
+            selection.deleted(before, after)
+        }
     }
 
-    override fun sendBackspaceKey() = edit { keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL) }
+    override fun sendBackspaceKey() {
+        // Only used where there is nothing before the cursor; if the editor reacts, it shows up as a move.
+        keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+    }
 
-    override fun enter(action: EnterAction) = edit {
+    override fun enter(action: EnterAction) {
         when (action) {
             EnterAction.NEWLINE ->
-                if (field.multiLine && !rawKeys) ic?.commitText("\n", 1) else keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                if (field.multiLine && !rawKeys) commit("\n") else {
+                    keys.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                    selection.unpredictable()
+                }
             else -> ic?.performEditorAction(editor.imeOptions and EditorInfo.IME_MASK_ACTION)
         }
     }
@@ -63,21 +73,12 @@ class InputConnectionTarget(
     override fun batch(block: () -> Unit) {
         val c = ic
         c?.beginBatchEdit()
-        depth++
+        selection.beginBatch()
         try {
             block()
         } finally {
-            depth--
+            selection.endBatch()
             c?.endBatchEdit()
-            if (depth == 0 && editedInBatch) {
-                editedInBatch = false
-                pendingUpdates++
-            }
         }
-    }
-
-    private inline fun edit(op: () -> Unit) {
-        op()
-        if (depth == 0) pendingUpdates++ else editedInBatch = true
     }
 }

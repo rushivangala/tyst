@@ -153,18 +153,17 @@ class TypingController(
         t.batch {
             val word = Words.currentWord(before)
             when {
-                word.isEmpty() && settings.doubleSpacePeriod && (lastWasSpace || autoSpace) && endsWithWordThenSpace(before) -> {
+                word.isEmpty() && autoSpace && before.endsWith(" ") -> {
+                    // A suggestion already put in a space. This tap is the user's habitual space after a
+                    // word, so absorb it; a second tap then counts as a double space.
+                    autoSpace = false
+                    lastWasSpace = true
+                }
+                word.isEmpty() && settings.doubleSpacePeriod && lastWasSpace && endsWithWordThenSpace(before) -> {
                     t.deleteAround(1, 0)
                     t.commit(". ")
                     lastWasSpace = false
                     autoSpace = false
-                    lastCorrection = null
-                }
-                word.isEmpty() && autoSpace -> {
-                    // The suggestion already added a space; a second one is just a space.
-                    t.commit(" ")
-                    autoSpace = false
-                    lastWasSpace = true
                     lastCorrection = null
                 }
                 else -> {
@@ -405,8 +404,7 @@ class TypingController(
         t.batch {
             if (t.selected().isNotEmpty()) t.commit(newText)
             else {
-                val b = t.before(MAX_EDIT_CHARS)
-                val a = t.after(MAX_EDIT_CHARS)
+                val (b, a) = toolsWindow(t)
                 t.deleteAround(b.length, a.length)
                 t.commit(newText)
             }
@@ -425,7 +423,27 @@ class TypingController(
     fun textForTools(): String {
         val t = target ?: return ""
         val sel = t.selected()
-        return sel.ifEmpty { t.before(MAX_EDIT_CHARS) + t.after(MAX_EDIT_CHARS) }
+        return sel.ifEmpty { toolsWindow(t).let { (b, a) -> b + a } }
+    }
+
+    /**
+     * The text around the cursor the writing tools work on when nothing is selected. A field longer
+     * than the window is cut at sentence or paragraph ends, so a rewrite never splits a sentence.
+     */
+    private fun toolsWindow(t: TextTarget): Pair<String, String> {
+        var b = t.before(MAX_EDIT_CHARS + 1)
+        var a = t.after(MAX_EDIT_CHARS + 1)
+        if (b.length > MAX_EDIT_CHARS) {
+            b = b.substring(b.length - MAX_EDIT_CHARS)
+            val cut = SENTENCE_END.find(b)?.range?.last?.plus(1) ?: b.length
+            b = b.substring(cut)
+        }
+        if (a.length > MAX_EDIT_CHARS) {
+            a = a.substring(0, MAX_EDIT_CHARS)
+            val cut = SENTENCE_END.findAll(a).lastOrNull()?.range?.last?.plus(1) ?: 0
+            a = a.substring(0, cut)
+        }
+        return b to a
     }
 
     // ---- strip ----
@@ -511,5 +529,7 @@ class TypingController(
         private const val SENTENCE_PUNCT = ".,!?;:"
         private const val ATTACHING_PUNCT = ".,!?;:"
         private val LEARN_STYLE_KINDS = setOf(FieldKind.TEXT, FieldKind.MESSAGE)
+        /** A sentence end plus the whitespace after it, or a line break. */
+        private val SENTENCE_END = Regex("""[.!?]["”’)]*\s+|\n+""")
     }
 }

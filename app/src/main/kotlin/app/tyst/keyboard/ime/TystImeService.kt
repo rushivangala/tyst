@@ -93,6 +93,8 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             // A field may already be focused while the engine was loading.
             val t = target
             if (t != null && isInputViewShown) controller?.start(focused, t, settings)
+            // Anything copied while the word lists were loading would otherwise be missed.
+            readClipboard(onlyFresh = true)
         }
         scope.launch {
             g.settings.flow.drop(1).collect { s ->
@@ -141,6 +143,8 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             KeyLayoutKind.LETTERS -> Mode.LETTERS
         }
         closePanels()
+        // The on-device recogniser can be installed or removed while the keyboard service lives on.
+        voiceAvailableCache = null
         val t = InputConnectionTarget({ currentInputConnection }, keySender, info, focused)
         target = t
         controller?.start(focused, t, settings)
@@ -184,12 +188,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         val t = target ?: return
-        if (t.pendingUpdates > 0 && newSelStart == newSelEnd) {
-            t.pendingUpdates--
-        } else {
-            t.pendingUpdates = 0
-            controller?.onCursorMoved()
-        }
+        if (t.selection.onUpdate(newSelStart, newSelEnd)) controller?.onCursorMoved()
     }
 
     // ---- look ----

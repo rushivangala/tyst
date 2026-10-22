@@ -94,6 +94,33 @@ class TypingControllerTest {
         assertThat(t2.value).isEqualTo("See you ${s.text}. ")
     }
 
+    @Test fun spaceAfterPickedSuggestionIsAbsorbedThenSecondAddsPeriod() {
+        val t = start()
+        type("See you ")
+        val s = controller.strip().suggestions.first { it.text == "soon" || it.text == "later" }
+        controller.pick(s)
+        // Tapping space out of habit after a suggestion: no period, no double space.
+        controller.onSpace()
+        assertThat(t.value).isEqualTo("See you ${s.text} ")
+        // A second tap is the usual double-space period.
+        controller.onSpace()
+        assertThat(t.value).isEqualTo("See you ${s.text}. ")
+    }
+
+    @Test fun writingToolsOnALongFieldWorkOnWholeSentences() {
+        val sentences = (1..400).map { "Sentence number $it is here." }
+        val full = sentences.joinToString(" ")
+        val t = start(full)
+        val window = controller.textForTools()
+        assertThat(window.length).isAtMost(4000)
+        assertThat(window).startsWith("Sentence number")
+        assertThat(window).endsWith("is here.")
+        controller.replaceText("Rewritten.")
+        // Everything outside the window is untouched, and the seam is between sentences.
+        assertThat(t.value).isEqualTo(full.removeSuffix(window) + "Rewritten.")
+        assertThat(t.value).contains("is here. Rewritten.")
+    }
+
     @Test fun doubleSpaceAddsPeriod() {
         val t = start()
         type("Sounds good  ")
