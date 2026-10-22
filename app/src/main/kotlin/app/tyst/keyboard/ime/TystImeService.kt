@@ -134,6 +134,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         super.onStartInputView(info, restarting)
         editor = info
         focused = FieldClassifier.classify(info.inputType, info.imeOptions, info.packageName ?: "", info.hintText?.toString() ?: "")
+        AutofillLog.add("Field opened in ${info.packageName ?: "?"} (${focused.kind.name.lowercase()})")
         mode = when (focused.layout) {
             KeyLayoutKind.NUMBER_PAD -> Mode.NUMBER
             KeyLayoutKind.PHONE_PAD -> Mode.PHONE
