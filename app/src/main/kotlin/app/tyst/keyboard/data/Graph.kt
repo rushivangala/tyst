@@ -39,6 +39,13 @@ class Graph(
     /** Bumped whenever learned data changes, so screens can refresh lists. */
     val revision: StateFlow<Int> = revisionState.asStateFlow()
 
+    /**
+     * False when learned data couldn't be read because the key wasn't available. Saving is then
+     * off until the next start, so a temporary Keystore hiccup can't overwrite good data with empty data.
+     */
+    @Volatile var canSave = true
+        private set
+
     fun start() {
         if (started) return
         started = true
@@ -67,12 +74,30 @@ class Graph(
         if (e != null) block(e) else waiting += block
     }
 
-    private fun <T> load(name: String, decode: (String) -> T): T? =
-        try {
-            store.read(name)?.let(decode)
-        } catch (_: Exception) {
-            null
+    /**
+     * Loads one learned-data file. Missing → null (fresh start). Damaged, or written by a format this
+     * build can't decode → moved aside, then null. Key unavailable after retries → null and saving off.
+     */
+    private fun <T> load(name: String, decode: (String) -> T): T? {
+        var result = store.load(name)
+        var attempt = 0
+        while (result is Stored.KeyUnavailable && attempt < KEY_RETRIES) {
+            Thread.sleep(KEY_RETRY_MS shl attempt)
+            attempt++
+            result = store.load(name)
         }
+        return when (result) {
+            Stored.Missing -> null
+            is Stored.Ok -> try {
+                decode(result.text)
+            } catch (_: Exception) {
+                store.quarantine(name)
+                null
+            }
+            is Stored.Damaged -> { store.quarantine(name); null }
+            is Stored.KeyUnavailable -> { canSave = false; null }
+        }
+    }
 
     /** Call after changing learned data from the settings screens. */
     fun changed() {
@@ -92,7 +117,7 @@ class Graph(
     fun saveNow() {
         main.removeCallbacks(saveRunnable)
         val e = engineState.value ?: return
-        if (!e.dirty) return
+        if (!e.dirty || !canSave) return
         e.dirty = false
         val personal = e.personal.encode()
         val memory = e.memory.encode()
@@ -112,6 +137,8 @@ class Graph(
     fun deleteAll() {
         main.removeCallbacks(saveRunnable)
         engineState.value?.let { it.deleteAllLearned(); it.dirty = false }
+        // The user chose to start over, so writing (empty) data is safe again.
+        canSave = true
         io.execute { store.deleteAll() }
         revisionState.value++
     }
@@ -119,5 +146,7 @@ class Graph(
     companion object {
         const val KEY_ALIAS = "tyst_learned_v1"
         const val SAVE_DELAY_MS = 2_000L
+        private const val KEY_RETRIES = 3
+        private const val KEY_RETRY_MS = 200L
     }
 }
