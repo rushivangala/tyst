@@ -37,7 +37,7 @@ class TestAutofillService : AutofillService() {
         for (i in 0 until structure.windowNodeCount) walk(structure.getWindowNodeAt(i).rootViewNode)
         lastRequestHadInline = request.inlineSuggestionsRequest != null
         requests++
-        if (ids.isEmpty()) {
+        if (ids.isEmpty() || answerEmpty) {
             callback.onSuccess(null)
             return
         }
@@ -66,5 +66,7 @@ class TestAutofillService : AutofillService() {
     companion object {
         @Volatile var requests = 0
         @Volatile var lastRequestHadInline = false
+        /** Answer with nothing, like the empty follow-up NordPass sends after its real answer. */
+        @Volatile var answerEmpty = false
     }
 }

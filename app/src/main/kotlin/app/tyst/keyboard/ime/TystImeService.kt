@@ -162,6 +162,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
         // onStartInputView, so they must not be cleared there.
         pendingInline = emptyList()
         strip?.setInlineSuggestions(emptyList())
+        AutofillLog.shown = 0
         controller?.finish()
         target = null
         g.saveNow()
@@ -427,11 +428,19 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
         if (!settings.showPasswordSuggestions) return false
         val count = response.inlineSuggestions.size
-        AutofillLog.add(if (count == 0) "Password manager had no suggestions for this field" else "Password manager sent $count suggestion${if (count == 1) "" else "s"}")
+        if (count == 0) {
+            // Android often follows a real answer with an empty one for the same field. Clearing on
+            // it made the pills vanish a moment after appearing, so keep what's shown; pills are
+            // cleared when the field closes instead.
+            AutofillLog.add(if (pendingInline.isEmpty()) "Password manager had no suggestions for this field" else "Empty follow-up from the password manager; keeping the ${pendingInline.size} shown")
+            return false
+        }
+        AutofillLog.add("Password manager sent $count suggestion${if (count == 1) "" else "s"}")
         InlineAutofill.inflate(this, response) { views ->
             pendingInline = views
             strip?.setInlineSuggestions(views)
-            if (views.isNotEmpty()) AutofillLog.add("Showing ${views.size} in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+            AutofillLog.shown = views.size
+            if (views.size == count) AutofillLog.add("Showing $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
         }
         return true
     }

@@ -9,6 +9,12 @@ import android.widget.LinearLayout
 
 /** A login screen for end-to-end autofill tests. Debug builds only. */
 class TestLoginActivity : Activity() {
+    /** Asks Android for a fresh fill request on the focused field, as happens on real devices. */
+    fun requestAutofillOnFocusedField() {
+        val view = currentFocus ?: return
+        getSystemService(android.view.autofill.AutofillManager::class.java)?.requestAutofill(view)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val user = EditText(this).apply {

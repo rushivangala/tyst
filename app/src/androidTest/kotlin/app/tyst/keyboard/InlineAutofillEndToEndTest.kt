@@ -34,6 +34,7 @@ class InlineAutofillEndToEndTest {
     }
 
     @After fun tearDown() {
+        TestAutofillService.answerEmpty = false
         if (previousIme.isNotEmpty() && previousIme != "null") device.executeShellCommand("ime set $previousIme")
         if (previousAutofill.isNotEmpty() && previousAutofill != "null") device.executeShellCommand("settings put secure autofill_service $previousAutofill")
         else device.executeShellCommand("settings delete secure autofill_service")
@@ -51,7 +52,15 @@ class InlineAutofillEndToEndTest {
             val report = "service requests=${TestAutofillService.requests}, request had inline=${TestAutofillService.lastRequestHadInline}, " +
                 "autofill_service=${device.executeShellCommand("settings get secure autofill_service").trim()}, keyboard log: [$log]"
             if (AutofillLog.all().none { it.contains("Showing") }) fail("Pills never shown. $report")
-            println("Autofill OK: $report")
+
+            // NordPass on a Pixel follows its answer with an empty one; the pills must survive it.
+            TestAutofillService.answerEmpty = true
+            it.onActivity { a -> a.requestAutofillOnFocusedField() }
+            val until2 = System.currentTimeMillis() + 8_000
+            while (System.currentTimeMillis() < until2 && AutofillLog.all().none { e -> e.contains("Empty follow-up") || e.contains("no suggestions") }) Thread.sleep(250)
+            val afterEmpty = AutofillLog.all().reversed().joinToString(" / ")
+            if (AutofillLog.shown == 0) fail("Pills cleared by an empty follow-up. keyboard log: [$afterEmpty]")
+            println("Autofill OK: $report / after empty follow-up: [$afterEmpty]")
         }
     }
 }

@@ -133,6 +133,9 @@ class InlineClipFrame(context: Context) : FrameLayout(context) {
 /** The last few autofill events, in memory only, shown in Passwords & codes to diagnose problems. */
 object AutofillLog {
     private val events = ArrayDeque<String>()
+
+    /** Pills currently in the strip (for the end-to-end test). */
+    @Volatile var shown = 0
     private val time = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT)
 
     @Synchronized
