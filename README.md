@@ -22,12 +22,41 @@ The design work (spec, design system, screens, copy and the design review) is in
 | On-device voice typing | ✅ Uses Android's *on-device* speech recogniser only (no network fallback), followed by a Swedish pass ("vasteras" → "Västerås"). |
 | Material 3 Expressive theming | ✅ Light, dark or system. Wallpaper colour with a contrast guard, the six curated palettes (Hav, Fjäll, Mossa, Lingon, Bärnsten, Skymning) or time-of-day rotation. Key height S–XL, key borders, number row, one-handed mode (left/right), and a live preview. |
 
-The keyboard also has symbols (two pages), number and phone pads, offline emoji with your own most-used emoji first, and the keyboard picker on long-press of space. Long-press comma gives emoji, settings and one-handed mode. TalkBack can explore and type every key ("a. Hold for å, ä"). Changes from the design review are included: the outline token at ≥ 3:1, no backup of learned data, an incognito marker, truncated memory chips, a countdown text on codes, Translate and Reply removed from the keyboard, and long-press tips in onboarding.
+Slide along the space bar to move the cursor, and slide left from backspace to select whole words and delete them on release. The keyboard also has symbols (two pages), number and phone pads, offline emoji with your own most-used emoji first, and the keyboard picker on long-press of space. Long-press comma gives emoji, settings and one-handed mode. TalkBack can explore and type every key ("a. Hold for å, ä"). Changes from the design review are included: the outline token at ≥ 3:1, no backup of learned data, an incognito marker, truncated memory chips, a countdown text on codes, Translate and Reply removed from the keyboard, and long-press tips in onboarding.
 
 ### Different from the spec, on purpose
 
 - **The writing tools use a built-in rules engine, not an LLM.** The spec plans a ~1 GB on-device model delivered by Play Asset Delivery. That model isn't part of this build. Rewrite and Proofread use deterministic phrase rules plus your learned habits. They work offline from the first minute and never invent facts. The engine sits behind `Rewriter` and `Proofreader` in `:core`, so a model can replace it later.
 - **Not built yet:** swipe typing, a clipboard history panel (only the latest copy is offered), per-app default tones, encrypted export, a biometric lock for memory, Translate and Reply (shown as "Later" in Settings), and Direct Boot support. Before the first unlock after a reboot, Android uses another keyboard.
+
+## Typing quality
+
+`core/src/test/kotlin/app/tyst/core/bench/TypingBenchmark.kt` measures typing end to end through `TypingController`. A simulated thumb types held-out messages (`core/src/test/resources/bench/messages.txt`, never used for training) with Gaussian tap scatter on a phone-sized layout. The benchmark reports:
+
+- **False corrections:** correctly typed words that autocorrect changed.
+- **Typos fixed:** mistyped words that came out right.
+- **Keystroke savings:** a typist who taps a suggestion as soon as the wanted word appears.
+- **Next word in top 3** and **strip latency**.
+
+Tune on the `TUNE` half and report the `TEST` half. `TypingBenchmarkTest` holds the regression floors.
+
+| Held-out half | before | now |
+|---|---|---|
+| False corrections | 0.0% | 0.0% |
+| Typos fixed | 64.8% | 86.4% |
+| Keystroke savings | 40.3% | 41.0% |
+| Next word in top 3 | 24.8% | 28.5% |
+| Strip latency p95 (desktop JVM) | 6.7 ms | 2.7 ms |
+
+How autocorrect decides:
+
+- **Common words never change.** The 10,000 most common English words, curated Swedish names, places and words, and anything spelled with å ä ö are never changed.
+- **Rare words.** A rarer word is replaced only when a far likelier word (about 60×) is one key-slip away. Entries that no spell-checker lists, such as "thr" and "pn", count as less likely (`en_unlisted.txt`).
+- **Where the finger landed** on each letter makes the nearly-hit neighbour cheaper.
+- **Swedish words.** Plain-ASCII Swedish words get a penalty inside English sentences on Medium and Strong. Mild keeps every Swedish word as typed.
+- **Next words** blend the hand-written chat phrases with a general-English table (`en_next.txt`).
+
+`tools/gen_bigrams.py` and `tools/gen_unlisted.py` rebuild the data files.
 
 ## Project layout
 
@@ -39,7 +68,7 @@ app/    Android app (minSdk 31, target/compile 37):
         ime/   InputMethodService, custom-drawn keyboard, strip, panels, inline autofill, voice
         data/  AES-GCM storage with a hardware-backed Android Keystore key, settings, app graph
         ui/    Compose onboarding and settings
-tools/  gen_lexicon.py builds the word lists from wordfreq
+tools/  gen_lexicon.py (wordfreq), gen_bigrams.py and gen_unlisted.py (symspellpy) build the word data
 design/ The Claude Design handoff (spec, design system, screens, copy, chats)
 brand/  Launcher icon exports
 ```
