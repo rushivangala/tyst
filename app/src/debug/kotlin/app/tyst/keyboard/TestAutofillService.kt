@@ -1,5 +1,6 @@
 package app.tyst.keyboard
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.assist.AssistStructure
 import android.content.Intent
@@ -22,6 +23,7 @@ import androidx.autofill.inline.v1.InlineSuggestionUi
  * A stand-in password manager for end-to-end tests (debug builds only). It answers every fill
  * request with two logins, offered as inline suggestions the way NordPass does.
  */
+@SuppressLint("RestrictedApi")
 @Suppress("DEPRECATION")
 class TestAutofillService : AutofillService() {
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {

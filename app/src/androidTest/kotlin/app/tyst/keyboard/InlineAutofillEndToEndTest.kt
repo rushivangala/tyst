@@ -42,7 +42,7 @@ class InlineAutofillEndToEndTest {
     @Test fun passwordManagerPillsAppearInTheStrip() {
         ActivityScenario.launch(TestLoginActivity::class.java).use {
             Thread.sleep(1_500)
-            device.wait(Until.findObject(By.desc("Email")), 5_000)?.click() ?: fail("No email field")
+            device.wait(Until.findObject(By.clazz("android.widget.EditText")), 5_000)?.click() ?: fail("No email field")
             device.wait(Until.hasObject(By.desc("Delete")), 10_000)
             // Wait for the request, the service's answer and the pills to be drawn.
             val until = System.currentTimeMillis() + 15_000
