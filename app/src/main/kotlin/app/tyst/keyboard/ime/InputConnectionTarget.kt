@@ -70,6 +70,24 @@ class InputConnectionTarget(
         }
     }
 
+    override fun selection(): Pair<Int, Int>? =
+        if (!rawKeys && selection.known) selection.start to selection.end else null
+
+    override fun setSelection(start: Int, end: Int): Boolean {
+        if (rawKeys || !selection.known) return false
+        val s = maxOf(0, start)
+        val e = maxOf(s, end)
+        if (ic?.setSelection(s, e) != true) return false
+        selection.selected(s, e)
+        return true
+    }
+
+    override fun arrowKeys(chars: Int) {
+        val code = if (chars < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
+        repeat(kotlin.math.abs(chars)) { keys.sendDownUpKeyEvents(code) }
+        selection.unpredictable()
+    }
+
     override fun batch(block: () -> Unit) {
         val c = ic
         c?.beginBatchEdit()

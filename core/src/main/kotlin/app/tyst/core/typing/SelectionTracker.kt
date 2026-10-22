@@ -47,6 +47,13 @@ class SelectionTracker {
         edited()
     }
 
+    /** setSelection([selStart], [selEnd]) by the keyboard itself (space-bar slide, delete slide). */
+    fun selected(selStart: Int, selEnd: Int) {
+        start = minOf(selStart, selEnd)
+        end = maxOf(selStart, selEnd)
+        edited()
+    }
+
     /** An edit whose effect can't be predicted (raw key events): the next update can't be matched. */
     fun unpredictable() {
         start = -1

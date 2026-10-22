@@ -15,6 +15,7 @@ import android.view.inputmethod.InlineSuggestionsRequest
 import android.view.inputmethod.InlineSuggestionsResponse
 import android.view.inputmethod.InputMethodManager
 import app.tyst.core.TystEngine
+import app.tyst.core.correct.TapOffset
 import app.tyst.core.field.FieldClassifier
 import app.tyst.core.field.FieldInfo
 import app.tyst.core.field.KeyLayoutKind
@@ -272,6 +273,16 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             KeyType.BACKSPACE, KeyType.SPACER -> Unit
         }
     }
+
+    override fun onKeyTap(key: Key, tap: TapOffset?) {
+        val c = controller
+        if (key.type == KeyType.CHAR && c != null) c.onText(key.text, tap) else onKey(key)
+    }
+
+    override fun onCursorSlide(steps: Int) { controller?.moveCursor(steps) }
+    override fun onDeleteSlideStart() { controller?.startDeleteSlide() }
+    override fun onDeleteSlide(words: Int) { controller?.deleteSlide(words) }
+    override fun onDeleteSlideEnd(commit: Boolean) { controller?.endDeleteSlide(commit) }
 
     override fun onPopupText(text: String) {
         controller?.onText(text) ?: basicCommit(text)
