@@ -157,10 +157,17 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
     /** Autofill pills that arrived before the keyboard view existed. */
     private var pendingInline: List<View> = emptyList()
 
+    /**
+     * The suggestions being drawn. Android only weakly references the "pill ready" callbacks, so
+     * if these objects are garbage-collected first the pills silently never appear.
+     */
+    private var liveInline: Any? = null
+
     override fun onFinishInput() {
         // Pills belong to the field that is closing; the next field's pills may arrive before
         // onStartInputView, so they must not be cleared there.
         pendingInline = emptyList()
+        liveInline = null
         strip?.setInlineSuggestions(emptyList())
         AutofillLog.shown = 0
         controller?.finish()
@@ -436,6 +443,7 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             return false
         }
         AutofillLog.add("Password manager sent $count suggestion${if (count == 1) "" else "s"}")
+        liveInline = response.inlineSuggestions
         InlineAutofill.inflate(this, response) { views, finished ->
             pendingInline = views
             strip?.setInlineSuggestions(views)

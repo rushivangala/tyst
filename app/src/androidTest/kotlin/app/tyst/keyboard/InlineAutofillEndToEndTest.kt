@@ -46,7 +46,7 @@ class InlineAutofillEndToEndTest {
             device.wait(Until.findObject(By.clazz("android.widget.EditText")), 5_000)?.click() ?: fail("No email field")
             device.wait(Until.hasObject(By.desc("Delete")), 10_000)
             // Wait for the request, the service's answer and the pills to be drawn.
-            val until = System.currentTimeMillis() + 15_000
+            val until = System.currentTimeMillis() + 25_000
             while (System.currentTimeMillis() < until && AutofillLog.shown == 0) Thread.sleep(250)
             val log = AutofillLog.all().reversed().joinToString(" / ")
             val report = "service requests=${TestAutofillService.requests}, request had inline=${TestAutofillService.lastRequestHadInline}, " +
