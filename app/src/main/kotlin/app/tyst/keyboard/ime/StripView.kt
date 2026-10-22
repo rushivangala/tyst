@@ -108,17 +108,30 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
 
     private var toolsActive = false
 
-    /** Shows the system-drawn autofill pills (e.g. from NordPass); an empty list removes them. */
+    /**
+     * Shows the system-drawn autofill pills (e.g. from NordPass); an empty list removes them.
+     *
+     * A pill is a window into a surface owned by the system. Detaching it releases that surface, and
+     * a password manager's pill may not come back. So a pill already in the strip is never moved:
+     * pills that stay keep their place, new ones are inserted around them, gone ones are removed.
+     */
     fun setInlineSuggestions(views: List<View>) {
         if (views == inlineViews) return
         inlineViews = views
-        inlineRow.removeAllViews()
-        views.forEach { v ->
+        val keep = views.toHashSet()
+        for (i in inlineRow.childCount - 1 downTo 0) {
+            if (inlineRow.getChildAt(i) !in keep) inlineRow.removeViewAt(i)
+        }
+        views.forEachIndexed { i, v ->
+            if (v.parent === inlineRow) return@forEachIndexed
             (v.parent as? ViewGroup)?.removeView(v)
-            inlineRow.addView(v, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = context.dp(6f).toInt() })
+            inlineRow.addView(v, minOf(i, inlineRow.childCount), LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = context.dp(6f).toInt() })
         }
         render(lastState, voice.visibility == VISIBLE, toolsActive)
     }
+
+    /** True while the pill row is on screen, for diagnostics. */
+    val showingInline: Boolean get() = inlineScroll.visibility == VISIBLE && inlineRow.childCount > 0
 
     fun render(state: StripState, voiceAvailable: Boolean, toolsOpen: Boolean) {
         lastState = state
@@ -132,7 +145,10 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
 
         val code = state.code
         chipRow.removeAllViews()
-        inlineScroll.visibility = GONE
+        // Pills are live system surfaces: only hide or show their row when that actually changes,
+        // never as a side effect of redrawing the strip on each key.
+        val inline = if (code == null && inlineViews.isNotEmpty()) VISIBLE else GONE
+        if (inlineScroll.visibility != inline) inlineScroll.visibility = inline
         when {
             code != null -> {
                 val chip = RichChip(
@@ -153,7 +169,6 @@ class StripView(context: Context, private val listener: Listener) : LinearLayout
                 slotRow.visibility = GONE
                 incognitoLabel.visibility = GONE
                 chipScroll.visibility = GONE
-                inlineScroll.visibility = VISIBLE
                 return
             }
             state.memory.isNotEmpty() -> {

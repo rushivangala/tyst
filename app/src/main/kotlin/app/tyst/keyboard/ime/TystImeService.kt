@@ -462,9 +462,25 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             pendingInline = views
             strip?.setInlineSuggestions(views)
             AutofillLog.shown = views.size
-            if (finished) AutofillLog.add("Showing ${views.size} of $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+            if (finished) {
+                AutofillLog.add("Showing ${views.size} of $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+                // After layout, say whether the pills really are on screen and how big, so a report from
+                // a phone tells "never answered" apart from "answered but invisible".
+                handler.postDelayed({ logPillsOnScreen() }, 600)
+            }
         }
         return true
+    }
+
+    private fun logPillsOnScreen() {
+        val st = strip
+        if (st == null) { AutofillLog.add("Pills waiting: keyboard not open"); return }
+        val r = android.graphics.Rect()
+        val sizes = st.inlineViews.mapIndexed { i, v ->
+            val seen = v.isAttachedToWindow && v.getGlobalVisibleRect(r)
+            "${i + 1}: ${v.width}×${v.height}${if (seen) " visible" else " NOT visible"}"
+        }
+        AutofillLog.add("Pills on screen (row shown=${st.showingInline}, keyboard shown=$isInputViewShown): ${sizes.joinToString(", ")}")
     }
 
     private object NoVoice : VoiceInput.Listener {
