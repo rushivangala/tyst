@@ -64,26 +64,28 @@ object InlineAutofill {
      * Inflates every pill and hands the list to [update] each time one is ready, in the order the
      * service sent them, so one pill that fails to draw can't hide the others.
      */
-    fun inflate(context: Context, response: InlineSuggestionsResponse, update: (List<View>) -> Unit) {
+    fun inflate(context: Context, response: InlineSuggestionsResponse, update: (views: List<View>, finished: Boolean) -> Unit) {
         val suggestions = response.inlineSuggestions
         if (suggestions.isEmpty()) {
-            update(emptyList())
+            update(emptyList(), true)
             return
         }
         val views = arrayOfNulls<View>(suggestions.size)
+        var pending = suggestions.size
+        fun settled() {
+            pending--
+            update(views.filterNotNull(), pending == 0)
+        }
         val size = Size(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         suggestions.forEachIndexed { i, s ->
             try {
                 s.inflate(context, size, context.mainExecutor) { view ->
-                    if (view == null) {
-                        AutofillLog.add("Pill ${i + 1} could not be drawn")
-                    } else {
-                        views[i] = view
-                        update(views.filterNotNull())
-                    }
+                    if (view == null) AutofillLog.add("Pill ${i + 1} could not be drawn") else views[i] = view
+                    settled()
                 }
             } catch (e: RuntimeException) {
                 AutofillLog.add("Pill ${i + 1} failed: ${e.javaClass.simpleName}: ${e.message}")
+                settled()
             }
         }
     }

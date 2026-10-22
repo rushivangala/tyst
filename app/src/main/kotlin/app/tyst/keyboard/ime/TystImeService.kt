@@ -436,11 +436,11 @@ class TystImeService : InputMethodService(), KeyboardView.Listener, StripView.Li
             return false
         }
         AutofillLog.add("Password manager sent $count suggestion${if (count == 1) "" else "s"}")
-        InlineAutofill.inflate(this, response) { views ->
+        InlineAutofill.inflate(this, response) { views, finished ->
             pendingInline = views
             strip?.setInlineSuggestions(views)
             AutofillLog.shown = views.size
-            if (views.size == count) AutofillLog.add("Showing $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
+            if (finished) AutofillLog.add("Showing ${views.size} of $count in the strip${if (strip == null) " (once the keyboard opens)" else ""}")
         }
         return true
     }

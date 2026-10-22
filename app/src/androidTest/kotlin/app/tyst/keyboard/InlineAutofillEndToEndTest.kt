@@ -47,11 +47,11 @@ class InlineAutofillEndToEndTest {
             device.wait(Until.hasObject(By.desc("Delete")), 10_000)
             // Wait for the request, the service's answer and the pills to be drawn.
             val until = System.currentTimeMillis() + 15_000
-            while (System.currentTimeMillis() < until && AutofillLog.all().none { it.contains("Showing") }) Thread.sleep(250)
+            while (System.currentTimeMillis() < until && AutofillLog.shown == 0) Thread.sleep(250)
             val log = AutofillLog.all().reversed().joinToString(" / ")
             val report = "service requests=${TestAutofillService.requests}, request had inline=${TestAutofillService.lastRequestHadInline}, " +
                 "autofill_service=${device.executeShellCommand("settings get secure autofill_service").trim()}, keyboard log: [$log]"
-            if (AutofillLog.all().none { it.contains("Showing") }) fail("Pills never shown. $report")
+            if (AutofillLog.shown == 0) fail("Pills never shown. $report")
 
             // NordPass on a Pixel follows its answer with an empty one; the pills must survive it.
             TestAutofillService.answerEmpty = true
