@@ -2,8 +2,14 @@ package app.tyst.core.predict
 
 import app.tyst.core.text.Words
 
-/** Unigram, bigram and trigram counts over normalized tokens. Not thread-safe. */
+/**
+ * Unigram, bigram and trigram counts over normalized tokens, plus (for the base model) a broad
+ * [following] table of general-English next words. Not thread-safe.
+ */
 class NGramModel {
+    /** General-English next words; null for the personal model. Weighted below the chat phrases. */
+    var following: NextWordTable? = null
+    var followingWeight = FOLLOWING_WEIGHT
     val unigrams = HashMap<String, Int>()
     val bigrams = HashMap<String, HashMap<String, Int>>()
     val trigrams = HashMap<String, HashMap<String, Int>>()
@@ -42,6 +48,7 @@ class NGramModel {
                 for ((w, c) in m) out.merge(w, 2.0 * c / total, Double::plus)
             }
         }
+        following?.forEach(p2) { w, p -> out.merge(w, followingWeight * p, Double::plus) }
         return out
     }
 
@@ -80,13 +87,20 @@ class NGramModel {
     }
 
     companion object {
-        /** Builds the base model from the bundled phrase list. */
+        /**
+         * How much general English counts next to the hand-written chat phrases, whose probabilities
+         * are 1.0 per word. Tuned with the typing benchmark on its tuning half.
+         */
+        const val FOLLOWING_WEIGHT = 0.6
+
+        /** Builds the base model from the bundled phrase list and next-word table. */
         fun loadBase(): NGramModel {
             val model = NGramModel()
-            val stream = NGramModel::class.java.getResourceAsStream("/tyst/phrases.txt") ?: return model
-            stream.bufferedReader(Charsets.UTF_8).readLines()
-                .filter { it.isNotBlank() && !it.startsWith("#") }
-                .forEach { line -> sentences(line).forEach { model.addSentence(it) } }
+            NGramModel::class.java.getResourceAsStream("/tyst/phrases.txt")?.bufferedReader(Charsets.UTF_8)?.useLines { lines ->
+                lines.filter { it.isNotBlank() && !it.startsWith("#") }
+                    .forEach { line -> sentences(line).forEach { model.addSentence(it) } }
+            }
+            model.following = NextWordTable.load()
             return model
         }
 

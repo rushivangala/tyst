@@ -86,4 +86,26 @@ class AutocorrectTest {
         val r = check("lagom", listOf("is"), opts.copy(swedishWords = false))
         assertThat(r.reason).isNotEqualTo(CorrectionReason.SWEDISH_WORD)
     }
+
+    @Test fun capitalisedSlipIsFixedWhenTheWordIsAlwaysCapitalised() {
+        assertThat(engine.autocorrector.check("Momday", listOf("on"), CorrectionOptions()).autoApply).isEqualTo("Monday")
+        // An unknown capitalised word mid-sentence is still treated as a name.
+        assertThat(engine.autocorrector.check("Kallstrom", listOf("with"), CorrectionOptions()).autoApply).isNull()
+    }
+
+    @Test fun tapNearTheBorderMakesTheNeighbourLikelier() {
+        val kp = app.tyst.core.correct.KeyProximity
+        val tap = { dx: Float -> app.tyst.core.correct.TapOffset(dx, 0f) }
+        // g was hit, h was meant: a tap at g's centre costs like a plain neighbour slip…
+        assertThat(kp.tapCost('h', 'g', tap(0f))).isWithin(0.05).of(kp.substitutionCost('h', 'g'))
+        // …one on the g|h border costs almost nothing, and one leaning away from h costs more.
+        assertThat(kp.tapCost('h', 'g', tap(0.48f))).isLessThan(0.1)
+        assertThat(kp.tapCost('h', 'g', tap(-0.3f))).isGreaterThan(kp.tapCost('h', 'g', tap(0f)))
+        // Taps never make a far key cheaper than a plain non-neighbour slip.
+        assertThat(kp.tapCost('p', 'g', tap(0.48f))).isEqualTo(1.0)
+        // Through the distance: "gat" → "hat" with the border tap is cheaper than at the centre.
+        val near = app.tyst.core.correct.typoDistance("hat", "gat", 2.0) { a, j -> kp.tapCost(a, "gat"[j], if (j == 0) tap(0.48f) else null) }
+        val centre = app.tyst.core.correct.typoDistance("hat", "gat", 2.0) { a, j -> kp.tapCost(a, "gat"[j], if (j == 0) tap(0f) else null) }
+        assertThat(near).isLessThan(centre)
+    }
 }

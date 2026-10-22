@@ -1,0 +1,161 @@
+# Held-out messages for the typing benchmark. Not used for training; keep them out of phrases.txt.
+# Everyday English as people text it, with Swedish names, places and words mixed in.
+Are we still on for tonight?
+Can you pick me up from work at five?
+I just got home, the traffic was terrible.
+Did you see my email about the trip?
+I left my charger at your place.
+Could you bring some snacks for the kids?
+The movie starts at half past seven.
+I forgot my wallet, can you pay and I will send you the money?
+We are out of coffee again.
+How did the interview go?
+Let me know when you are on your way.
+The doctor said it is nothing serious.
+I need to finish this before the weekend.
+Thanks for the lovely evening, we had a great time.
+My phone is about to die, call you later.
+Is the store still open?
+Did anyone feed the cat this morning?
+I will be a few minutes late for the call.
+The bus is running late again.
+Can we push the meeting to next Monday?
+I have a headache, going to bed early.
+Please remember to water the plants.
+What should we cook for dinner?
+I found a great place for brunch on Saturday.
+Happy anniversary, love you so much!
+Do you need anything from the pharmacy?
+The tickets are booked for the second of June.
+I am stuck in a meeting until four.
+Can you send me the photos from the party?
+We should plan a trip this summer.
+The kids have a day off school on Friday.
+Shall we get takeaway tonight?
+I just landed, waiting for my bag.
+Your package is at my place, come and get it whenever.
+I really enjoyed the book you lent me.
+Can you check if the oven is off?
+The car needs new tyres before winter.
+I booked a table for six people.
+How much was the electricity bill this month?
+Good job on the presentation today.
+I will take the early train tomorrow.
+Remember to bring your passport.
+We have a team lunch on Wednesday.
+Could you share the slides after the meeting?
+I think I left the keys in the car.
+The game was so exciting last night.
+It is raining a lot here, bring an umbrella.
+I am heading out for a run.
+Can we talk about the budget tomorrow morning?
+Did you get my message?
+I am so proud of you!
+What time does the party start?
+I will pick up the cake on the way.
+Thanks again for your help with the move.
+The internet is down at home.
+Are you coming to the office tomorrow?
+I need a break, this week has been long.
+The new restaurant downtown is amazing.
+Do you want to watch a movie tonight?
+I cannot find the remote anywhere.
+Please call me back when you have a minute.
+We need to buy a present for her birthday.
+The meeting has been moved to the big conference room.
+Just finished the report, sending it now.
+Can you help me with my homework later?
+I will be working from home today.
+How are the kids doing?
+I have attached the invoice for last month.
+The flight was delayed by two hours.
+Let us know if you can make it.
+I am really looking forward to the holiday.
+The cat knocked over a glass of water.
+Sorry, I fell asleep early last night.
+Could you water my plants while I am away?
+The weather forecast says sun all weekend.
+I just started the new series, it is so good.
+Where did you park the car?
+We are meeting at the usual place.
+Thank you for the flowers, they are beautiful.
+Should I bring anything to the barbecue?
+I have to work late tonight, do not wait for me.
+The plumber is coming between eight and ten.
+Can you remind me to call my mother?
+I am almost at the station.
+We still have some leftovers in the fridge.
+It was lovely to see you all yesterday.
+Did you remember to lock the door?
+The appointment is on Tuesday at eleven.
+I am going to the gym after work.
+Have fun at the concert tonight!
+Can we move dinner to eight instead?
+I need your signature on the form.
+I just sent you the address.
+The new version of the app is out.
+How long will the repairs take?
+I will let you know as soon as I hear anything.
+Can you take the dog for a walk?
+We are all out of milk and bread.
+The school called about the trip next week.
+That was a really nice surprise.
+Please confirm that you received the documents.
+I will drop off the keys tomorrow morning.
+My sister is visiting us this weekend.
+Are you free for a coffee this afternoon?
+I think we need more chairs for the party.
+The heating is not working in the bedroom.
+Good luck with the exam tomorrow!
+I made a reservation for Friday night.
+Could you look at the draft before I send it?
+I am waiting outside the building.
+We are going to be a little late.
+The train was cancelled, taking the bus instead.
+Do you know a good dentist nearby?
+I already paid for the tickets.
+Let me know what time suits you best.
+Hope you feel better soon!
+I will bring the wine and some cheese.
+Fika at three in the kitchen?
+We had fika with Anna at the cafe on Södermalm.
+Tack for the help yesterday, you are the best.
+Are you going to the kräftskiva on Saturday?
+I will meet Johan and Elin at Liseberg after lunch.
+The train to Göteborg leaves at nine from platform four.
+We are driving to Malmö for the weekend.
+Can you buy kanelbullar on your way home?
+My mormor turns ninety next month.
+I have a meeting with Sofia in Uppsala on Thursday.
+The hotel in Åre is fully booked.
+We are going to Gotland in July.
+Lagom is the perfect word for this weather.
+Hej, are you home yet?
+My sambo is cooking tonight.
+Our flight from Arlanda is at seven in the morning.
+Let us have a cosy fredagsmys with the kids.
+Linnea and Erik are coming over for dinner.
+Can you call Björn about the boat?
+The office in Västerås closes early on Friday.
+I saw Karin at the station in Lund.
+We walked around Gamla stan all afternoon.
+I bought köttbullar and lingonsylt for dinner.
+Midsommar is going to be at our place this year.
+The apartment in Vasastan has a lovely balcony.
+I am taking the ferry from Nynäshamn.
+Please tell Maja that the meeting is cancelled.
+Did Oskar get the job in Stockholm?
+Skål to a great year!
+The kids loved the snow in Kiruna.
+I will see you at the julbord on Friday.
+We need to book the cabin in Dalarna soon.
+Sanna sent the pictures from Öland.
+Meet me outside Åhléns at five.
+Is the semla season already here?
+Can you ask Gustav if he has the keys?
+We are having glögg and gingerbread tonight.
+Klara starts dagis on Monday.
+Ingrid and Mats send their love from Umeå.
+My farfar still goes skiing every winter.
+The concert at Slottsskogen was amazing.
+Let us take a walk along the water in Norrköping.
